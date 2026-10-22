@@ -578,10 +578,10 @@ function mock(a, p){
 }
 
 /* ================= looks ================= */
-const LOOKS = [['a','Gilded','#d9a93c'],['b','Signal','#5b4ef0'],['c','Night','#2dd4a0']];
+const LOOKS = [['a','Gilded','#d9a93c'],['b','Signal','#5b4ef0'],['c','Executive Dark','#2dd4a0']];
 function setLook(l){ document.documentElement.dataset.look = l; try { localStorage.setItem('ga_look', l); } catch(e){} drawLooks(); }
-function drawLooks(){ const cur = document.documentElement.dataset.look || 'a'; const h = '<b>Look</b>' + LOOKS.map(x => `<button class="${cur === x[0] ? 'on' : ''}" onclick="setLook('${x[0]}')"><i style="background:${x[2]}"></i>${x[1]}</button>`).join(''); ['looksSide','looksLogin'].forEach(id => { const e = $(id); if (e) e.innerHTML = h; }); }
-(function(){ let l = 'a'; try { l = new URLSearchParams(location.search).get('look') || localStorage.getItem('ga_look') || 'a'; } catch(e){} if (!/^[abc]$/.test(l)) l = 'a'; document.documentElement.dataset.look = l; drawLooks(); })();
+function drawLooks(){ const cur = document.documentElement.dataset.look || 'c'; const h = '<b>Look</b>' + LOOKS.map(x => `<button class="${cur === x[0] ? 'on' : ''}" onclick="setLook('${x[0]}')"><i style="background:${x[2]}"></i>${x[1]}</button>`).join(''); ['looksSide','looksLogin'].forEach(id => { const e = $(id); if (e) e.innerHTML = h; }); }
+(function(){ let l = 'c'; try { l = new URLSearchParams(location.search).get('look') || localStorage.getItem('ga_look') || 'c'; } catch(e){} if (!/^[abc]$/.test(l)) l = 'c'; document.documentElement.dataset.look = l; drawLooks(); })();
 /* ================= boot ================= */
 (function(){
   if (DEMO) { document.body.classList.add('isdemo'); $('demoBar').classList.remove('hide'); $('lEmail').value = 'admin@gildedac.co.za'; $('lPass').value = 'demo-password'; }

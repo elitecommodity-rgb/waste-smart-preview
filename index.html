@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-look="a"><head>
-<script src="shim.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="en" data-look="x"><head>
+<script src="shim.js"></script><meta charset="utf-8"><meta name="theme-color" content="#0C1118"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Waste Smart</title><meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Manrope:wght@700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ============ Waste Smart v6.4 — one component set, three looks (data-look = a | b | c) ============ */
 :root{
@@ -316,16 +316,144 @@ textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
 .pf-hero .n{font-size:clamp(24px,3.4vw,40px)}
 .pf-hero{gap:18px 28px}
 
+/* ============ Look X "Executive": slate, teal, amber, coral. Corporate dark; the default ============ */
+:root[data-look="x"]{
+  --bg:#0C1118; --surface:#121A24; --surface2:#1A2430; --ink:#E8EDF4; --mute:#8D9CB0; --line:#243041;
+  --accent:#14B8A6; --accent-ink:#06201C; --accent-soft:#0F2E2C; --coral:#FF8A80;
+  --good:#5EEAD4; --warn:#F5A524; --bad:#FF8A80;
+  --radius:10px; --radius-s:8px; --shadow:none;
+  --font-display:'Manrope','Inter',system-ui,sans-serif; --font-body:'Manrope','Inter',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --dw:800; --dcase:none; --dtrack:-.02em; --btn-case:none; --btn-track:0;
+  --c-waste:#F5A524; --c-plastic:#5EEAD4; --c-paper:#F5C86B; --c-glass:#7DB8FF; --c-cans:#B9A4FF; --c-oil:#C9A27C;
+  --c-gas:#FF8FB1; --c-elec:#7DB8FF; --c-water:#5EEAD4; --c-sales:#E8EDF4; --c-recyc:#5EEAD4;
+  --grid:rgba(232,237,244,.1); --tip-bg:#E8EDF4; --tip-ink:#0C1118; --heat0:#1A2430; --heat1:#14B8A6; --heat-ink:#06201C;
+  --nav-bg:#0C1118; --nav-ink:#E8EDF4; --hero-bg:#121A24; --hero-ink:#E8EDF4;
+  color-scheme:dark;
+}
+:root[data-look="x"] .topnav{border-bottom:1px solid var(--line);padding-block:0;gap:20px;min-height:60px}
+:root[data-look="x"] .brand{font-size:18px;letter-spacing:-.01em}
+:root[data-look="x"] .brand .dot{width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--accent-ink)}
+:root[data-look="x"] .brand .dot::after{content:"W"}
+:root[data-look="x"] .tabs{align-self:stretch;gap:2px}
+:root[data-look="x"] .tab{border-radius:0;background:transparent;font-weight:600;font-size:14px;padding:0 16px;min-height:44px;display:flex;align-items:center;border-bottom:3px solid transparent;opacity:.62}
+:root[data-look="x"] .tab[aria-current="page"]{background:transparent;color:var(--ink);border-bottom-color:var(--accent);opacity:1;font-weight:700}
+:root[data-look="x"] .card,:root[data-look="x"] .editor-card,:root[data-look="x"] .bi-card{border-width:1px}
+:root[data-look="x"] .btn{font-weight:700}
+:root[data-look="x"] .bi-chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+:root[data-look="x"] .eyebrow{font-family:var(--font-body);font-weight:700;letter-spacing:.12em}
+:root[data-look="x"] .view-head h2{font-size:clamp(24px,4.4vw,32px);letter-spacing:-.025em}
+:root[data-look="x"] .hero-total{border:1px solid var(--line)}
+:root[data-look="x"] .hero-total .n{color:var(--good)}
+:root[data-look="x"] .hero-total .l,:root[data-look="x"] .eyebrow,:root[data-look="x"] .costgrp{font-family:var(--font-body)}
+:root[data-look="x"] .savebar{left:0}
+
+/* ---- Overview (executive summary) ---- */
+.ov-head{display:flex;flex-wrap:wrap;gap:14px 20px;justify-content:space-between;align-items:flex-end;padding-block:24px 6px}
+.ov-head h2{font-size:clamp(24px,4.4vw,32px);margin-top:2px}
+.ov-head .section-sub{margin:6px 0 0}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-s);overflow:hidden;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg .bi-chip{border:0;border-radius:0;border-left:1px solid var(--line);min-height:44px;padding:0 16px;white-space:nowrap;color:var(--mute);font-size:13px}
+.seg .bi-chip:first-child{border-left:0}
+.seg .bi-chip.on{background:var(--accent);color:var(--accent-ink)}
+.ov-grid{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px;align-items:start;margin:16px 0}
+.ov-main{display:grid;gap:16px;min-width:0}
+.ov-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ov-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;min-width:0}
+.ov-card h3{font-size:17px;margin:0;text-transform:none;letter-spacing:-.01em}
+.ov-card .hd{display:flex;justify-content:space-between;align-items:baseline;gap:6px 12px;flex-wrap:wrap;margin-bottom:6px}
+.ov-card .hd small{font-size:12px;color:var(--mute)}
+.ov-lbl{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.ov-big{font-family:var(--font-display);font-weight:800;font-size:clamp(38px,11vw,50px);letter-spacing:-.04em;line-height:1;color:var(--good);margin:6px 0 4px;font-variant-numeric:tabular-nums}
+.ov-big.neg{color:var(--bad)}
+.ov-sub{font-size:13px;color:var(--mute)}
+.ov-wf{margin-top:14px;display:flex;flex-direction:column;font-size:14px}
+.ov-wf>div{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+.ov-wf>div span{color:var(--mute)} .ov-wf b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ov-wf .cost b{color:var(--warn)} .ov-wf .inc b{color:var(--good)}
+.ov-wf .tot{border-top:2px solid var(--ink);font-weight:800}.ov-wf .tot span{color:var(--ink);font-weight:800}
+.ov-leak{margin-top:16px;background:color-mix(in srgb,var(--bad) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--bad) 35%,var(--line));border-radius:var(--radius-s);padding:14px 16px}
+.ov-leak .v{font-family:var(--font-display);font-weight:800;font-size:30px;letter-spacing:-.03em;color:var(--bad);margin-top:2px;font-variant-numeric:tabular-nums}
+.ov-leak .ov-lbl{color:var(--bad)}
+.ov-tbl{margin-top:8px}
+.ov-tr{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.3fr) 96px 72px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.ov-tr.th{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--mute);border-bottom-color:var(--line);padding-block:8px}
+.ov-tr:last-child{border-bottom:0}
+.ov-tr .nm{font-weight:600;min-width:0}.ov-tr .nm small{display:block;color:var(--mute);font-weight:500;font-size:12px;margin-top:1px}
+.ov-tr .br{height:8px;background:var(--surface2);border-radius:4px;display:block}.ov-tr .br i{display:block;height:8px;border-radius:4px;background:var(--warn)}
+.ov-tr .am,.ov-tr .dl{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.ov-tr .dl{font-family:var(--font-body)}.ov-tr .dl.bad{color:var(--bad)}.ov-tr .dl.good{color:var(--good)}.ov-tr .dl.flat{color:var(--mute)}
+.ov-li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);align-items:start}
+.ov-li:last-child{border-bottom:0}
+.ov-li b{display:block;font-size:13.5px}.ov-li small{display:block;font-size:12.5px;color:var(--mute);margin-top:2px;line-height:1.4}
+.ov-li .v{font-weight:800;color:var(--bad);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ov-act{display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;padding:11px 0;border-bottom:1px solid var(--line);align-items:start}
+.ov-act:last-child{border-bottom:0}
+.ov-act b{display:block;font-size:13.5px}.ov-act small{display:block;font-size:12.5px;color:var(--mute);margin-top:2px;line-height:1.4}
+.tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;padding:5px 0;border-radius:4px;text-align:center}
+.tag.hi{background:color-mix(in srgb,var(--bad) 18%,var(--surface));color:var(--bad)}
+.tag.md{background:color-mix(in srgb,var(--warn) 18%,var(--surface));color:var(--warn)}
+.tag.lo{background:var(--surface2);color:var(--mute)}
+.ov-empty{color:var(--mute);font-size:13.5px;padding:10px 0}
+.ov-more{margin:16px 0}
+.ov-more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:0 20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);font-weight:700;font-size:15px}
+.ov-more>summary::-webkit-details-marker{display:none}
+.ov-more>summary::after{content:"Show";font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+.ov-more[open]>summary::after{content:"Hide"}
+.ov-more[open]>summary{margin-bottom:14px}
+.ov-note{font-size:12px;color:var(--mute);margin:4px 0 20px}
+@media (max-width:980px){ .ov-grid{grid-template-columns:minmax(0,1fr)} .ov-two{grid-template-columns:minmax(0,1fr)} }
+
+/* ---- Phones: iOS and Android ---- */
+@media (max-width:640px){
+  .ov-head{padding-block:18px 2px}
+  .ov-card{padding:16px}
+  .ov-tr{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"nm am dl" "br br br";gap:6px 12px;padding:11px 0}
+  .ov-tr.th{display:none}
+  .ov-tr .nm{grid-area:nm}.ov-tr .br{grid-area:br}.ov-tr .am{grid-area:am}.ov-tr .dl{grid-area:dl;min-width:48px}
+  .ov-act{grid-template-columns:56px minmax(0,1fr)}
+  .seg{width:100%}.seg .bi-chip{flex:1 0 auto}
+  .topnav{flex-wrap:wrap;gap:0 12px}
+  :root[data-look="x"] .topnav{padding-top:8px;min-height:0}
+  :root[data-look="x"] .brand{order:1}
+  :root[data-look="x"] .nav-right{order:2;margin-left:auto}
+  :root[data-look="x"] .tabs{order:3;flex:1 0 100%;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-inline:max(8px,env(safe-area-inset-left,0px));scroll-snap-type:x proximity}
+  :root[data-look="x"] .tab{padding:0 12px;scroll-snap-align:start}
+  :root[data-look="x"] .biz{display:none}
+  .btn,.bi-chip,.tab{min-height:44px}
+  .btn.small{min-height:44px}
+  input,select,textarea{font-size:16px}
+  .hero-total{grid-template-columns:repeat(2,minmax(0,1fr));padding:16px;gap:14px}
+  .bi-card{padding:14px}
+  .datebar{flex-wrap:wrap}
+  table.htable{font-size:13px}
+  .wrap{padding-inline:max(14px,env(safe-area-inset-left,0px)) max(14px,env(safe-area-inset-right,0px))}
+}
+html,body{max-width:100%;overflow-x:hidden}
+.bi-tablewrap,.report-out{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.savebar{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+.lock-card{max-width:100%}
+.ov-card svg{display:block;width:100%;height:auto;overflow:visible}.ov-card svg text{font-family:var(--font-body)}
+.bi-dev{flex-wrap:wrap;row-gap:2px}
+@media (max-width:640px){
+  .seg .bi-chip{padding:0 10px;font-size:12.5px;flex:1 1 auto}
+  .bi-row{flex-wrap:wrap;min-width:0}
+  .bi-row>*{min-width:0;max-width:100%}
+  .bi-row input[type=date]{flex:1 1 130px}
+  .bi-bar .btn{margin-left:0!important}
+}
+@media (max-width:640px){.bi-row input[type=date]{font-size:16px;min-height:44px}}
+
 </style></head><body>
 <!-- ================= AUTH ================= -->
 <div id="authScreen" hidden>
   <div class="lock-card">
     <div class="eyebrow">Waste Smart</div>
     <h1 id="authHeading">Welcome <span class="hl">back</span></h1>
-    <p class="lock-sub" id="authSub">Log in with your business email and admin PIN.</p>
+    <p class="lock-sub" id="authSub">Sign in with your business email and admin PIN. New sites are set up for you by Gilded Age.</p>
     <div class="auth-tabs">
       <button type="button" class="auth-tab active" id="authTabLogin" onclick="showAuthPanel('login')">Log in</button>
-      <button type="button" class="auth-tab" id="authTabRegister" onclick="showAuthPanel('register')">New site</button>
+      <button type="button" class="auth-tab" id="authTabRegister" onclick="showAuthPanel('register')" hidden>New site</button>
     </div>
     <div id="authLoginPanel">
       <div class="field"><label class="field-label" for="loginEmail">Business email</label><input type="email" id="loginEmail" placeholder="you@yourbusiness.co.za" autocomplete="username"></div>
@@ -363,40 +491,49 @@ textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
   <header class="topnav">
     <div class="brand"><span class="dot"></span>Waste Smart</div>
     <nav class="tabs" id="tabs" aria-label="Sections">
-      <button class="tab" data-view="profit">Profit</button>
-      <button class="tab" data-view="today">Today</button>
-      <button class="tab" data-view="board">Board</button>
-      <button class="tab" data-view="impact">Impact</button>
-      <button class="tab" data-view="reports">Reports</button>
-      <button class="tab" data-view="integrations">Devices</button>
-      <button class="tab" data-view="settings">Settings</button>
+      <button class="tab" data-view="profit">Overview</button>
+      <button class="tab" data-view="today">Daily log</button>
+      <button class="tab" data-view="board">Analysis</button>
+      <button class="tab" data-view="impact">Sustainability</button>
+      <button class="tab" data-view="reports">Reporting</button>
+      <button class="tab" data-view="integrations">Integrations</button>
+      <button class="tab" data-view="settings">Administration</button>
     </nav>
     <div class="nav-right"><span class="biz" id="bizName"></span><button class="btn ghost small" onclick="lockApp()">Lock</button></div>
   </header>
   <main id="appMain">
 
-  <!-- PROFIT -->
+  <!-- OVERVIEW -->
   <section class="view" id="v_profit" hidden><div class="wrap">
-    <div class="view-head"><div class="eyebrow">Money</div><h2>Profit</h2>
-      <p class="section-sub">What each thing you track costs you, what it earns back, and how it compares with your sales.</p></div>
-    <div class="bi-chips" id="pfPeriod" style="margin-bottom:14px"><button class="bi-chip" data-r="period:month">This month</button><button class="bi-chip" data-r="lastmonth">Last month</button><button class="bi-chip" data-r="last:30">30 days</button><button class="bi-chip" data-r="last:90">90 days</button><button class="bi-chip" data-r="period:year">This year</button></div>
+    <div class="ov-head"><div><div class="eyebrow">Executive summary</div><h2 id="ovTitle">Operating position</h2>
+      <p class="section-sub" id="ovSub">What operations cost now, what they earn, and where money is leaking.</p></div>
+      <div class="seg" id="pfPeriod" role="group" aria-label="Reporting period"><button class="bi-chip" data-r="period:month">Month to date</button><button class="bi-chip" data-r="lastmonth">Prior month</button><button class="bi-chip" data-r="last:90">90 days</button><button class="bi-chip" data-r="period:year">Year to date</button></div></div>
     <div id="pfSetup"></div>
-    <div class="hero-total pf-hero" id="pfHero"></div>
-    <div class="bi-card wide" style="margin-bottom:14px"><h3>Where the money goes</h3><div class="sub" id="pfLinesSub"></div><div id="pfLines"></div></div>
-    <div class="bi-card wide" style="margin-bottom:14px"><h3>What to look at first</h3><div class="sub">Worked out from your own numbers.</div><ul class="bi-hlist" id="pfActions"></ul></div>
+    <div class="ov-grid">
+      <aside class="ov-card" id="ovRail" aria-label="Net contribution"></aside>
+      <div class="ov-main">
+        <div class="ov-card"><div class="hd"><h3>Cost of operations</h3><small id="ovCostSub"></small></div><div class="ov-tbl" id="ovCosts"></div></div>
+        <div class="ov-two">
+          <div class="ov-card"><div class="hd"><h3>Controllable leakage</h3></div><div id="ovLeaks"></div></div>
+          <div class="ov-card"><div class="hd"><h3>Recommended actions</h3></div><div id="pfActions"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="ov-card" style="margin-bottom:16px"><div class="hd"><h3>Food waste against expected level, daily</h3><small><span style="color:var(--bad);font-weight:700">Red</span> = above the expected level for that weekday</small></div><div class="sub costline" id="pfNormSub" style="margin-bottom:8px"></div><div id="pfNorm"></div></div>
+    <p class="ov-note" id="ovNote"></p>
+    <details class="ov-more"><summary>Supporting analysis</summary>
     <div class="bi-grid">
       <div class="bi-card"><h3>Cost per sale</h3><div class="sub">How hard each sale works your kitchen. Needs a connected POS.</div><div id="pfRatios"></div></div>
-      <div class="bi-card"><h3>Left running while closed</h3><div class="sub">Power and water used in the hours you do not trade.</div><div id="pfAfter"></div></div>
-      <div class="bi-card"><h3>Written off at the till</h3><div class="sub">Voids and wasted items logged on the POS, by reason.</div><div id="pfVoids"></div></div>
-      <div class="bi-card"><h3>Staff time</h3><div class="sub">Hours on the clock by role, and time worked after the last sale.</div><div id="pfLabor"></div></div>
-      <div class="bi-card wide"><h3>Waste against how busy you were</h3><div class="sub" id="pfNormSub"></div><div id="pfNorm"></div></div>
+      <div class="bi-card"><h3>Utilities in closed hours</h3><div class="sub">Power and water used in the hours you do not trade.</div><div id="pfAfter"></div></div>
+      <div class="bi-card"><h3>Write-offs at the till</h3><div class="sub">Voids and wasted items logged on the POS, by reason.</div><div id="pfVoids"></div></div>
+      <div class="bi-card"><h3>Labour</h3><div class="sub">Hours on the clock by role, and time worked after the last sale.</div><div id="pfLabor"></div></div>
       <div class="bi-card wide"><h3>Trading hours against power</h3><div class="sub">Average per hour of the day. Power that stays high when sales drop is the saving.</div><div class="bi-grid" style="margin:0;gap:12px"><div id="pfHourSales"></div><div id="pfHourPower"></div></div></div>
-    </div>
+    </div></details>
   </div></section>
 
   <!-- TODAY -->
   <section class="view" id="v_today" hidden><div class="wrap">
-    <div class="view-head"><div class="eyebrow">Daily log</div><h2>Today</h2>
+    <div class="view-head"><div class="eyebrow">Daily log</div><h2>Daily log</h2>
       <p class="section-sub">Scales and meters fill this in on their own. Anything can be typed in by hand as a backup, and a typed figure always wins for that day.</p></div>
     <div class="datebar">
       <button class="btn ghost small" onclick="shiftDay(-1)" aria-label="Previous day">◀</button>
@@ -413,7 +550,7 @@ textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
 
   <!-- BOARD -->
   <section class="view" id="v_board" hidden><div class="wrap">
-    <div class="view-head"><div class="eyebrow">Live report</div><h2>The Board</h2>
+    <div class="view-head"><div class="eyebrow">Analysis</div><h2>Operational analysis</h2>
       <p class="section-sub">Every figure rolled up from your scales and meters, plus anything typed in by hand. Click a bar or a weekday to filter everything else; click again to clear. The same data feeds Power BI.</p></div>
     <div class="bi-bar" id="biBar">
       <div class="bi-row"><span class="bi-lbl">Period</span>
@@ -450,7 +587,7 @@ textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
 
   <!-- IMPACT -->
   <section class="view" id="v_impact" hidden><div class="wrap">
-    <div class="view-head"><div class="eyebrow">Savings</div><h2>Impact and costs</h2>
+    <div class="view-head"><div class="eyebrow">Sustainability</div><h2>Sustainability and disposal costs</h2>
       <p class="section-sub">What recycling saves the planet and what disposal costs you, for the period chosen on the Board.</p></div>
     <div class="hero-total" id="envHero"></div>
     <div class="card" style="margin-bottom:16px"><h4>Disposal rates</h4>
@@ -468,7 +605,7 @@ textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
 
   <!-- REPORTS -->
   <section class="view" id="v_reports" hidden><div class="wrap">
-    <div class="view-head"><div class="eyebrow">Export</div><h2>Reports</h2><p class="section-sub">Choose a date range, preview a report and download it as CSV.</p></div>
+    <div class="view-head"><div class="eyebrow">Reporting</div><h2>Management reporting</h2><p class="section-sub">Choose a date range, preview a report and download it as CSV.</p></div>
     <div class="card" style="margin-bottom:16px"><div class="form-grid"><div class="field"><label class="field-label" for="repFrom">From</label><input type="date" id="repFrom"></div><div class="field"><label class="field-label" for="repTo">To</label><input type="date" id="repTo"></div></div>
       <div class="btnrow"><button class="btn ghost small" onclick="setReportRange('week')">This week</button><button class="btn ghost small" onclick="setReportRange('month')">This month</button><button class="btn ghost small" onclick="setReportRange('lastmonth')">Last month</button><button class="btn ghost small" onclick="setReportRange('year')">This year</button><button class="btn ghost small" onclick="setReportRange('all')">All</button></div></div>
     <div class="grid-2" id="reportCards"></div>
@@ -476,7 +613,7 @@ textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
 
   <!-- DEVICES -->
   <section class="view" id="v_integrations" hidden><div class="wrap">
-    <div class="view-head"><div class="eyebrow">Connections</div><h2>Devices</h2>
+    <div class="view-head"><div class="eyebrow">Integrations</div><h2>Connected devices</h2>
       <p class="section-sub">Connect any scale, meter or POS. Each device gets its own key and is told where its numbers go: kitchen waste, a recycling material, used oil, gas, electricity, water or sales.</p></div>
     <div id="feedStatus" class="okbox" hidden></div>
     <div class="editor-card" style="margin-bottom:16px"><h4>Connected devices</h4><div id="devList"></div>
@@ -504,7 +641,7 @@ textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
 
   <!-- SETTINGS -->
   <section class="view" id="v_settings" hidden><div class="wrap">
-    <div class="view-head"><div class="eyebrow">Admin</div><h2>Settings</h2></div>
+    <div class="view-head"><div class="eyebrow">Administration</div><h2>Administration</h2></div>
     <div class="editor-card" style="margin-bottom:16px"><h4>Look and feel</h4><p class="section-sub">Pick how Waste Smart looks on this device.</p><div class="looks" id="lookPicker"></div></div>
     <div class="grid-2" style="margin-bottom:16px">
       <div class="editor-card"><h4>Business profile</h4><div class="form-grid"><div class="field"><label class="field-label" for="setBizName">Business name</label><input type="text" id="setBizName"></div><div class="field"><label class="field-label" for="setBizCurrency">Currency symbol</label><input type="text" id="setBizCurrency" maxlength="3"></div></div><button class="btn primary small" onclick="saveBusinessProfile()">Save profile</button></div>
@@ -581,10 +718,10 @@ function parseISO(s){ const [y,m,d] = s.split('-').map(Number); return new Date(
 function nf(n, dp){ return (Number(n)||0).toLocaleString('en-ZA', { maximumFractionDigits: dp==null?1:dp, minimumFractionDigits: 0 }); }
 
 /* ---------- looks (three skins over one component set) ---------- */
-const LOOKS = { b:['Fresh','Bright and friendly. Soft cards, deep green, big rounded numbers.'], a:['Control Room','Graphite and electric lime. Condensed, loud, built for a back-office screen.'], c:['Stainless','Steel grey, black ink and safety orange. Hard edges, label-tape feel.'],
+const LOOKS = { x:['Executive','Slate and teal. Corporate dark with cost, earnings and leakage up front.'], b:['Fresh','Bright and friendly. Soft cards, deep green, big rounded numbers.'], a:['Control Room','Graphite and electric lime. Condensed, loud, built for a back-office screen.'], c:['Stainless','Steel grey, black ink and safety orange. Hard edges, label-tape feel.'],
   d:['Boardroom','Navy sidebar, crisp white cards, electric blue. Sharp and corporate.'], e:['Midnight','Deep indigo dark mode with a violet glow. Modern and punchy.'], f:['Terracotta','Warm paper, espresso nav, editorial serif. Crafted, kitchen-professional.'] };
-function applyLook(l){ if (!LOOKS[l]) l = 'a'; document.documentElement.setAttribute('data-look', l); try{ localStorage.setItem(LOOK_KEY, l); }catch(e){} }
-(function(){ let l = 'a'; try{ l = new URLSearchParams(location.search).get('look') || localStorage.getItem(LOOK_KEY) || 'a'; }catch(e){} applyLook(l); })();
+function applyLook(l){ if (!LOOKS[l]) l = 'x'; document.documentElement.setAttribute('data-look', l); try{ localStorage.setItem(LOOK_KEY, l); }catch(e){} }
+(function(){ let l = 'x'; try{ l = new URLSearchParams(location.search).get('look') || localStorage.getItem(LOOK_KEY) || 'x'; }catch(e){} applyLook(l); })();
 function renderLookPicker(){
   const cur = document.documentElement.getAttribute('data-look');
   $('lookPicker').innerHTML = Object.keys(LOOKS).map(k=>`<button class="lookopt" aria-pressed="${k===cur}" onclick="applyLook('${k}');renderLookPicker()"><b>${esc(LOOKS[k][0])}</b><span class="costline">${esc(LOOKS[k][1])}</span></button>`).join('');
@@ -1463,7 +1600,7 @@ function biDonutC(rows){
 function biWeekday(allRows){
   const tot = [0,0,0,0,0,0,0], n = [0,0,0,0,0,0,0]; allRows.forEach(r=>{ const i = (parseISO(r.date).getDay()+6)%7; tot[i]+=r.waste; if (r.waste>0) n[i]++; });
   const mx = Math.max(...tot, 0.0001);
-  $('biHeat').innerHTML = tot.some(v=>v>0) ? `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">${tot.map((v,i)=>{ const f = v/mx; const sel = biF.weekday === i;
+  $('biHeat').innerHTML = tot.some(v=>v>0) ? `<div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px">${tot.map((v,i)=>{ const f = v/mx; const sel = biF.weekday === i;
     return `<button onclick="biSetWeekday(${i})" data-tip="<b>${WD[i]}</b><br>${nf(v)} kg over ${n[i]} day${n[i]===1?'':'s'}" style="border:1.5px solid ${sel?'var(--ink)':'var(--line)'};border-radius:var(--radius-s);padding:10px 4px;text-align:center;min-height:84px;background:color-mix(in srgb,var(--heat1) ${Math.round(f*100)}%,var(--heat0));color:${f>.55?'var(--heat-ink)':'var(--ink)'};${biF.weekday!=null&&!sel?'opacity:.4':''}"><div style="font-size:11.5px;font-weight:700">${WD[i]}</div><div style="font-family:var(--font-display);font-weight:var(--dw);font-size:20px">${nf(v,0)}</div><div style="font-size:11px">kg</div></button>`; }).join('')}</div>` : '<div class="bi-empty">No waste logged in this period.</div>';
 }
 function biRecycC(rows, from, to){
@@ -1569,11 +1706,75 @@ function profitModel(from, to){
 function pctOf(v, sales){ return sales > 0 ? nf(v/sales*100, 1) + '%' : '—'; }
 
 function renderProfit(){
-  if (!$('pfHero')) return;
+  if (!$('ovRail')) return;
   document.querySelectorAll('#pfPeriod .bi-chip').forEach(b=>b.classList.toggle('on', b.dataset.r === pfF.key));
   const rg = pfRange(), span = dayDiff(rg.from, rg.to) + 1, pFrom = addDays(rg.from, -span), pTo = addDays(rg.from, -1);
-  const m = profitModel(rg.from, rg.to), pm = profitModel(pFrom, pTo);
-  pfSetup(m); pfHero(m, pm); pfLinesC(m, pm); pfRatiosC(m, pm); pfAfterC(rg); pfVoidsC(rg); pfLaborC(rg); pfNormC(rg); pfHourC(rg); pfActionsC(m, pm, rg);
+  const m = profitModel(rg.from, rg.to), pm = profitModel(pFrom, pTo), lk = ovLeakModel(m, rg);
+  ovTitle(rg); pfSetup(m); ovRailC(m, lk); ovCostsC(m, pm); ovLeaksC(lk); ovActionsC(m, pm, rg, lk);
+  pfRatiosC(m, pm); pfAfterC(rg); pfVoidsC(rg); pfLaborC(rg); pfNormC(rg); pfHourC(rg);
+  $('ovNote').textContent = 'Food waste is valued at your average food cost per kg. Leakage is an estimate worked out from your own data: waste above the usual level for that weekday, till write-offs, and utilities used in closed hours. Some closed-hour use (fridges, freezers) is expected.';
+}
+function ovTitle(rg){
+  const d = parseISO(rg.to), mon = d.toLocaleDateString('en-ZA',{month:'long',year:'numeric'});
+  const t = pfF.key==='period:month' ? `${mon} operating position` : pfF.key==='lastmonth' ? `${mon} operating position` : pfF.key==='period:year' ? `${d.getFullYear()} year to date` : `Operating position, last ${dayDiff(rg.from,rg.to)+1} days`;
+  $('ovTitle').textContent = t;
+  $('ovSub').textContent = `${rg.from} to ${rg.to}. Compared with the ${dayDiff(rg.from,rg.to)+1} days before.`;
+}
+function ovLeakModel(m, rg){
+  const fr = +rates.foodCostPerKg || 0, items = [];
+  const wn = wasteNorm(), flagged = Object.values(wn.days).filter(d=>d.flag && d.date>=rg.from && d.date<=rg.to), withBase = Object.values(wn.days).filter(d=>d.base!=null && d.date>=rg.from && d.date<=rg.to);
+  const exKg = flagged.reduce((x,d)=>x+d.excessKg,0);
+  if (exKg > 0) items.push({ n:'Food waste above expected level', b:`${flagged.length} of ${withBase.length} days over the ${WD ? 'weekday' : 'usual'} median, about ${nf(exKg)} kg extra`, v: fr>0 ? exKg*fr : 0, kg: exKg });
+  const vr = ((feedState.pos||{}).voidsDailyReason||[]).filter(r=>r.date>=rg.from && r.date<=rg.to), by = {}; vr.forEach(r=>{ by[r.reason] = (by[r.reason]||0) + r.value; });
+  const vTot = Object.values(by).reduce((x,y)=>x+y,0), vTop = Object.entries(by).sort((x,y)=>y[1]-x[1])[0];
+  if (vTot > 0) items.push({ n:'Write-offs and voids', b:`${vTop[0]} is the largest reason`, v:vTot });
+  const a = pfAfterModel(rg), t = feedState.settings || {};
+  if (a){ const cl = (a.e.closed*(t.tariff_kwh||0)) + (a.w.closed/1000*(t.tariff_water_kl||0)) + (a.g.closed*(t.tariff_gas_kg||0));
+    if (cl > 0) items.push({ n:'Utilities in closed hours', b:'Consumed outside trading hours', v:cl }); }
+  items.sort((x,y)=>y.v-x.v);
+  return { items, total: items.reduce((x,i)=>x+i.v,0) };
+}
+function ovRailC(m, lk){
+  const hasS = m.sales > 0, net = m.left, cur = c => fmtMoney(c), neg = hasS && net < 0;
+  const recV = m.income.find(i=>i.k==='recyc').v, oilV = m.income.find(i=>i.k==='oil').v;
+  $('ovRail').innerHTML = `<div class="ov-lbl">Net contribution</div>
+    <div class="ov-big${neg?' neg':''}">${hasS ? cur(net) : '—'}</div>
+    <div class="ov-sub">${hasS ? pctOf(net,m.sales)+' of revenue, after tracked cost of operations' : 'Connect a POS or key in sales to see net contribution'}</div>
+    <div class="ov-wf">
+      <div><span>Revenue${m.sales>0?' (sales)':''}</span><b>${hasS ? cur(m.sales) : '—'}</b></div>
+      <div class="cost"><span>Tracked cost of operations</span><b>${m.totalCost>0 ? '−'+cur(m.totalCost) : cur(0)}</b></div>
+      <div class="inc"><span>Recycling recovery</span><b>+${cur(recV)}</b></div>
+      <div class="inc"><span>Used cooking oil recovery</span><b>+${cur(oilV)}</b></div>
+      <div class="tot"><span>Net contribution</span><b>${hasS ? cur(net) : '—'}</b></div></div>
+    <div class="ov-leak"><div class="ov-lbl">Controllable leakage</div><div class="v">${cur(lk.total)}</div>
+      <div class="ov-sub" style="color:var(--mute)">${hasS && lk.total>0 ? pctOf(lk.total,m.sales)+' of revenue · ' : ''}${lk.items.length} item${lk.items.length===1?'':'s'} identified</div></div>`;
+}
+function ovCostsC(m, pm){
+  const costs = m.costs.slice().sort((x,y)=>y.v-x.v), mx = Math.max(...costs.map(c=>c.v), 1);
+  const prevOf = k => (pm.costs.find(x=>x.k===k)||{}).v || 0;
+  $('ovCostSub').textContent = m.totalCost>0 ? `${fmtMoney(m.totalCost)}${m.sales>0 ? ' · '+pctOf(m.totalCost,m.sales)+' of revenue' : ''}` : 'Add tariffs and rates under Administration';
+  const nameOf = c => c.k==='food' ? 'Food waste' : c.name;
+  $('ovCosts').innerHTML = `<div class="ov-tr th"><span>CATEGORY</span><span>SHARE</span><span style="text-align:right">AMOUNT</span><span style="text-align:right">VS PRIOR</span></div>` + costs.map(c=>{
+    const p = prevOf(c.k), d = p>0 ? (c.v-p)/p*100 : null, flat = d==null || Math.abs(d)<1, cls = flat ? 'flat' : (d>0?'bad':'good');
+    return `<div class="ov-tr" data-tip="<b>${esc(c.name)}</b><br>${esc(c.note)}"><div class="nm">${esc(nameOf(c))}<small>${c.need && c.v===0 ? 'needs '+esc(c.need) : esc(c.note)}</small></div>
+      <span class="br"><i style="width:${Math.max(c.v>0?2:0,c.v/mx*100)}%"></i></span><span class="am">${fmtMoney(c.v)}</span>
+      <span class="dl ${cls}">${d==null ? '—' : (Math.abs(d)<1 ? '0%' : (d>0?'+':'−')+nf(Math.abs(d),0)+'%')}</span></div>`; }).join('');
+}
+function ovLeaksC(lk){
+  $('ovLeaks').innerHTML = lk.items.length ? lk.items.map(i=>`<div class="ov-li"><div><b>${esc(i.n)}</b><small>${esc(i.b)}</small></div><span class="v">${i.v>0 ? fmtMoney(i.v) : nf(i.kg)+' kg'}</span></div>`).join('') : '<div class="ov-empty">No leakage identified in this period. Findings appear once there is enough history from the scale, POS and meters.</div>';
+}
+function ovActionsC(m, pm, rg, lk){
+  const L = [], add = (p, h, d)=>L.push(`<div class="ov-act"><span class="tag ${p==='HIGH'?'hi':p==='MEDIUM'?'md':'lo'}">${p}</span><div><b>${h}</b><small>${d}</small></div></div>`);
+  const wn = wasteNorm(), flagged = Object.values(wn.days).filter(d=>d.flag && d.date>=rg.from && d.date<=rg.to);
+  if (flagged.length){ const byWd = {}; flagged.forEach(d=>{ byWd[d.weekday] = (byWd[d.weekday]||0) + 1; }); const top = Object.entries(byWd).sort((x,y)=>y[1]-x[1])[0];
+    add('HIGH', `Review ${esc(WD[+top[0]])} preparation volumes`, `${top[1]} of ${flagged.length} flagged day${flagged.length>1?'s':''} fell on a ${esc(WD[+top[0]])}, above the expected level.`); }
+  const a = pfAfterModel(rg), t = feedState.settings || {};
+  if (a && a.e.n > 0 && t.tariff_kwh > 0){ const mo = a.e.closed / a.e.n * MON * t.tariff_kwh; if (mo >= 1) add('HIGH', 'Enforce close-down procedure', `Closed-hour electricity costs about ${fmtMoney(mo)} a month. Check what is left running overnight.`); }
+  const vr = ((feedState.pos||{}).voidsDailyReason||[]).filter(r=>r.date>=rg.from && r.date<=rg.to), by = {}; vr.forEach(r=>{ by[r.reason] = (by[r.reason]||0) + r.value; });
+  const topV = Object.entries(by).sort((x,y)=>y[1]-x[1])[0]; if (topV && topV[1] > 0) add('MEDIUM', `Investigate "${esc(topV[0])}" write-offs`, `Largest till write-off reason at ${fmtMoney(topV[1])}. Check storage, ordering and handling.`);
+  m.costs.forEach(c=>{ const p = (pm.costs.find(x=>x.k===c.k)||{}).v || 0; if (L.length < 5 && p > 0 && c.v > p*1.1 && c.v - p >= 1) add('MEDIUM', `${esc(c.name)} up ${nf((c.v-p)/p*100,0)}%`, `${fmtMoney(c.v-p)} more than the prior period.`); });
+  if (m.waste > 0 && !(rates.foodCostPerKg > 0)) add('LOW', 'Set average food cost per kg', 'Needed to value food waste. Add it under Administration.');
+  $('pfActions').innerHTML = L.length ? L.slice(0,5).join('') : '<div class="ov-empty">Nothing requires attention. Recommendations appear once there is a full period of data.</div>';
 }
 function pfSetup(m){
   const need = [...m.costs, ...m.income].filter(x=>x.need && (x.k!=='oil' && x.k!=='recyc' || true)).map(x=>x.need);
@@ -1591,7 +1792,7 @@ async function pfSaveFood(){
   rates = Object.assign({}, rates, { foodCostPerKg:v });
   if (await sSet(K.RECYCLING, JSON.stringify(rates))){ toast('Saved.'); renderProfit(); }
 }
-function pfHero(m, pm){
+function pfHero(m, pm){ if (!$('pfHero')) return;
   const tile = (n,l,sub)=>`<div><div class="n">${n}</div><div class="l">${l}</div>${sub?`<div class="l" style="opacity:.8;margin-top:2px">${sub}</div>`:''}</div>`;
   const cmp = (cur, prev, lowerGood)=> prev>0 ? `${cur>=prev?'▲':'▼'} ${nf(Math.abs(cur-prev)/prev*100,0)}% vs previous` : '';
   $('pfHero').innerHTML = tile(m.sales>0?fmtMoney(m.sales):'—','Sales', m.sales>0?cmp(m.sales,pm.sales):'No sales yet')
@@ -1599,7 +1800,7 @@ function pfHero(m, pm){
     + tile(fmtMoney(m.totalIncome),'Earned back', 'recycling and oil')
     + tile(m.sales>0?fmtMoney(m.left):'—','Left after these costs', m.sales>0 ? pctOf(m.left,m.sales)+' of sales' : 'Needs sales');
 }
-function pfLinesC(m, pm){
+function pfLinesC(m, pm){ if (!$('pfLines')) return;
   const costs = m.costs.slice().sort((a,b)=>b.v-a.v), mx = Math.max(...costs.map(c=>c.v), ...m.income.map(c=>c.v), 1);
   const prevOf = k => (pm.costs.concat(pm.income).find(x=>x.k===k)||{}).v || 0;
   $('pfLinesSub').textContent = `${m.totalCost>0 ? 'Together these cost ' + fmtMoney(m.totalCost) + (m.sales>0 ? ', which is ' + pctOf(m.totalCost,m.sales) + ' of sales.' : '.') : 'Add tariffs and rates to see what each line costs.'} Food thrown away is an estimate from your own cost per kg.`;
@@ -1690,7 +1891,7 @@ function pfHourC(rg){
   $('pfHourPower').innerHTML = '<div class="costline">Electricity per hour (kWh)</div>' + (days.size ? strip(barChart(pg, [{name:'kWh',color:'--c-elec'}], { h:150 })) : '<div class="bi-empty">No hourly electricity readings yet.</div>');
   biF.bucket = keep;
 }
-function pfActionsC(m, pm, rg){
+function pfActionsC(m, pm, rg){ if (!$('pfActions')) return;
   const L = [], add = (cls, tag, txt)=>L.push(`<li><span class="ic ${cls}">${tag}</span><span>${txt}</span></li>`);
   const big = m.costs.slice().sort((a,b)=>b.v-a.v)[0];
   if (big && big.v > 0) add('info','BIGGEST', `${esc(big.name)} is your biggest tracked cost: ${fmtMoney(big.v)}${m.sales>0?', '+pctOf(big.v,m.sales)+' of sales':''}.`);
@@ -1736,8 +1937,8 @@ function pfNormC(rg){
   const withBase = days.filter(d=>d.base != null), flagged = withBase.filter(d=>d.flag);
   $('pfNormSub').textContent = `Grams of waste per ${n.unitName}, against the usual for that weekday (the middle of the last 8 same weekdays). A day is flagged at ${n.flagPct}% above usual and at least 2 kg more than usual. No recipes needed.`;
   if (!days.length){ $('pfNorm').innerHTML = '<div class="bi-empty">Needs waste from the scale and covers or orders from the POS on the same days.</div>'; return; }
-  const W = 720, H = 190, L = 44, B = 24, T = 8, R = 6, iw = W-L-R, ih = H-T-B, slot = iw/days.length, bw = Math.max(3, Math.min(30, slot*.7));
-  const mx = niceMax(Math.max(...days.map(d=>Math.max(d.actual, d.base||0)), 1)), y = v => T + ih - v/mx*ih, every = Math.ceil(days.length/10);
+  const W = Math.max(300, Math.min(900, $('pfNorm').clientWidth || 720)), H = 190, L = 40, B = 24, T = 8, R = 6, iw = W-L-R, ih = H-T-B, slot = iw/days.length, bw = Math.max(3, Math.min(30, slot*.7));
+  const mx = niceMax(Math.max(...days.map(d=>Math.max(d.actual, d.base||0)), 1)), y = v => T + ih - v/mx*ih, every = Math.ceil(days.length/(W<500?6:10));
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Waste per ${n.unitName} by day against usual">`;
   [0,.5,1].forEach(f=>{ const v = mx*f; s += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--mute)">${nf(v,0)}</text>`; });
   let line = [];
@@ -1751,7 +1952,7 @@ function pfNormC(rg){
   if (line.length > 1) s += `<polyline points="${line.join(' ')}" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
   s += '</svg>';
   const fr = (+rates.foodCostPerKg||0), excess = flagged.reduce((a,d)=>a+d.excessKg,0);
-  const list = flagged.slice().sort((a,b)=>b.excessKg-a.excessKg).slice(0,5).map(d=>`<div class="bi-dev"><span class="st quiet">${esc(d.date)} ${WD[d.weekday]}</span><span>${nf(d.actual,0)} g per ${n.unitName} against ${nf(d.base,0)} usual</span><b class="mono" style="margin-left:auto;color:var(--bad)">+${nf(d.pct,0)}%</b><span class="mono" style="min-width:110px;text-align:right">${nf(d.excessKg)} kg extra${fr>0?' · '+fmtMoney(d.excessKg*fr):''}</span></div>`).join('');
+  const list = flagged.slice().sort((a,b)=>b.excessKg-a.excessKg).slice(0,3).map(d=>`<div class="bi-dev"><span class="st quiet">${esc(d.date)} ${WD[d.weekday]}</span><span>${nf(d.actual,0)} g per ${n.unitName} against ${nf(d.base,0)} usual</span><b class="mono" style="margin-left:auto;color:var(--bad)">+${nf(d.pct,0)}%</b><span class="mono" style="min-width:110px;text-align:right">${nf(d.excessKg)} kg extra${fr>0?' · '+fmtMoney(d.excessKg*fr):''}</span></div>`).join('');
   $('pfNorm').innerHTML = s + `<div class="bi-legend"><span><span class="k" style="background:var(--mute);opacity:.6"></span>Normal day</span><span><span class="k" style="background:var(--bad)"></span>Flagged</span><span><span class="k" style="background:var(--ink)"></span>Usual for that weekday</span></div>`
     + (withBase.length ? (flagged.length ? `<div style="margin-top:10px">${list}</div><div class="costline" style="margin-top:8px">${flagged.length} of ${withBase.length} days flagged. About <b style="color:var(--ink)">${nf(excess)} kg</b> more waste than usual for how busy you were${fr>0?', worth about <b style="color:var(--ink)">'+fmtMoney(excess*fr)+'</b>':''}.</div>` : '<div class="costline" style="margin-top:8px">No day was unusually high for how busy you were.</div>') : '<div class="costline" style="margin-top:8px">The usual level starts showing once each weekday has three earlier days of history.</div>');
 }
