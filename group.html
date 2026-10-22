@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" data-look="x"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0C1118"><meta name="robots" content="noindex">
+<title>Waste Smart Group Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0C1118;--surface:#121A24;--surface2:#1A2430;--ink:#E8EDF4;--mute:#8D9CB0;--line:#243041;--accent:#14B8A6;--accent-ink:#06201C;--good:#5EEAD4;--warn:#F5A524;--bad:#FF8A80;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}html,body{max-width:100%;overflow-x:hidden}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 'Manrope',system-ui,sans-serif;-webkit-tap-highlight-color:transparent;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{letter-spacing:-.02em;line-height:1.1}
+[hidden]{display:none!important}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
+.top{position:sticky;top:0;z-index:40;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.top .wrap{display:flex;align-items:center;gap:20px;min-height:60px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.brand i{width:26px;height:26px;border-radius:6px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:14px}
+.tabs{display:flex;gap:2px;align-self:stretch;overflow-x:auto;scrollbar-width:none;flex:1}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:0 16px;min-height:44px;font-weight:600;font-size:14px;color:var(--mute);white-space:nowrap;cursor:pointer}
+.tab[aria-current=page]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.nr{display:flex;gap:10px;align-items:center}
+.grp{font-size:13px;color:var(--mute);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+a{color:var(--good)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:8px;border:1px solid var(--line);background:transparent;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--ink)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.sm{min-height:38px;padding:0 13px;font-size:13px}
+.btn:disabled{opacity:.5}
+input,select,textarea{width:100%;min-height:44px;padding:10px 13px;background:var(--surface);border:1px solid var(--line);border-radius:8px;font-size:16px}
+textarea{min-height:120px;font-family:'JetBrains Mono',monospace;font-size:13px}
+input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(--accent) 60%,transparent);border-color:var(--accent)}
+label{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin-bottom:5px}
+.fld{margin-bottom:12px}.frm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.head{display:flex;flex-wrap:wrap;gap:14px 20px;justify-content:space-between;align-items:flex-end;padding-block:24px 8px}
+.head h1{font-size:clamp(24px,4.4vw,32px);margin-top:2px}.sub{color:var(--mute);font-size:14px;margin-top:6px;max-width:70ch}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;scrollbar-width:none;max-width:100%}
+.seg button{background:none;border:0;border-left:1px solid var(--line);min-height:44px;padding:0 14px;font-size:13px;font-weight:600;color:var(--mute);white-space:nowrap;cursor:pointer}
+.seg button:first-child{border-left:0}.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px 22px;min-width:0}
+.card h3{font-size:17px}.hd{display:flex;justify-content:space-between;align-items:baseline;gap:6px 12px;flex-wrap:wrap;margin-bottom:10px}.hd small{font-size:12px;color:var(--mute)}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:12px 0 16px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;min-width:0}
+.kpi .l{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.kpi .n{font-weight:800;font-size:clamp(22px,2.4vw,30px);letter-spacing:-.03em;margin-top:6px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi .s{font-size:12.5px;color:var(--mute);margin-top:2px}
+.kpi.net .n{color:var(--good)}.kpi.leak{background:color-mix(in srgb,var(--bad) 9%,var(--surface));border-color:color-mix(in srgb,var(--bad) 35%,var(--line))}.kpi.leak .n,.kpi.leak .l{color:var(--bad)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start;margin-bottom:24px}
+.side{display:grid;gap:16px;min-width:0}
+.crumb{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;font-size:13px;margin-bottom:10px}
+.crumb button{background:none;border:0;color:var(--good);font-weight:700;cursor:pointer;min-height:32px;padding:0 4px;font-size:13px}.crumb span{color:var(--mute)}.crumb b{color:var(--ink)}
+.tbl{display:block}
+.tr{display:grid;gap:12px;align-items:center;padding:11px 8px;border-bottom:1px solid var(--line);font-size:14px;min-width:0}
+.tr.rw{cursor:pointer}.tr.rw:hover{background:var(--surface2)}
+.tr.th{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--mute);padding-block:8px;text-transform:uppercase;position:sticky;top:0}
+.th button{background:none;border:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:pointer;text-align:inherit;padding:0;min-height:28px}
+.th button.s::after{content:" ▾"}.th button.s.up::after{content:" ▴"}
+.cols-x{grid-template-columns:minmax(0,1.6fr) 56px 96px minmax(110px,1fr) 96px 62px 62px 62px}
+.cols-s{grid-template-columns:minmax(0,1.5fr) 96px minmax(0,1.1fr) 96px 66px 90px 64px 78px}
+.tr .nm{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis}.tr .nm small{display:block;color:var(--mute);font-weight:500;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr .r{text-align:right;font-variant-numeric:tabular-nums}.tr .bad{color:var(--bad)}.tr .good{color:var(--good)}.tr .warn{color:var(--warn)}.tr .mu{color:var(--mute)}
+.bar{display:flex;align-items:center;gap:8px}.bar i{display:block;height:8px;border-radius:4px;background:var(--warn);min-width:2px}.bar span{flex:none;font-variant-numeric:tabular-nums;font-weight:700;width:42px;text-align:right}.bar .tk{flex:1;background:var(--surface2);border-radius:4px;height:8px;display:block}
+.chip{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:700;border:1px solid var(--line);color:var(--mute);white-space:nowrap}
+.chip.live{color:var(--good);border-color:color-mix(in srgb,var(--good) 40%,var(--line))}.chip.onb{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,var(--line))}
+.li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}.li:last-child{border-bottom:0}.li:hover b{color:var(--good)}
+.li b{display:block;font-size:13.5px}.li small{display:block;font-size:12px;color:var(--mute)}.li .v{font-weight:800;color:var(--bad);text-align:right;font-variant-numeric:tabular-nums}.li .v small{color:var(--mute);font-weight:500}
+.cov{display:grid;gap:12px}.cov div{display:flex;justify-content:space-between;font-size:14px;gap:10px}.cov span{color:var(--mute)}.cov b{font-variant-numeric:tabular-nums}
+.filters{display:grid;grid-template-columns:minmax(0,2fr) repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+.pg{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:12px;color:var(--mute);font-size:13px}
+.empty{color:var(--mute);padding:14px 0;font-size:14px}
+.note{font-size:12.5px;color:var(--mute);margin:10px 0 24px;max-width:90ch}
+.ov{position:fixed;inset:0;background:rgba(3,6,10,.66);z-index:80;display:flex;justify-content:flex-end}
+.ov.c{justify-content:center;align-items:center;padding:16px}
+.dr{background:var(--bg);border-left:1px solid var(--line);width:min(520px,100%);height:100%;overflow-y:auto;padding:20px max(20px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) 22px}
+.md{background:var(--surface);border:1px solid var(--line);border-radius:12px;width:min(640px,100%);max-height:92vh;overflow-y:auto;padding:22px}
+.dr h2,.md h2{font-size:22px;margin:4px 0 4px}.x{float:right}
+.mini{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.mini>div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px}.mini .l{font-size:11px;color:var(--mute);letter-spacing:.08em;text-transform:uppercase;font-weight:700}.mini .n{font-size:20px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}
+.dv{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}.dv:last-child{border-bottom:0}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}.dot.on{background:var(--good)}.dot.off{background:var(--bad)}.dot.na{background:var(--mute)}
+.tree{display:grid;gap:10px}.reg{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface)}.reg .rh{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.reg .ar{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.reg .ar span{background:var(--surface2);border-radius:6px;padding:4px 10px;font-size:12.5px}.reg .ar span em{color:var(--mute);font-style:normal;margin-left:6px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-bottom:24px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:8px;font-weight:700;font-size:14px;z-index:99;max-width:92vw}
+.demo{background:#2a2410;color:#ffd76a;font-size:12.5px;padding:7px 16px;text-align:center}.demo a{color:#ffd76a}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.layout{grid-template-columns:minmax(0,1fr)}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.filters .q{grid-column:1/-1}.two{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:760px){
+ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi.net{grid-column:1/-1}.kpi .n{font-size:22px}
+ .top .wrap{gap:0 12px;padding-top:8px}.brand{order:1}.nr{order:2;margin-left:auto}.tabs{order:3;flex:1 0 100%;margin-inline:-8px;padding-inline:8px}.grp{display:none}.tab{padding:0 12px}
+ .cols-x{grid-template-columns:minmax(0,1fr) auto auto}.cols-x .hm{display:none}
+ .cols-s{grid-template-columns:minmax(0,1fr) auto auto}.cols-s .hm{display:none}
+ .card{padding:16px}.frm{grid-template-columns:minmax(0,1fr)}.seg{width:100%}.seg button{flex:1 0 auto;padding:0 10px}
+ .head{padding-top:18px}.dr{width:100%;border-left:0}.mini .n{font-size:18px}
+}
+</style></head><body>
+<div class="demo">DEMO · generated sample portfolio · changes reset on reload · <a href="index.html">Site app</a> · <a href="master.html">Gilded Age master admin</a></div>
+<header class="top"><div class="wrap">
+  <div class="brand"><i>W</i>Waste Smart</div>
+  <nav class="tabs" id="tabs"><button class="tab" data-t="portfolio">Portfolio</button><button class="tab" data-t="sites">Sites</button><button class="tab" data-t="structure">Structure</button><button class="tab" data-t="access">Access</button></nav>
+  <div class="nr"><span class="grp" id="grpName"></span><select id="dsSel" aria-label="Demo portfolio size" style="width:auto;min-height:38px;padding:4px 10px;font-size:13px"><option value="s">3 sites</option><option value="m">48 sites</option><option value="e" selected>3,000 sites</option></select></div>
+</div></header>
+<main class="wrap" id="main"></main>
+<div id="layer"></div>
+<script>
+'use strict';
+/* ============ helpers ============ */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf=(n,d=0)=>(Number(n)||0).toLocaleString('en-ZA',{minimumFractionDigits:d,maximumFractionDigits:d});
+function R(n){const a=Math.abs(n),s=n<0?'−':'';if(a>=1e9)return s+'R'+nf(a/1e9,2)+'bn';if(a>=1e7)return s+'R'+nf(a/1e6,1)+'m';if(a>=1e6)return s+'R'+nf(a/1e6,2)+'m';return s+'R'+nf(a)}
+const pct=(a,b,d=1)=>b>0?nf(a/b*100,d)+'%':'—';
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+
+/* ============ demo data ============ */
+const TYPES=['Restaurant','Quick service','Canteen','Production kitchen','Hotel kitchen','Store'];
+const TBASE={'Restaurant':420000,'Quick service':310000,'Canteen':260000,'Production kitchen':180000,'Hotel kitchen':520000,'Store':150000};
+const MGR_F=['Thandi','Sipho','Lerato','Pieter','Naledi','Ayanda','Johan','Zanele','Kabelo','Fatima','Riaan','Nomsa','Themba','Michelle','Bongani','Priya','Willem','Lindiwe','Craig','Anele'];
+const MGR_L=['Nkosi','van der Merwe','Dlamini','Naidoo','Botha','Mokoena','Pillay','Khumalo','Joubert','Sithole','Smith','Mahlangu','Govender','du Plessis','Zulu','Ndlovu','Venter','Cele','Jacobs','Molefe'];
+const PROV={
+ 'Gauteng':['Johannesburg North','Johannesburg South','Pretoria East','Pretoria West','Sandton','Ekurhuleni','Vaal'],
+ 'Western Cape':['Cape Town CBD','Southern Suburbs','Northern Suburbs','Winelands','Garden Route'],
+ 'KwaZulu-Natal':['Durban Central','Umhlanga','Pietermaritzburg','Richards Bay','South Coast'],
+ 'Eastern Cape':['Gqeberha','East London','Mthatha'],
+ 'Free State':['Bloemfontein','Welkom'],
+ 'Limpopo':['Polokwane','Tzaneen'],
+ 'Mpumalanga':['Mbombela','Emalahleni'],
+ 'North West':['Rustenburg','Mahikeng'],
+ 'Northern Cape':['Kimberley','Upington']};
+const WEIGHT={'Gauteng':.32,'Western Cape':.2,'KwaZulu-Natal':.18,'Eastern Cape':.08,'Free State':.05,'Limpopo':.05,'Mpumalanga':.05,'North West':.04,'Northern Cape':.03};
+function build(kind){
+  const r=rng(kind==='e'?7:kind==='m'?21:3), D={regions:[],areas:[],sites:[],users:[],id:1};
+  let name,brands,provs,total;
+  if(kind==='s'){name='Harbour Hospitality (Pty) Ltd';brands=['Harbour Street Kitchen','The Anchor Grill','Bayside Canteen'];provs={'KwaZulu-Natal':['Durban Central','Umhlanga']};total=3}
+  else if(kind==='m'){name='Coastal Dining Group';brands=['Coastal Grill','Bay Café','Tide Kitchen','Harvest Canteen'];provs={'Western Cape':PROV['Western Cape'],'KwaZulu-Natal':PROV['KwaZulu-Natal'],'Eastern Cape':PROV['Eastern Cape']};total=48}
+  else{name='Meridian Holdings Ltd (JSE: MRD)';brands=['Meridian Grill','Quick Fork','Meridian Canteen','Central Kitchen','Meridian Hotels','Meridian Express','Meridian Fresh'];provs=PROV;total=3000}
+  Object.keys(provs).forEach(p=>{const rid='r'+D.id++;D.regions.push({id:rid,name:p});provs[p].forEach(a=>D.areas.push({id:'a'+D.id++,name:a,rid}))});
+  const areaPick=[];D.areas.forEach(a=>{const rn=D.regions.find(x=>x.id===a.rid).name;const w=(WEIGHT[rn]||1/D.regions.length)/provs[rn].length;areaPick.push([a,w])});
+  const sum=areaPick.reduce((x,y)=>x+y[1],0);
+  for(let i=0;i<total;i++){
+    let t=r()*sum,a=areaPick[0][0];for(const [ar,w] of areaPick){t-=w;if(t<=0){a=ar;break}}
+    let brand,type;
+    if(kind==='s'){brand=brands[i];type=['Restaurant','Restaurant','Canteen'][i]}
+    else{const bi=Math.floor(r()*brands.length);brand=brands[bi];type=/Canteen/.test(brand)?'Canteen':/Central/.test(brand)?'Production kitchen':/Hotel/.test(brand)?'Hotel kitchen':/Quick|Express/.test(brand)?'Quick service':/Fresh/.test(brand)?'Store':'Restaurant'}
+    const n=D.sites.filter(s=>s.aid===a.id).length+1;
+    const roll=r(), status=kind==='s'?(i===2?'Onboarding':'Live'):(roll<.04?'Onboarding':roll<.06?'Paused':'Live');
+    const q=.7+r()*.7, bad=r()<.08;
+    D.sites.push({id:'s'+(i+1),code:'WS-'+String(i+1).padStart(4,'0'),name:kind==='s'?brand:`${brand} ${a.name.replace(/^(Johannesburg|Pretoria|Cape Town|Durban) /,'')} ${n}`,type,rid:a.rid,aid:a.id,mgr:MGR_F[Math.floor(r()*20)]+' '+MGR_L[Math.floor(r()*20)],status,
+      rev:TBASE[type]*q*(kind==='s'?1:.9+r()*.3),fw:.035+r()*.03+(bad?.03:0),el:.012+r()*.012,gs:.007+r()*.008,wt:.003+r()*.004,col:.005+r()*.006,rc:.0004+r()*.0012,lk:.006+r()*.012+(bad?.012+r()*.03:0),pf:(r()-.4)*.28,
+      dev:[r()>.03,r()>.04,r()>.06,r()>.05,type==='Store'||r()>.04],pos:r()>.05});
+  }
+  if(kind==='s'){D.sites[0].lk=.034;D.sites[0].fw=.075;D.sites[1].fw=.05}
+  const roles=[['Group Operations Director','Group admin',null],['Group Finance Lead','Group admin',null]];
+  D.regions.slice(0,6).forEach((rg,i)=>roles.push([MGR_F[i+3]+' '+MGR_L[i+9],'Regional manager',rg.id]));
+  D.areas.slice(0,6).forEach((ar,i)=>roles.push([MGR_F[i+8]+' '+MGR_L[i+2],'Area manager',ar.id]));
+  roles.forEach((u,i)=>D.users.push({id:'u'+i,name:u[0],email:u[0].toLowerCase().replace(/[^a-z]+/g,'.')+'@'+(kind==='s'?'harbourhospitality':kind==='m'?'coastaldining':'meridian-holdings')+'.co.za',role:u[1],scope:u[2],last:['today','yesterday','3 days ago','last week','never'][Math.floor(r()*5)]}));
+  D.name=name;D.kind=kind;return D;
+}
+
+/* ============ model ============ */
+const PER={mtd:{k:'Month to date',f:.71},prior:{k:'Prior month',f:1},d90:{k:'90 days',f:3},ytd:{k:'Year to date',f:9.7}};
+const S={D:null,tab:'portfolio',per:'mtd',reg:null,area:null,sort:{k:'leak',dir:-1},sq:'',fr:'',fa:'',ft:'',fs:'',page:0,ssort:{k:'name',dir:1},M:null};
+function metrics(s,f){
+  if(s.status!=='Live')return{rev:0,cost:0,recov:0,leak:0,prev:0,live:0,dOn:s.status==='Onboarding'?0:0,dTot:5};
+  const rev=s.rev*f,cost=rev*(s.fw+s.el+s.gs+s.wt+s.col);
+  const dOn=s.dev.filter(Boolean).length;
+  return{rev,cost,recov:rev*s.rc,leak:rev*s.lk,prev:cost/(1+s.pf),live:1,dOn,dTot:5,food:rev*s.fw,elec:rev*s.el,gas:rev*s.gs,water:rev*s.wt,collect:rev*s.col};
+}
+function compute(){S.M=new Map();const f=PER[S.per].f;S.D.sites.forEach(s=>S.M.set(s.id,metrics(s,f)))}
+function agg(list){const a={n:list.length,live:0,onb:0,rev:0,cost:0,recov:0,leak:0,prev:0,dOn:0,dTot:0,nPos:0};
+  list.forEach(s=>{const m=S.M.get(s.id);if(s.status==='Onboarding')a.onb++;if(m.live){a.live++;a.rev+=m.rev;a.cost+=m.cost;a.recov+=m.recov;a.leak+=m.leak;a.prev+=m.prev;a.dOn+=m.dOn;a.dTot+=m.dTot;if(!s.pos)a.nPos++}});
+  a.net=a.rev-a.cost+a.recov;a.dPct=a.prev>0?(a.cost-a.prev)/a.prev*100:null;return a}
+const reg=id=>S.D.regions.find(r=>r.id===id),area=id=>S.D.areas.find(a=>a.id===id);
+function scoped(){return S.D.sites.filter(s=>(!S.reg||s.rid===S.reg)&&(!S.area||s.aid===S.area))}
+const dlt=d=>d==null?'<span class="mu">—</span>':Math.abs(d)<1?'<span class="mu">0%</span>':`<span class="${d>0?'bad':'good'}">${d>0?'+':'−'}${nf(Math.abs(d),0)}%</span>`;
+
+/* ============ views ============ */
+function render(){
+  document.querySelectorAll('#tabs .tab').forEach(b=>b.toggleAttribute('aria-current',false)||(b.dataset.t===S.tab&&b.setAttribute('aria-current','page')));
+  $('#grpName').textContent=S.D.name;
+  $('#main').innerHTML=({portfolio:vPortfolio,sites:vSites,structure:vStructure,access:vAccess})[S.tab]();
+  if(S.tab==='sites')bindSites();
+}
+function periodSeg(){return `<div class="seg" role="group" aria-label="Period">${Object.entries(PER).map(([k,v])=>`<button class="${S.per===k?'on':''}" onclick="setPer('${k}')">${v.k}</button>`).join('')}</div>`}
+function setPer(k){S.per=k;compute();render()}
+
+function vPortfolio(){
+  const all=agg(scoped()),G=agg(S.D.sites);
+  const scopeName=S.area?area(S.area).name:S.reg?reg(S.reg).name:S.D.name;
+  const crumbs=`<div class="crumb"><button onclick="drill()">${esc(S.D.name)}</button>${S.reg?`<span>›</span>${S.area?`<button onclick="drill('${S.reg}')">${esc(reg(S.reg).name)}</button><span>›</span><b>${esc(area(S.area).name)}</b>`:`<b>${esc(reg(S.reg).name)}</b>`}`:''}</div>`;
+  // explorer rows
+  let rows,level;
+  if(!S.reg){level='Region';rows=S.D.regions.map(r=>({id:r.id,name:r.name,sub:S.D.areas.filter(a=>a.rid===r.id).length+' areas',list:S.D.sites.filter(s=>s.rid===r.id)}))}
+  else if(!S.area){level='Area';rows=S.D.areas.filter(a=>a.rid===S.reg).map(a=>({id:a.id,name:a.name,sub:'',list:S.D.sites.filter(s=>s.aid===a.id)}))}
+  else{level='Site';rows=null}
+  let body;
+  if(rows){
+    rows.forEach(r=>{r.a=agg(r.list)});
+    const k=S.sort.k,dir=S.sort.dir,val={name:r=>r.name.toLowerCase(),sites:r=>r.a.n,rev:r=>r.a.rev,cost:r=>r.a.rev?r.a.cost/r.a.rev:0,leak:r=>r.a.leak,leakp:r=>r.a.rev?r.a.leak/r.a.rev:0,d:r=>r.a.dPct??-999,dev:r=>r.a.dTot?r.a.dOn/r.a.dTot:0}[k];
+    rows.sort((x,y)=>(val(x)>val(y)?1:val(x)<val(y)?-1:0)*dir);
+    const mxc=Math.max(.001,...rows.map(r=>r.a.rev?r.a.cost/r.a.rev:0));
+    const th=(k,l,c='')=>`<button class="${S.sort.k===k?'s '+(S.sort.dir>0?'up':''):''}" onclick="sortBy('${k}')">${l}</button>`;
+    body=`<div class="tbl"><div class="tr th cols-x"><span>${th('name',level)}</span><span class="r hm">${th('sites','Sites')}</span><span class="r hm">${th('rev','Revenue')}</span><span>${th('cost','Cost % revenue')}</span><span class="r">${th('leak','Leakage')}</span><span class="r hm">${th('leakp','% rev')}</span><span class="r hm">${th('d','vs prior')}</span><span class="r hm">${th('dev','Devices')}</span></div>`+
+    rows.map(r=>{const a=r.a,cp=a.rev?a.cost/a.rev:0,dv=a.dTot?a.dOn/a.dTot*100:0;return `<div class="tr rw cols-x" onclick="${level==='Region'?`drill('${r.id}')`:`drill('${S.reg}','${r.id}')`}"><div class="nm">${esc(r.name)}<small>${a.n} site${a.n===1?'':'s'}${a.onb?' · '+a.onb+' onboarding':''}${a.rev?' · '+R(a.rev):''}</small></div><span class="r hm">${nf(a.n)}</span><span class="r hm">${a.rev?R(a.rev):'—'}</span><span class="bar"><span class="tk"><i style="width:${Math.min(100,cp/.14*100)}%"></i></span><span>${a.rev?nf(cp*100,1)+'%':'—'}</span></span><span class="r bad">${a.leak?R(a.leak):'—'}</span><span class="r hm mu">${pct(a.leak,a.rev)}</span><span class="r hm">${dlt(a.dPct)}</span><span class="r hm ${dv<90?'warn':'good'}">${a.dTot?nf(dv,0)+'%':'—'}</span></div>`}).join('')+`</div>`;
+  } else {
+    const list=siteSorted(scoped(),{k:'leak',dir:-1}).slice(0,100);
+    body=siteTable(list)+(scoped().length>100?`<div class="note">Top 100 by leakage shown. Use the Sites tab to filter all ${nf(scoped().length)}.</div>`:'');
+  }
+  // needs attention
+  const att=scoped().filter(s=>S.M.get(s.id).live).map(s=>({s,m:S.M.get(s.id)})).sort((x,y)=>y.m.leak/y.m.rev-x.m.leak/x.m.rev).slice(0,8);
+  const offl=scoped().filter(s=>s.status==='Live'&&s.dev.some(d=>!d)).length;
+  return `<div class="head"><div><div class="eyebrow">Group executive summary</div><h1>${esc(scopeName)} portfolio position</h1><p class="sub">${PER[S.per].k} · ${nf(all.n)} site${all.n===1?'':'s'} in scope (${nf(all.live)} live). Compared with the prior period.</p></div>${periodSeg()}</div>
+  <div class="kpis"><div class="kpi net"><div class="l">Net contribution</div><div class="n">${R(all.net)}</div><div class="s">${pct(all.net,all.rev)} of revenue</div></div>
+   <div class="kpi"><div class="l">Revenue</div><div class="n">${R(all.rev)}</div><div class="s">${all.live?R(all.rev/all.live)+' per live site':'No live sites'}</div></div>
+   <div class="kpi"><div class="l">Cost of operations</div><div class="n">${R(all.cost)}</div><div class="s">${pct(all.cost,all.rev)} of revenue · ${all.dPct==null?'—':(all.dPct>=0?'+':'−')+nf(Math.abs(all.dPct),1)+'% vs prior'}</div></div>
+   <div class="kpi leak"><div class="l">Controllable leakage</div><div class="n">${R(all.leak)}</div><div class="s" style="color:var(--mute)">${pct(all.leak,all.rev)} of revenue</div></div>
+   <div class="kpi"><div class="l">Sites live</div><div class="n">${nf(all.live)}<span style="font-size:.55em;color:var(--mute);font-weight:600"> / ${nf(all.n)}</span></div><div class="s">${all.onb} onboarding</div></div></div>
+  <div class="layout"><div class="card"><div class="hd"><h3>${rows?(level==='Region'?'Regional performance':'Areas in '+esc(reg(S.reg).name)):'Sites in '+esc(area(S.area).name)}</h3><small>${rows?'Select a row to drill down':'Select a site for detail'}</small></div>${crumbs}${body}</div>
+  <div class="side"><div class="card"><div class="hd"><h3>Needs attention</h3><small>Highest leakage, % of revenue</small></div>${att.length?att.map(({s,m})=>`<div class="li" onclick="openSite('${s.id}')"><div><b>${esc(s.name)}</b><small>${esc(reg(s.rid).name)} › ${esc(area(s.aid).name)}</small></div><div class="v">${R(m.leak)}<small> ${nf(m.leak/m.rev*100,1)}%</small></div></div>`).join(''):'<div class="empty">No live sites in scope.</div>'}</div>
+  <div class="card"><div class="hd"><h3>Coverage</h3><small>Data completeness</small></div><div class="cov">
+   <div><span>Devices online</span><b class="${all.dTot&&all.dOn/all.dTot<.9?'warn':'good'}">${all.dTot?nf(all.dOn/all.dTot*100,1)+'%':'—'}</b></div>
+   <div><span>Live sites with a device offline</span><b>${nf(offl)}</b></div>
+   <div><span>Live sites without a POS feed</span><b>${nf(all.nPos)}</b></div>
+   <div><span>Sites onboarding</span><b>${nf(all.onb)}</b></div>
+   <div><span>Group total sites</span><b>${nf(G.n)}</b></div></div></div></div></div>
+  <p class="note">Net contribution is revenue less tracked cost of operations plus recycling and oil recovery. Controllable leakage is waste above the expected level for that weekday, till write-offs and utilities used in closed hours, estimated per site. Demo figures are generated, not client data.</p>`;
+}
+function drill(r=null,a=null){S.reg=r;S.area=a;S.sort={k:'leak',dir:-1};render();window.scrollTo(0,0)}
+function sortBy(k){S.sort=S.sort.k===k?{k,dir:-S.sort.dir}:{k,dir:k==='name'?1:-1};render()}
+
+function siteSorted(list,so){
+  const g={name:s=>s.name.toLowerCase(),type:s=>s.type,loc:s=>reg(s.rid).name+area(s.aid).name,mgr:s=>s.mgr,rev:s=>S.M.get(s.id).rev,cost:s=>{const m=S.M.get(s.id);return m.rev?m.cost/m.rev:0},leak:s=>S.M.get(s.id).leak,dev:s=>S.M.get(s.id).dOn,status:s=>s.status}[so.k];
+  return list.slice().sort((a,b)=>(g(a)>g(b)?1:g(a)<g(b)?-1:0)*so.dir);
+}
+function siteTable(list,sortable){
+  const th=(k,l)=>sortable?`<button class="${S.ssort.k===k?'s '+(S.ssort.dir>0?'up':''):''}" onclick="ssortBy('${k}')">${l}</button>`:l;
+  return `<div class="tbl"><div class="tr th cols-s"><span>${th('name','Site')}</span><span class="hm">${th('type','Type')}</span><span class="hm">${th('loc','Region · Area')}</span><span class="hm">${th('mgr','Manager')}</span><span class="r">${th('rev','Revenue')}</span><span class="r hm">${th('cost','Cost %')}</span><span class="r">${th('leak','Leakage')}</span><span class="r hm">${th('status','Status')}</span></div>`+
+  (list.length?list.map(s=>{const m=S.M.get(s.id);return `<div class="tr rw cols-s" onclick="openSite('${s.id}')"><div class="nm">${esc(s.name)}<small>${esc(s.code)} · ${esc(s.type)} · ${esc(area(s.aid).name)}</small></div><span class="hm mu">${esc(s.type)}</span><span class="hm">${esc(reg(s.rid).name)} · ${esc(area(s.aid).name)}</span><span class="hm mu">${esc(s.mgr)}</span><span class="r">${m.live?R(m.rev):'—'}</span><span class="r hm">${m.live?nf(m.cost/m.rev*100,1)+'%':'—'}</span><span class="r bad">${m.live?R(m.leak):'—'}</span><span class="r hm"><span class="chip ${s.status==='Live'?'live':s.status==='Onboarding'?'onb':''}">${s.status}</span></span></div>`}).join(''):'<div class="empty">No sites match.</div>')+`</div>`;
+}
+function ssortBy(k){S.ssort=S.ssort.k===k?{k,dir:-S.ssort.dir}:{k,dir:k==='rev'||k==='leak'?-1:1};render()}
+const PAGE=25;
+function filtered(){
+  const q=S.sq.trim().toLowerCase();
+  return S.D.sites.filter(s=>(!S.fr||s.rid===S.fr)&&(!S.fa||s.aid===S.fa)&&(!S.ft||s.type===S.ft)&&(!S.fs||s.status===S.fs)&&(!q||(s.name+' '+s.code+' '+s.mgr+' '+area(s.aid).name+' '+reg(s.rid).name).toLowerCase().includes(q)));
+}
+function vSites(){
+  const list=siteSorted(filtered(),S.ssort),pages=Math.max(1,Math.ceil(list.length/PAGE));if(S.page>=pages)S.page=pages-1;
+  const slice=list.slice(S.page*PAGE,S.page*PAGE+PAGE);
+  const opt=(arr,v,all)=>`<option value="">${all}</option>`+arr.map(x=>`<option value="${esc(x[0])}"${x[0]===v?' selected':''}>${esc(x[1])}</option>`).join('');
+  return `<div class="head"><div><div class="eyebrow">Site register</div><h1>All sites</h1><p class="sub">Every store, kitchen and canteen in the group. Search by name, code, manager, area or region.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" onclick="exportCsv()">Export CSV</button><button class="btn pri" onclick="siteForm()">Add site</button></div></div>
+  <div class="filters"><div class="q"><input id="fq" type="search" placeholder="Search ${nf(S.D.sites.length)} sites" value="${esc(S.sq)}" aria-label="Search sites"></div>
+   <select id="fr" aria-label="Region">${opt(S.D.regions.map(r=>[r.id,r.name]),S.fr,'All regions')}</select>
+   <select id="fa" aria-label="Area">${opt(S.D.areas.filter(a=>!S.fr||a.rid===S.fr).map(a=>[a.id,a.name]),S.fa,'All areas')}</select>
+   <select id="ft" aria-label="Type">${opt(TYPES.map(t=>[t,t]),S.ft,'All types')}</select>
+   <select id="fs" aria-label="Status">${opt(['Live','Onboarding','Paused'].map(t=>[t,t]),S.fs,'All statuses')}</select></div>
+  <div class="card">${siteTable(slice,true)}<div class="pg"><span>${nf(list.length)} site${list.length===1?'':'s'} · page ${S.page+1} of ${nf(pages)}</span><span style="display:flex;gap:8px"><button class="btn sm" onclick="pgGo(-1)" ${S.page<=0?'disabled':''}>Previous</button><button class="btn sm" onclick="pgGo(1)" ${S.page>=pages-1?'disabled':''}>Next</button></span></div></div><div style="height:24px"></div>`;
+}
+function bindSites(){
+  let tm;$('#fq').addEventListener('input',e=>{clearTimeout(tm);tm=setTimeout(()=>{S.sq=e.target.value;S.page=0;const p=e.target.selectionStart;render();const q=$('#fq');q.focus();q.setSelectionRange(p,p)},220)});
+  ['fr','fa','ft','fs'].forEach(id=>$('#'+id).addEventListener('change',e=>{S[id]=e.target.value;if(id==='fr')S.fa='';S.page=0;render()}));
+}
+function pgGo(d){S.page+=d;render();window.scrollTo(0,0)}
+function exportCsv(){
+  const rows=[['Code','Site','Type','Region','Area','Manager','Status','Revenue','Cost','Leakage']];
+  filtered().forEach(s=>{const m=S.M.get(s.id);rows.push([s.code,s.name,s.type,reg(s.rid).name,area(s.aid).name,s.mgr,s.status,Math.round(m.rev),Math.round(m.cost),Math.round(m.leak)])});
+  const csv=rows.map(r=>r.map(v=>/[",\n]/.test(v)?'"'+String(v).replace(/"/g,'""')+'"':v).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='sites.csv';a.click();toast('Exported '+nf(rows.length-1)+' sites');
+}
+
+function vStructure(){
+  return `<div class="head"><div><div class="eyebrow">Group structure</div><h1>Regions, areas and sites</h1><p class="sub">Organise the group the way you manage it. Every site sits in one area, every area in one region. Reporting and access follow this structure.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" onclick="nodeForm('region')">Add region</button><button class="btn" onclick="nodeForm('area')">Add area</button><button class="btn pri" onclick="siteForm()">Add site</button></div></div>
+  <div class="two"><div class="card"><div class="hd"><h3>Hierarchy</h3><small>${S.D.regions.length} regions · ${S.D.areas.length} areas · ${nf(S.D.sites.length)} sites</small></div><div class="tree">${S.D.regions.map(r=>{const ars=S.D.areas.filter(a=>a.rid===r.id),n=S.D.sites.filter(s=>s.rid===r.id).length;return `<div class="reg"><div class="rh"><b>${esc(r.name)} <span class="mu" style="color:var(--mute);font-weight:500">· ${nf(n)} sites</span></b><span><button class="btn sm" onclick="nodeForm('rename','${r.id}')">Rename</button></span></div><div class="ar">${ars.map(a=>`<span>${esc(a.name)}<em>${S.D.sites.filter(s=>s.aid===a.id).length}</em></span>`).join('')||'<span>No areas yet</span>'}</div></div>`}).join('')}</div></div>
+  <div class="card"><div class="hd"><h3>Bulk import sites</h3><small>One site per line</small></div><p class="sub" style="margin-top:0">Paste rows as <code>name, type, region, area, manager</code>. New regions and areas are created automatically. Suited to loading hundreds or thousands of sites from a spreadsheet.</p>
+   <textarea id="bulk" placeholder="Meridian Grill Rosebank 1, Restaurant, Gauteng, Johannesburg North, A Manager&#10;Meridian Canteen Cato Ridge, Canteen, KwaZulu-Natal, Pietermaritzburg, B Manager" aria-label="Bulk import"></textarea>
+   <div class="btnrow" style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn pri" onclick="bulkImport()">Import sites</button><span class="sub" style="margin:0;align-self:center">Types: ${TYPES.join(', ')}</span></div>
+   <div id="bulkOut" class="sub"></div></div></div>
+  <p class="note">When connected to the live platform, each new site is created on the Waste Smart master admin with its own admin PIN reset link, so onboarding and device provisioning stay with Gilded Age. Structure changes here are not saved in this demo.</p>`;
+}
+const ROLES={'Group admin':'Whole group, all regions','Regional manager':'One region and its areas','Area manager':'One area and its sites','Site manager':'One site only'};
+function vAccess(){
+  const scopeName=u=>u.role==='Group admin'?'Whole group':u.role==='Regional manager'?(reg(u.scope)||{}).name:u.role==='Area manager'?(area(u.scope)||{}).name:(S.D.sites.find(s=>s.id===u.scope)||{}).name;
+  return `<div class="head"><div><div class="eyebrow">Administration</div><h1>People and access</h1><p class="sub">Give each person the view they need. Regional and area managers only see the sites in their scope. Sign-in is by email with a one-time link to set the PIN.</p></div><button class="btn pri" onclick="userForm()">Add person</button></div>
+  <div class="two"><div class="card"><div class="hd"><h3>Users</h3><small>${S.D.users.length} people</small></div><div class="tbl">${S.D.users.map(u=>`<div class="li" style="cursor:default"><div><b>${esc(u.name)}</b><small>${esc(u.email)}</small></div><div class="v" style="color:var(--ink);font-size:13px">${esc(u.role)}<small>${esc(scopeName(u)||'—')} · ${esc(u.last)}</small></div></div>`).join('')}</div></div>
+  <div class="card"><div class="hd"><h3>Roles</h3></div><div class="cov">${Object.entries(ROLES).map(([k,v])=>`<div style="display:block"><b>${k}</b><br><span>${v}</span></div>`).join('')}</div><p class="sub">A group admin can add regions, areas and sites, and see the full portfolio. Listed-company reporting can be pulled to Power BI at group, region or site level from the same data feed.</p></div></div>`;
+}
+
+/* ============ site panel and forms ============ */
+function layer(html,center){$('#layer').innerHTML=`<div class="ov${center?' c':''}" onclick="if(event.target===this)closeLayer()">${html}</div>`;document.body.style.overflow='hidden'}
+function closeLayer(){$('#layer').innerHTML='';document.body.style.overflow=''}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLayer()});
+function sel(arr,v,id){return `<select id="${id}">${arr.map(x=>`<option value="${esc(x[0])}"${x[0]===v?' selected':''}>${esc(x[1])}</option>`).join('')}</select>`}
+function openSite(id){
+  const s=S.D.sites.find(x=>x.id===id),m=S.M.get(id),names=['Kitchen scale','Electricity meter','Gas meter','Water meter','POS'];
+  const bars=m.live?[['Food waste',m.food],['Electricity',m.elec],['Gas',m.gas],['Water',m.water],['Waste collection',m.collect]]:[];const mx=Math.max(1,...bars.map(b=>b[1]));
+  layer(`<div class="dr"><button class="btn sm x" onclick="closeLayer()">Close</button><div class="eyebrow">${esc(s.code)} · ${esc(s.type)}</div><h2>${esc(s.name)}</h2><div class="sub" style="margin:0">${esc(reg(s.rid).name)} › ${esc(area(s.aid).name)} · Manager ${esc(s.mgr)} · <span class="chip ${s.status==='Live'?'live':s.status==='Onboarding'?'onb':''}">${s.status}</span></div>
+  ${m.live?`<div class="mini"><div><div class="l">Revenue</div><div class="n">${R(m.rev)}</div></div><div><div class="l">Net contribution</div><div class="n" style="color:var(--good)">${R(m.rev-m.cost+m.recov)}</div></div><div><div class="l">Cost % revenue</div><div class="n">${nf(m.cost/m.rev*100,1)}%</div></div><div><div class="l">Controllable leakage</div><div class="n" style="color:var(--bad)">${R(m.leak)}</div></div></div>
+  <h3 style="font-size:15px;margin:6px 0">Cost of operations</h3>${bars.map(b=>`<div class="dv"><span style="flex:1">${b[0]}</span><span class="bar" style="width:46%"><span class="tk"><i style="width:${b[1]/mx*100}%"></i></span></span><b style="width:84px;text-align:right">${R(b[1])}</b></div>`).join('')}`:`<div class="empty">${s.status==='Onboarding'?'Onboarding: no data yet. The Gilded Age team is provisioning devices.':'Paused: no data is being collected.'}</div>`}
+  <h3 style="font-size:15px;margin:16px 0 6px">Connected devices</h3>${names.map((n,i)=>{const on=i===4?s.pos:s.dev[i],st=s.status!=='Live'?'na':on?'on':'off';return `<div class="dv"><span><span class="dot ${st}"></span>${n}</span><span class="${st==='off'?'bad':'mu'}">${s.status!=='Live'?'Not connected':on?'Online':'Offline'}</span></div>`}).join('')}
+  <h3 style="font-size:15px;margin:18px 0 8px">Site details</h3><div class="frm"><div class="fld"><label for="e_n">Name</label><input id="e_n" value="${esc(s.name)}"></div><div class="fld"><label for="e_t">Type</label>${sel(TYPES.map(t=>[t,t]),s.type,'e_t')}</div><div class="fld"><label for="e_r">Region</label>${sel(S.D.regions.map(r=>[r.id,r.name]),s.rid,'e_r')}</div><div class="fld"><label for="e_a">Area</label>${sel(S.D.areas.map(a=>[a.id,a.name+' ('+reg(a.rid).name+')']),s.aid,'e_a')}</div><div class="fld"><label for="e_m">Manager</label><input id="e_m" value="${esc(s.mgr)}"></div><div class="fld"><label for="e_s">Status</label>${sel(['Live','Onboarding','Paused'].map(t=>[t,t]),s.status,'e_s')}</div></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn pri" onclick="saveSite('${s.id}')">Save changes</button><a class="btn" href="index.html" target="_blank" rel="noopener">Open site overview</a></div></div>`);
+}
+function saveSite(id){const s=S.D.sites.find(x=>x.id===id),a=area($('#e_a').value);
+  s.name=$('#e_n').value.trim()||s.name;s.type=$('#e_t').value;s.mgr=$('#e_m').value.trim();s.status=$('#e_s').value;s.aid=a.id;s.rid=a.rid;
+  closeLayer();compute();render();toast('Site updated')}
+function siteForm(){
+  layer(`<div class="md"><button class="btn sm x" onclick="closeLayer()">Close</button><h2>Add site</h2><p class="sub" style="margin-top:0">Store, kitchen or canteen. It starts as Onboarding until devices are connected.</p><div class="frm"><div class="fld"><label for="n_n">Site name</label><input id="n_n"></div><div class="fld"><label for="n_t">Type</label>${sel(TYPES.map(t=>[t,t]),'Restaurant','n_t')}</div><div class="fld"><label for="n_a">Area</label>${sel(S.D.areas.map(a=>[a.id,a.name+' ('+reg(a.rid).name+')']),(S.area||S.D.areas[0].id),'n_a')}</div><div class="fld"><label for="n_m">Manager</label><input id="n_m"></div></div><button class="btn pri" onclick="addSite()">Create site</button></div>`,true)}
+function addSite(){const n=$('#n_n').value.trim();if(!n){toast('Enter a site name');return}const a=area($('#n_a').value);
+  const id='s'+(S.D.sites.length+1+Math.floor(Math.random()*1e4));S.D.sites.push({id,code:'WS-'+String(S.D.sites.length+1).padStart(4,'0'),name:n,type:$('#n_t').value,rid:a.rid,aid:a.id,mgr:$('#n_m').value.trim()||'Unassigned',status:'Onboarding',rev:300000,fw:.05,el:.018,gs:.011,wt:.005,col:.008,rc:.001,lk:.012,pf:0,dev:[0,0,0,0,0].map(()=>false),pos:false});
+  closeLayer();compute();render();toast('Site created, onboarding')}
+function nodeForm(kind,id){
+  const t=kind==='region'?'Add region':kind==='area'?'Add area':'Rename region';
+  layer(`<div class="md"><button class="btn sm x" onclick="closeLayer()">Close</button><h2>${t}</h2><div class="fld" style="margin-top:14px"><label for="nd_n">Name</label><input id="nd_n" value="${kind==='rename'?esc(reg(id).name):''}"></div>${kind==='area'?`<div class="fld"><label for="nd_r">Region</label>${sel(S.D.regions.map(r=>[r.id,r.name]),S.D.regions[0].id,'nd_r')}</div>`:''}<button class="btn pri" onclick="saveNode('${kind}','${id||''}')">Save</button></div>`,true)}
+function saveNode(kind,id){const n=$('#nd_n').value.trim();if(!n){toast('Enter a name');return}
+  if(kind==='region')S.D.regions.push({id:'r'+Date.now(),name:n});else if(kind==='area')S.D.areas.push({id:'a'+Date.now(),name:n,rid:$('#nd_r').value});else reg(id).name=n;
+  closeLayer();render();toast('Saved')}
+function bulkImport(){
+  const lines=$('#bulk').value.split('\n').map(l=>l.trim()).filter(Boolean);let ok=0,bad=[];
+  lines.forEach((l,i)=>{const p=l.split(',').map(x=>x.trim());if(p.length<4||!p[0]){bad.push(i+1);return}
+    let t=TYPES.find(x=>x.toLowerCase()===(p[1]||'').toLowerCase())||'Restaurant';
+    let r=S.D.regions.find(x=>x.name.toLowerCase()===p[2].toLowerCase());if(!r){r={id:'r'+Date.now()+i,name:p[2]};S.D.regions.push(r)}
+    let a=S.D.areas.find(x=>x.rid===r.id&&x.name.toLowerCase()===p[3].toLowerCase());if(!a){a={id:'a'+Date.now()+i,name:p[3],rid:r.id};S.D.areas.push(a)}
+    S.D.sites.push({id:'s'+Date.now()+i,code:'WS-'+String(S.D.sites.length+1).padStart(4,'0'),name:p[0],type:t,rid:r.id,aid:a.id,mgr:p[4]||'Unassigned',status:'Onboarding',rev:300000,fw:.05,el:.018,gs:.011,wt:.005,col:.008,rc:.001,lk:.012,pf:0,dev:[false,false,false,false,false],pos:false});ok++});
+  compute();render();toast(ok+' site'+(ok===1?'':'s')+' imported'+(bad.length?', '+bad.length+' skipped':''));
+}
+function userForm(){
+  layer(`<div class="md"><button class="btn sm x" onclick="closeLayer()">Close</button><h2>Add person</h2><div class="frm" style="margin-top:14px"><div class="fld"><label for="u_n">Name</label><input id="u_n"></div><div class="fld"><label for="u_e">Email</label><input id="u_e" type="email" inputmode="email"></div><div class="fld"><label for="u_r">Role</label>${sel(Object.keys(ROLES).filter(x=>x!=='Site manager').map(x=>[x,x]),'Regional manager','u_r')}</div><div class="fld"><label for="u_s">Scope</label><select id="u_s"><option value="">Whole group</option>${S.D.regions.map(r=>`<option value="${r.id}">Region: ${esc(r.name)}</option>`).join('')}${S.D.areas.map(a=>`<option value="${a.id}">Area: ${esc(a.name)}</option>`).join('')}</select></div></div><p class="sub" style="margin-top:0">They receive an email with a one-time link to set their PIN.</p><button class="btn pri" onclick="addUser()">Add and send invite</button></div>`,true)}
+function addUser(){const n=$('#u_n').value.trim(),e=$('#u_e').value.trim();if(!n||!/.+@.+\..+/.test(e)){toast('Enter a name and a valid email');return}
+  S.D.users.push({id:'u'+Date.now(),name:n,email:e,role:$('#u_r').value,scope:$('#u_s').value||null,last:'invited'});closeLayer();render();toast('Invite sent to '+e)}
+
+/* ============ boot ============ */
+function load(k){S.D=build(k);S.reg=S.area=null;S.fr=S.fa=S.ft=S.fs=S.sq='';S.page=0;compute();render()}
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(b){S.tab=b.dataset.t;render();window.scrollTo(0,0)}});
+$('#dsSel').addEventListener('change',e=>load(e.target.value));
+load('e');
+</script></body></html>

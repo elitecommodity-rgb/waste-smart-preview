@@ -57,7 +57,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     const b = document.createElement('div');
     b.style.cssText = 'position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:99999;background:#14181f;color:#f4e7b8;font:600 12px system-ui,sans-serif;padding:7px 14px;border-radius:999px;box-shadow:0 4px 18px rgba(0,0,0,.35);letter-spacing:.02em';
-    b.innerHTML = 'DEMO &middot; sample data &middot; admin PIN <b>1234</b> &middot; <a href="master.html" style="color:#ffd76a">Gilded Age master admin &rarr;</a>';
+    b.innerHTML = 'DEMO &middot; sample data &middot; admin PIN <b>1234</b> &middot; <a href="master.html" style="color:#ffd76a">Gilded Age master admin &rarr;</a> &middot; <a href="group.html" style="color:#ffd76a">Group admin &rarr;</a>';
     document.body.appendChild(b);
   });
 })();
