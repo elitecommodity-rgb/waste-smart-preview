@@ -112,10 +112,10 @@ svg.ch{display:block;width:100%;height:auto;overflow:visible}svg.ch text{font-fa
 @media (max-width:1100px){.three{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:760px){.scope{grid-template-columns:repeat(2,minmax(0,1fr))}.scope>div:nth-child(3),.scope>div:nth-child(4){grid-column:1/-1}.c3{grid-template-columns:minmax(0,1fr) auto auto}.c3 .hm{display:none}.fr{grid-template-columns:minmax(0,1fr) 96px}.fr .fd{display:none}.heat div{padding:8px 2px;min-height:64px}}
 </style></head><body>
-<div class="demo">DEMO · generated sample portfolio · changes reset on reload · <a href="index.html">Site app</a> · <a href="master.html">Gilded Age master admin</a></div>
+<div class="demo">DEMO · generated sample portfolio · changes reset on reload · <a href="app.html">Site app</a> · <a href="master.html">Gilded Age master admin</a></div>
 <header class="top"><div class="wrap">
   <div class="brand"><i>W</i>Waste Smart</div>
-  <nav class="tabs" id="tabs"><button class="tab" data-t="portfolio">Overview</button><button class="tab" data-t="daily">Daily log</button><button class="tab" data-t="analysis">Analysis</button><button class="tab" data-t="sustain">Sustainability</button><button class="tab" data-t="reports">Reporting</button><button class="tab" data-t="integr">Integrations</button><button class="tab" data-t="sites">Sites</button><button class="tab" data-t="structure">Structure</button><button class="tab" data-t="access">Access</button><button class="tab" data-t="admin">Administration</button></nav>
+  <nav class="tabs" id="tabs"><button class="tab" data-t="portfolio">Overview</button><button class="tab" data-t="daily">Daily log</button><button class="tab" data-t="analysis">Analysis</button><button class="tab" data-t="sustain">Sustainability</button><button class="tab" data-t="reports">Reporting</button><button class="tab" data-t="integr">Integrations</button><button class="tab" data-t="sites">Sites</button><button class="tab" data-t="structure">Structure</button><button class="tab" data-t="admin">Administration</button></nav>
   <div class="nr"><span class="grp" id="grpName"></span><select id="dsSel" aria-label="Demo portfolio size" style="width:auto;min-height:38px;padding:4px 10px;font-size:13px"><option value="s">3 sites</option><option value="m">48 sites</option><option value="e" selected>3,000 sites</option></select></div>
 </div></header>
 <main class="wrap" id="main"></main>
@@ -134,8 +134,6 @@ function toast(m){const t=document.createElement('div');t.className='toast';t.te
 /* ============ demo data ============ */
 const TYPES=['Restaurant','Quick service','Canteen','Production kitchen','Hotel kitchen','Store'];
 const TBASE={'Restaurant':420000,'Quick service':310000,'Canteen':260000,'Production kitchen':180000,'Hotel kitchen':520000,'Store':150000};
-const MGR_F=['Thandi','Sipho','Lerato','Pieter','Naledi','Ayanda','Johan','Zanele','Kabelo','Fatima','Riaan','Nomsa','Themba','Michelle','Bongani','Priya','Willem','Lindiwe','Craig','Anele'];
-const MGR_L=['Nkosi','van der Merwe','Dlamini','Naidoo','Botha','Mokoena','Pillay','Khumalo','Joubert','Sithole','Smith','Mahlangu','Govender','du Plessis','Zulu','Ndlovu','Venter','Cele','Jacobs','Molefe'];
 const PROV={
  'Gauteng':['Johannesburg North','Johannesburg South','Pretoria East','Pretoria West','Sandton','Ekurhuleni','Vaal'],
  'Western Cape':['Cape Town CBD','Southern Suburbs','Northern Suburbs','Winelands','Garden Route'],
@@ -164,15 +162,11 @@ function build(kind){
     const n=D.sites.filter(s=>s.aid===a.id).length+1;
     const roll=r(), status=kind==='s'?(i===2?'Onboarding':'Live'):(roll<.04?'Onboarding':roll<.06?'Paused':'Live');
     const q=.7+r()*.7, bad=r()<.08;
-    D.sites.push({id:'s'+(i+1),code:'WS-'+String(i+1).padStart(4,'0'),name:kind==='s'?brand:`${brand} ${a.name.replace(/^(Johannesburg|Pretoria|Cape Town|Durban) /,'')} ${n}`,type,rid:a.rid,aid:a.id,mgr:MGR_F[Math.floor(r()*20)]+' '+MGR_L[Math.floor(r()*20)],status,
+    D.sites.push({id:'s'+(i+1),code:'WS-'+String(i+1).padStart(4,'0'),name:kind==='s'?brand:`${brand} ${a.name.replace(/^(Johannesburg|Pretoria|Cape Town|Durban) /,'')} ${n}`,type,rid:a.rid,aid:a.id,status,
       rev:TBASE[type]*q*(kind==='s'?1:.9+r()*.3),fw:.035+r()*.03+(bad?.03:0),el:.012+r()*.012,gs:.007+r()*.008,wt:.003+r()*.004,col:.005+r()*.006,rc:.0004+r()*.0012,lk:.006+r()*.012+(bad?.012+r()*.03:0),pf:(r()-.4)*.28,
       dev:[r()>.03,r()>.04,r()>.06,r()>.05,type==='Store'||r()>.04],pos:r()>.05});
   }
   if(kind==='s'){D.sites[0].lk=.034;D.sites[0].fw=.075;D.sites[1].fw=.05}
-  const roles=[['Group Operations Director','Group admin',null],['Group Finance Lead','Group admin',null]];
-  D.regions.slice(0,6).forEach((rg,i)=>roles.push([MGR_F[i+3]+' '+MGR_L[i+9],'Regional manager',rg.id]));
-  D.areas.slice(0,6).forEach((ar,i)=>roles.push([MGR_F[i+8]+' '+MGR_L[i+2],'Area manager',ar.id]));
-  roles.forEach((u,i)=>D.users.push({id:'u'+i,name:u[0],email:u[0].toLowerCase().replace(/[^a-z]+/g,'.')+'@'+(kind==='s'?'harbourhospitality':kind==='m'?'coastaldining':'meridian-holdings')+'.co.za',role:u[1],scope:u[2],last:['today','yesterday','3 days ago','last week','never'][Math.floor(r()*5)]}));
   D.name=name;D.kind=kind;return D;
 }
 
@@ -197,7 +191,7 @@ const dlt=d=>d==null?'<span class="mu">—</span>':Math.abs(d)<1?'<span class="m
 function render(){
   document.querySelectorAll('#tabs .tab').forEach(b=>b.toggleAttribute('aria-current',false)||(b.dataset.t===S.tab&&b.setAttribute('aria-current','page')));
   $('#grpName').textContent=S.D.name;
-  $('#main').innerHTML=({portfolio:vPortfolio,daily:vDaily,analysis:vAnalysis,sustain:vSustain,reports:vReports,integr:vIntegr,sites:vSites,structure:vStructure,access:vAccess,admin:vAdmin})[S.tab]();
+  $('#main').innerHTML=({portfolio:vPortfolio,daily:vDaily,analysis:vAnalysis,sustain:vSustain,reports:vReports,integr:vIntegr,sites:vSites,structure:vStructure,admin:vAdmin})[S.tab]();
   if(S.tab==='sites')bindSites();
 }
 function periodSeg(){return `<div class="seg" role="group" aria-label="Period">${Object.entries(PER).map(([k,v])=>`<button class="${S.per===k?'on':''}" onclick="setPer('${k}')">${v.k}</button>`).join('')}</div>`}
@@ -248,25 +242,25 @@ function drill(r=null,a=null){S.reg=r;S.area=a;S.site=null;S.sort={k:'leak',dir:
 function sortBy(k){S.sort=S.sort.k===k?{k,dir:-S.sort.dir}:{k,dir:k==='name'?1:-1};render()}
 
 function siteSorted(list,so){
-  const g={name:s=>s.name.toLowerCase(),type:s=>s.type,loc:s=>reg(s.rid).name+area(s.aid).name,mgr:s=>s.mgr,rev:s=>S.M.get(s.id).rev,cost:s=>{const m=S.M.get(s.id);return m.rev?m.cost/m.rev:0},leak:s=>S.M.get(s.id).leak,dev:s=>S.M.get(s.id).dOn,status:s=>s.status}[so.k];
+  const g={name:s=>s.name.toLowerCase(),type:s=>s.type,loc:s=>reg(s.rid).name+area(s.aid).name,dev:s=>S.M.get(s.id).dOn,rev:s=>S.M.get(s.id).rev,cost:s=>{const m=S.M.get(s.id);return m.rev?m.cost/m.rev:0},leak:s=>S.M.get(s.id).leak,dev:s=>S.M.get(s.id).dOn,status:s=>s.status}[so.k];
   return list.slice().sort((a,b)=>(g(a)>g(b)?1:g(a)<g(b)?-1:0)*so.dir);
 }
 function siteTable(list,sortable){
   const th=(k,l)=>sortable?`<button class="${S.ssort.k===k?'s '+(S.ssort.dir>0?'up':''):''}" onclick="ssortBy('${k}')">${l}</button>`:l;
-  return `<div class="tbl"><div class="tr th cols-s"><span>${th('name','Site')}</span><span class="hm">${th('type','Type')}</span><span class="hm">${th('loc','Region · Area')}</span><span class="hm">${th('mgr','Manager')}</span><span class="r">${th('rev','Revenue')}</span><span class="r hm">${th('cost','Cost %')}</span><span class="r">${th('leak','Leakage')}</span><span class="r hm">${th('status','Status')}</span></div>`+
-  (list.length?list.map(s=>{const m=S.M.get(s.id);return `<div class="tr rw cols-s" onclick="openSite('${s.id}')"><div class="nm">${esc(s.name)}<small>${esc(s.code)} · ${esc(s.type)} · ${esc(area(s.aid).name)}</small></div><span class="hm mu">${esc(s.type)}</span><span class="hm">${esc(reg(s.rid).name)} · ${esc(area(s.aid).name)}</span><span class="hm mu">${esc(s.mgr)}</span><span class="r">${m.live?R(m.rev):'—'}</span><span class="r hm">${m.live?nf(m.cost/m.rev*100,1)+'%':'—'}</span><span class="r bad">${m.live?R(m.leak):'—'}</span><span class="r hm"><span class="chip ${s.status==='Live'?'live':s.status==='Onboarding'?'onb':''}">${s.status}</span></span></div>`}).join(''):'<div class="empty">No sites match.</div>')+`</div>`;
+  return `<div class="tbl"><div class="tr th cols-s"><span>${th('name','Site')}</span><span class="hm">${th('type','Type')}</span><span class="hm">${th('loc','Region · Area')}</span><span class="hm">${th('dev','Devices')}</span><span class="r">${th('rev','Revenue')}</span><span class="r hm">${th('cost','Cost %')}</span><span class="r">${th('leak','Leakage')}</span><span class="r hm">${th('status','Status')}</span></div>`+
+  (list.length?list.map(s=>{const m=S.M.get(s.id);return `<div class="tr rw cols-s" onclick="openSite('${s.id}')"><div class="nm">${esc(s.name)}<small>${esc(s.code)} · ${esc(s.type)} · ${esc(area(s.aid).name)}</small></div><span class="hm mu">${esc(s.type)}</span><span class="hm">${esc(reg(s.rid).name)} · ${esc(area(s.aid).name)}</span><span class="hm mu">${m.live?m.dOn+' / '+m.dTot:'—'}</span><span class="r">${m.live?R(m.rev):'—'}</span><span class="r hm">${m.live?nf(m.cost/m.rev*100,1)+'%':'—'}</span><span class="r bad">${m.live?R(m.leak):'—'}</span><span class="r hm"><span class="chip ${s.status==='Live'?'live':s.status==='Onboarding'?'onb':''}">${s.status}</span></span></div>`}).join(''):'<div class="empty">No sites match.</div>')+`</div>`;
 }
 function ssortBy(k){S.ssort=S.ssort.k===k?{k,dir:-S.ssort.dir}:{k,dir:k==='rev'||k==='leak'?-1:1};render()}
 const PAGE=25;
 function filtered(){
   const q=S.sq.trim().toLowerCase();
-  return S.D.sites.filter(s=>(!S.fr||s.rid===S.fr)&&(!S.fa||s.aid===S.fa)&&(!S.ft||s.type===S.ft)&&(!S.fs||s.status===S.fs)&&(!q||(s.name+' '+s.code+' '+s.mgr+' '+area(s.aid).name+' '+reg(s.rid).name).toLowerCase().includes(q)));
+  return S.D.sites.filter(s=>(!S.fr||s.rid===S.fr)&&(!S.fa||s.aid===S.fa)&&(!S.ft||s.type===S.ft)&&(!S.fs||s.status===S.fs)&&(!q||(s.name+' '+s.code+' '+area(s.aid).name+' '+reg(s.rid).name).toLowerCase().includes(q)));
 }
 function vSites(){
   const list=siteSorted(filtered(),S.ssort),pages=Math.max(1,Math.ceil(list.length/PAGE));if(S.page>=pages)S.page=pages-1;
   const slice=list.slice(S.page*PAGE,S.page*PAGE+PAGE);
   const opt=(arr,v,all)=>`<option value="">${all}</option>`+arr.map(x=>`<option value="${esc(x[0])}"${x[0]===v?' selected':''}>${esc(x[1])}</option>`).join('');
-  return `<div class="head"><div><div class="eyebrow">Site register</div><h1>All sites</h1><p class="sub">Every store, kitchen and canteen in the group. Search by name, code, manager, area or region.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" onclick="exportCsv()">Export CSV</button><button class="btn pri" onclick="siteForm()">Add site</button></div></div>
+  return `<div class="head"><div><div class="eyebrow">Site register</div><h1>All sites</h1><p class="sub">Every store, kitchen and canteen in the group. Search by name, code, area or region.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" onclick="exportCsv()">Export CSV</button><button class="btn pri" onclick="siteForm()">Add site</button></div></div>
   <div class="filters"><div class="q"><input id="fq" type="search" placeholder="Search ${nf(S.D.sites.length)} sites" value="${esc(S.sq)}" aria-label="Search sites"></div>
    <select id="fr" aria-label="Region">${opt(S.D.regions.map(r=>[r.id,r.name]),S.fr,'All regions')}</select>
    <select id="fa" aria-label="Area">${opt(S.D.areas.filter(a=>!S.fr||a.rid===S.fr).map(a=>[a.id,a.name]),S.fa,'All areas')}</select>
@@ -280,29 +274,21 @@ function bindSites(){
 }
 function pgGo(d){S.page+=d;render();window.scrollTo(0,0)}
 function exportCsv(){
-  const rows=[['Code','Site','Type','Region','Area','Manager','Status','Revenue','Cost','Leakage']];
-  filtered().forEach(s=>{const m=S.M.get(s.id);rows.push([s.code,s.name,s.type,reg(s.rid).name,area(s.aid).name,s.mgr,s.status,Math.round(m.rev),Math.round(m.cost),Math.round(m.leak)])});
+  const rows=[['Code','Site','Type','Region','Area','Status','Revenue','Cost','Leakage']];
+  filtered().forEach(s=>{const m=S.M.get(s.id);rows.push([s.code,s.name,s.type,reg(s.rid).name,area(s.aid).name,s.status,Math.round(m.rev),Math.round(m.cost),Math.round(m.leak)])});
   const csv=rows.map(r=>r.map(v=>/[",\n]/.test(v)?'"'+String(v).replace(/"/g,'""')+'"':v).join(',')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='sites.csv';a.click();toast('Exported '+nf(rows.length-1)+' sites');
 }
 
 function vStructure(){
-  return `<div class="head"><div><div class="eyebrow">Group structure</div><h1>Regions, areas and sites</h1><p class="sub">Organise the group the way you manage it. Every site sits in one area, every area in one region. Reporting and access follow this structure.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" onclick="nodeForm('region')">Add region</button><button class="btn" onclick="nodeForm('area')">Add area</button><button class="btn pri" onclick="siteForm()">Add site</button></div></div>
+  return `<div class="head"><div><div class="eyebrow">Group structure</div><h1>Regions, areas and sites</h1><p class="sub">Organise the group the way you manage it. Every site sits in one area, every area in one region. Reporting follows this structure.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" onclick="nodeForm('region')">Add region</button><button class="btn" onclick="nodeForm('area')">Add area</button><button class="btn pri" onclick="siteForm()">Add site</button></div></div>
   <div class="two"><div class="card"><div class="hd"><h3>Hierarchy</h3><small>${S.D.regions.length} regions · ${S.D.areas.length} areas · ${nf(S.D.sites.length)} sites</small></div><div class="tree">${S.D.regions.map(r=>{const ars=S.D.areas.filter(a=>a.rid===r.id),n=S.D.sites.filter(s=>s.rid===r.id).length;return `<div class="reg"><div class="rh"><b>${esc(r.name)} <span class="mu" style="color:var(--mute);font-weight:500">· ${nf(n)} sites</span></b><span><button class="btn sm" onclick="nodeForm('rename','${r.id}')">Rename</button></span></div><div class="ar">${ars.map(a=>`<span>${esc(a.name)}<em>${S.D.sites.filter(s=>s.aid===a.id).length}</em></span>`).join('')||'<span>No areas yet</span>'}</div></div>`}).join('')}</div></div>
-  <div class="card"><div class="hd"><h3>Bulk import sites</h3><small>One site per line</small></div><p class="sub" style="margin-top:0">Paste rows as <code>name, type, region, area, manager</code>. New regions and areas are created automatically. Suited to loading hundreds or thousands of sites from a spreadsheet.</p>
-   <textarea id="bulk" placeholder="Meridian Grill Rosebank 1, Restaurant, Gauteng, Johannesburg North, A Manager&#10;Meridian Canteen Cato Ridge, Canteen, KwaZulu-Natal, Pietermaritzburg, B Manager" aria-label="Bulk import"></textarea>
+  <div class="card"><div class="hd"><h3>Bulk import sites</h3><small>One site per line</small></div><p class="sub" style="margin-top:0">Paste rows as <code>name, type, region, area</code>. New regions and areas are created automatically. Suited to loading hundreds or thousands of sites from a spreadsheet.</p>
+   <textarea id="bulk" placeholder="Meridian Grill Rosebank 1, Restaurant, Gauteng, Johannesburg North&#10;Meridian Canteen Cato Ridge, Canteen, KwaZulu-Natal, Pietermaritzburg" aria-label="Bulk import"></textarea>
    <div class="btnrow" style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn pri" onclick="bulkImport()">Import sites</button><span class="sub" style="margin:0;align-self:center">Types: ${TYPES.join(', ')}</span></div>
    <div id="bulkOut" class="sub"></div></div></div>
   <p class="note">When connected to the live platform, each new site is created on the Waste Smart master admin with its own admin PIN reset link, so onboarding and device provisioning stay with Gilded Age. Structure changes here are not saved in this demo.</p>`;
 }
-const ROLES={'Group admin':'Whole group, all regions','Regional manager':'One region and its areas','Area manager':'One area and its sites','Site manager':'One site only'};
-function vAccess(){
-  const scopeName=u=>u.role==='Group admin'?'Whole group':u.role==='Regional manager'?(reg(u.scope)||{}).name:u.role==='Area manager'?(area(u.scope)||{}).name:(S.D.sites.find(s=>s.id===u.scope)||{}).name;
-  return `<div class="head"><div><div class="eyebrow">Administration</div><h1>People and access</h1><p class="sub">Give each person the view they need. Regional and area managers only see the sites in their scope. Sign-in is by email with a one-time link to set the PIN.</p></div><button class="btn pri" onclick="userForm()">Add person</button></div>
-  <div class="two"><div class="card"><div class="hd"><h3>Users</h3><small>${S.D.users.length} people</small></div><div class="tbl">${S.D.users.map(u=>`<div class="li" style="cursor:default"><div><b>${esc(u.name)}</b><small>${esc(u.email)}</small></div><div class="v" style="color:var(--ink);font-size:13px">${esc(u.role)}<small>${esc(scopeName(u)||'—')} · ${esc(u.last)}</small></div></div>`).join('')}</div></div>
-  <div class="card"><div class="hd"><h3>Roles</h3></div><div class="cov">${Object.entries(ROLES).map(([k,v])=>`<div style="display:block"><b>${k}</b><br><span>${v}</span></div>`).join('')}</div><p class="sub">A group admin can add regions, areas and sites, and see the full portfolio. Listed-company reporting can be pulled to Power BI at group, region or site level from the same data feed.</p></div></div>`;
-}
-
 /* ============ site panel and forms ============ */
 function layer(html,center){$('#layer').innerHTML=`<div class="ov${center?' c':''}" onclick="if(event.target===this)closeLayer()">${html}</div>`;document.body.style.overflow='hidden'}
 function closeLayer(){$('#layer').innerHTML='';document.body.style.overflow=''}
@@ -311,20 +297,20 @@ function sel(arr,v,id){return `<select id="${id}">${arr.map(x=>`<option value="$
 function openSite(id){
   const s=S.D.sites.find(x=>x.id===id),m=S.M.get(id),names=['Kitchen scale','Electricity meter','Gas meter','Water meter','POS'];
   const bars=m.live?[['Food waste',m.food],['Electricity',m.elec],['Gas',m.gas],['Water',m.water],['Waste collection',m.collect]]:[];const mx=Math.max(1,...bars.map(b=>b[1]));
-  layer(`<div class="dr"><button class="btn sm x" onclick="closeLayer()">Close</button><div class="eyebrow">${esc(s.code)} · ${esc(s.type)}</div><h2>${esc(s.name)}</h2><div class="sub" style="margin:0">${esc(reg(s.rid).name)} › ${esc(area(s.aid).name)} · Manager ${esc(s.mgr)} · <span class="chip ${s.status==='Live'?'live':s.status==='Onboarding'?'onb':''}">${s.status}</span></div>
+  layer(`<div class="dr"><button class="btn sm x" onclick="closeLayer()">Close</button><div class="eyebrow">${esc(s.code)} · ${esc(s.type)}</div><h2>${esc(s.name)}</h2><div class="sub" style="margin:0">${esc(reg(s.rid).name)} › ${esc(area(s.aid).name)} · <span class="chip ${s.status==='Live'?'live':s.status==='Onboarding'?'onb':''}">${s.status}</span></div>
   ${m.live?`<div class="mini"><div><div class="l">Revenue</div><div class="n">${R(m.rev)}</div></div><div><div class="l">Net contribution</div><div class="n" style="color:var(--good)">${R(m.rev-m.cost+m.recov)}</div></div><div><div class="l">Cost % revenue</div><div class="n">${nf(m.cost/m.rev*100,1)}%</div></div><div><div class="l">Controllable leakage</div><div class="n" style="color:var(--bad)">${R(m.leak)}</div></div></div>
   <h3 style="font-size:15px;margin:6px 0">Cost of operations</h3>${bars.map(b=>`<div class="dv"><span style="flex:1">${b[0]}</span><span class="bar" style="width:46%"><span class="tk"><i style="width:${b[1]/mx*100}%"></i></span></span><b style="width:84px;text-align:right">${R(b[1])}</b></div>`).join('')}`:`<div class="empty">${s.status==='Onboarding'?'Onboarding: no data yet. The Gilded Age team is provisioning devices.':'Paused: no data is being collected.'}</div>`}
   <h3 style="font-size:15px;margin:16px 0 6px">Connected devices</h3>${names.map((n,i)=>{const on=i===4?s.pos:s.dev[i],st=s.status!=='Live'?'na':on?'on':'off';return `<div class="dv"><span><span class="dot ${st}"></span>${n}</span><span class="${st==='off'?'bad':'mu'}">${s.status!=='Live'?'Not connected':on?'Online':'Offline'}</span></div>`}).join('')}
-  <h3 style="font-size:15px;margin:18px 0 8px">Site details</h3><div class="frm"><div class="fld"><label for="e_n">Name</label><input id="e_n" value="${esc(s.name)}"></div><div class="fld"><label for="e_t">Type</label>${sel(TYPES.map(t=>[t,t]),s.type,'e_t')}</div><div class="fld"><label for="e_r">Region</label>${sel(S.D.regions.map(r=>[r.id,r.name]),s.rid,'e_r')}</div><div class="fld"><label for="e_a">Area</label>${sel(S.D.areas.map(a=>[a.id,a.name+' ('+reg(a.rid).name+')']),s.aid,'e_a')}</div><div class="fld"><label for="e_m">Manager</label><input id="e_m" value="${esc(s.mgr)}"></div><div class="fld"><label for="e_s">Status</label>${sel(['Live','Onboarding','Paused'].map(t=>[t,t]),s.status,'e_s')}</div></div>
+  <h3 style="font-size:15px;margin:18px 0 8px">Site details</h3><div class="frm"><div class="fld"><label for="e_n">Name</label><input id="e_n" value="${esc(s.name)}"></div><div class="fld"><label for="e_t">Type</label>${sel(TYPES.map(t=>[t,t]),s.type,'e_t')}</div><div class="fld"><label for="e_r">Region</label>${sel(S.D.regions.map(r=>[r.id,r.name]),s.rid,'e_r')}</div><div class="fld"><label for="e_a">Area</label>${sel(S.D.areas.map(a=>[a.id,a.name+' ('+reg(a.rid).name+')']),s.aid,'e_a')}</div><div class="fld"><label for="e_s">Status</label>${sel(['Live','Onboarding','Paused'].map(t=>[t,t]),s.status,'e_s')}</div></div>
   <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn pri" onclick="saveSite('${s.id}')">Save changes</button><a class="btn" href="index.html" target="_blank" rel="noopener">Open site overview</a></div></div>`);
 }
 function saveSite(id){const s=S.D.sites.find(x=>x.id===id),a=area($('#e_a').value);
-  s.name=$('#e_n').value.trim()||s.name;s.type=$('#e_t').value;s.mgr=$('#e_m').value.trim();s.status=$('#e_s').value;s.aid=a.id;s.rid=a.rid;
+  s.name=$('#e_n').value.trim()||s.name;s.type=$('#e_t').value;s.status=$('#e_s').value;s.aid=a.id;s.rid=a.rid;
   closeLayer();compute();render();toast('Site updated')}
 function siteForm(){
-  layer(`<div class="md"><button class="btn sm x" onclick="closeLayer()">Close</button><h2>Add site</h2><p class="sub" style="margin-top:0">Store, kitchen or canteen. It starts as Onboarding until devices are connected.</p><div class="frm"><div class="fld"><label for="n_n">Site name</label><input id="n_n"></div><div class="fld"><label for="n_t">Type</label>${sel(TYPES.map(t=>[t,t]),'Restaurant','n_t')}</div><div class="fld"><label for="n_a">Area</label>${sel(S.D.areas.map(a=>[a.id,a.name+' ('+reg(a.rid).name+')']),(S.area||S.D.areas[0].id),'n_a')}</div><div class="fld"><label for="n_m">Manager</label><input id="n_m"></div></div><button class="btn pri" onclick="addSite()">Create site</button></div>`,true)}
+  layer(`<div class="md"><button class="btn sm x" onclick="closeLayer()">Close</button><h2>Add site</h2><p class="sub" style="margin-top:0">Store, kitchen or canteen. It starts as Onboarding until devices are connected.</p><div class="frm"><div class="fld"><label for="n_n">Site name</label><input id="n_n"></div><div class="fld"><label for="n_t">Type</label>${sel(TYPES.map(t=>[t,t]),'Restaurant','n_t')}</div><div class="fld"><label for="n_a">Area</label>${sel(S.D.areas.map(a=>[a.id,a.name+' ('+reg(a.rid).name+')']),(S.area||S.D.areas[0].id),'n_a')}</div></div><button class="btn pri" onclick="addSite()">Create site</button></div>`,true)}
 function addSite(){const n=$('#n_n').value.trim();if(!n){toast('Enter a site name');return}const a=area($('#n_a').value);
-  const id='s'+(S.D.sites.length+1+Math.floor(Math.random()*1e4));S.D.sites.push({id,code:'WS-'+String(S.D.sites.length+1).padStart(4,'0'),name:n,type:$('#n_t').value,rid:a.rid,aid:a.id,mgr:$('#n_m').value.trim()||'Unassigned',status:'Onboarding',rev:300000,fw:.05,el:.018,gs:.011,wt:.005,col:.008,rc:.001,lk:.012,pf:0,dev:[0,0,0,0,0].map(()=>false),pos:false});
+  const id='s'+(S.D.sites.length+1+Math.floor(Math.random()*1e4));S.D.sites.push({id,code:'WS-'+String(S.D.sites.length+1).padStart(4,'0'),name:n,type:$('#n_t').value,rid:a.rid,aid:a.id,status:'Onboarding',rev:300000,fw:.05,el:.018,gs:.011,wt:.005,col:.008,rc:.001,lk:.012,pf:0,dev:[0,0,0,0,0].map(()=>false),pos:false});
   closeLayer();compute();render();toast('Site created, onboarding')}
 function nodeForm(kind,id){
   const t=kind==='region'?'Add region':kind==='area'?'Add area':'Rename region';
@@ -338,13 +324,9 @@ function bulkImport(){
     let t=TYPES.find(x=>x.toLowerCase()===(p[1]||'').toLowerCase())||'Restaurant';
     let r=S.D.regions.find(x=>x.name.toLowerCase()===p[2].toLowerCase());if(!r){r={id:'r'+Date.now()+i,name:p[2]};S.D.regions.push(r)}
     let a=S.D.areas.find(x=>x.rid===r.id&&x.name.toLowerCase()===p[3].toLowerCase());if(!a){a={id:'a'+Date.now()+i,name:p[3],rid:r.id};S.D.areas.push(a)}
-    S.D.sites.push({id:'s'+Date.now()+i,code:'WS-'+String(S.D.sites.length+1).padStart(4,'0'),name:p[0],type:t,rid:r.id,aid:a.id,mgr:p[4]||'Unassigned',status:'Onboarding',rev:300000,fw:.05,el:.018,gs:.011,wt:.005,col:.008,rc:.001,lk:.012,pf:0,dev:[false,false,false,false,false],pos:false});ok++});
+    S.D.sites.push({id:'s'+Date.now()+i,code:'WS-'+String(S.D.sites.length+1).padStart(4,'0'),name:p[0],type:t,rid:r.id,aid:a.id,status:'Onboarding',rev:300000,fw:.05,el:.018,gs:.011,wt:.005,col:.008,rc:.001,lk:.012,pf:0,dev:[false,false,false,false,false],pos:false});ok++});
   compute();render();toast(ok+' site'+(ok===1?'':'s')+' imported'+(bad.length?', '+bad.length+' skipped':''));
 }
-function userForm(){
-  layer(`<div class="md"><button class="btn sm x" onclick="closeLayer()">Close</button><h2>Add person</h2><div class="frm" style="margin-top:14px"><div class="fld"><label for="u_n">Name</label><input id="u_n"></div><div class="fld"><label for="u_e">Email</label><input id="u_e" type="email" inputmode="email"></div><div class="fld"><label for="u_r">Role</label>${sel(Object.keys(ROLES).filter(x=>x!=='Site manager').map(x=>[x,x]),'Regional manager','u_r')}</div><div class="fld"><label for="u_s">Scope</label><select id="u_s"><option value="">Whole group</option>${S.D.regions.map(r=>`<option value="${r.id}">Region: ${esc(r.name)}</option>`).join('')}${S.D.areas.map(a=>`<option value="${a.id}">Area: ${esc(a.name)}</option>`).join('')}</select></div></div><p class="sub" style="margin-top:0">They receive an email with a one-time link to set their PIN.</p><button class="btn pri" onclick="addUser()">Add and send invite</button></div>`,true)}
-function addUser(){const n=$('#u_n').value.trim(),e=$('#u_e').value.trim();if(!n||!/.+@.+\..+/.test(e)){toast('Enter a name and a valid email');return}
-  S.D.users.push({id:'u'+Date.now(),name:n,email:e,role:$('#u_r').value,scope:$('#u_s').value||null,last:'invited'});closeLayer();render();toast('Invite sent to '+e)}
 
 /* ============ group-level versions of the app's features ============ */
 const CFG={foodCost:28,plastic:1.2,paper:1.8,glass:.4,cans:8,oil:9,flagPct:30,provider:'muni',muniBase:0,muniRate:1.5,privBase:0,privRate:2.2,baseline:900,wLpk:17,trees:.017,kwh:2.4,gas:32,water:38,tz:'Africa/Johannesburg',cur:'R',freq:'1 hour',biz:'',sales:''};

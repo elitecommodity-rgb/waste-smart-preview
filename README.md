@@ -2,7 +2,9 @@
 
 Static preview of the Waste Smart app and the Gilded Age master admin, running on sample data.
 
-- `index.html`  the Waste Smart admin app (demo PIN 1234)
+- `index.html`  the Waste Smart website (landing page)
+- `app.html`    the Waste Smart admin app (demo PIN 1234)
+- `group.html`  the multi-site group admin
 - `master.html` the Gilded Age master admin (demo sign-in is pre-filled)
 - `shim.js` + `snapshot.json`  sample data and the small shim that answers the app's server calls in the browser
 

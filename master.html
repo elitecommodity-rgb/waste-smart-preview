@@ -116,7 +116,7 @@ body.isdemo #app{padding-top:24px}body.isdemo nav.side{top:24px;height:calc(100v
 </style>
 </head>
 <body>
-<div id="demoBar" class="demo hide">DEMO &middot; invented clients and sample data, nothing is saved or sent &middot; sign in is pre-filled &middot; <a href="index.html">Open the Waste Smart app &rarr;</a></div>
+<div id="demoBar" class="demo hide">DEMO &middot; invented clients and sample data, nothing is saved or sent &middot; sign in is pre-filled &middot; <a href="app.html">Open the Waste Smart app &rarr;</a></div>
 
 <section id="login">
   <form class="lcard" onsubmit="doLogin(event)">
@@ -564,7 +564,7 @@ function mockInit(){
               mk(5,'Ridge Road Catering','Contract Caterer','ops@ridgeroad.example','Lerato Dlamini','Africa/Johannesburg','R',true,'suspended',{ all:'stale' },400),
               mk(6,'Marina Grill','Waterfront Restaurant','manager@marinagrill.example','Sipho Ndlovu','Africa/Johannesburg','R',true,'active',{ all:'live', recycling_glass:'quiet', electricity:'quiet' },1.2) ],
     devices:[], audit:[], bi:{ 1:[{ label:'Power BI desktop' }] },
-    admins:[{ name:'Gilded Age Owner', email:'admin@gildedac.co.za', role:'owner', lastLogin:'today' },{ name:'Support Desk', email:'support@gildedac.co.za', role:'staff', lastLogin:'3 days ago' }] };
+    admins:[{ name:'Gilded Age Owner', email:'admin@gildedac.co.za', role:'owner', lastLogin:'today' },{ name:'Support Desk', email:'support@gildedac.co.za', role:'admin', lastLogin:'3 days ago' }] };
   M.clients.forEach(c => { const s = c._specs; const list = s.some || all;
     list.forEach(t => { const p = pillar(t); let h = s[t] || s.all || s.st || 'live';
       M.devices.push(mkDev(c.id, p, h, h === 'live' ? 0.3 + (M.did % 5) * 0.25 : h === 'quiet' ? 3.4 : h === 'stale' ? c._lastH || 40 : null)); }); });
@@ -603,7 +603,7 @@ function mock(a, p){
     case 'device_delete': { const i = M.devices.findIndex(x => x.id === p.id); if (p.keepData) { M.devices[i].enabled = false; M.devices[i].health = 'disabled'; } else M.devices.splice(i, 1); return { ok:true }; }
     case 'bi_token_create': (M.bi[p.clientId] = M.bi[p.clientId] || []).push({ label:p.label }); mAudit(who, 'issued a Power BI token', +p.clientId); return { token:'wsbi_' + Math.random().toString(16).slice(2, 12) + Math.random().toString(16).slice(2, 12) };
     case 'admins_list': return { admins:M.admins };
-    case 'admin_create': if (!/@/.test(p.email || '')) throw new Error('Enter a valid email.'); M.admins.push({ name:p.name || p.email, email:p.email, role:'staff', lastLogin:null }); mAudit(who, 'added administrator ' + p.email); return { ok:true };
+    case 'admin_create': if (!/@/.test(p.email || '')) throw new Error('Enter a valid email.'); M.admins.push({ name:p.name || p.email, email:p.email, role:'admin', lastLogin:null }); mAudit(who, 'added administrator ' + p.email); return { ok:true };
     case 'audit_list': return { audit: M.audit.slice(0, 60).map(x => ({ ts:x.ts, who:x.who, what:x.what, client:(M.clients.find(c => c.id === x.clientId) || {}).name })) };
   }
   throw new Error('Unknown action.');
