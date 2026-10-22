@@ -671,7 +671,7 @@ html,body{max-width:100%;overflow-x:hidden}
 const API_ENDPOINT = 'https://gildedac.co.za/app/api.php'; // set to match your live deployment
 const BUILD_VERSION = 'v6.4.1';
 const BUILD_DATE = '2026-10-22';
-const AUTH_TOKEN_KEY = 'ws_auth_token', AUTH_SITE_KEY = 'ws_auth_site', LOOK_KEY = 'ws_look';
+const AUTH_TOKEN_KEY = 'ws_auth_token', AUTH_SITE_KEY = 'ws_auth_site', LOOK_KEY = 'ws_look_v2';
 
 function getAuthToken(){ try{ return localStorage.getItem(AUTH_TOKEN_KEY); }catch(e){ return null; } }
 function getAuthSite(){ try{ const r = localStorage.getItem(AUTH_SITE_KEY); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
