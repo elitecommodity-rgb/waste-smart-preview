@@ -131,6 +131,18 @@ body.isdemo #app{padding-top:24px}body.isdemo nav.side{top:24px;height:calc(100v
   </form>
 </section>
 
+<section id="setpw" class="hide">
+  <form class="lcard" onsubmit="doSetPw(event)">
+    <div class="mark"><i>G</i> Gilded Age</div>
+    <h1>Choose your password</h1><p id="swSub">Set the password you will use for the master admin.</p>
+    <label>New password</label><input type="password" id="swP1" autocomplete="new-password" minlength="10" required>
+    <label>Repeat password</label><input type="password" id="swP2" autocomplete="new-password" minlength="10" required>
+    <div class="err" id="swErr"></div>
+    <button class="btn gold" style="width:100%;margin-top:6px" id="swBtn">Save password</button>
+    <p style="margin:16px 0 0;font-size:12px">At least 10 characters. The link works once.</p>
+  </form>
+</section>
+
 <div id="app" class="hide">
   <nav class="side">
     <div class="mark"><i>G</i> Gilded Age</div>
@@ -222,6 +234,24 @@ async function doLogin(ev){
 }
 async function doLogout(){ try { await call('logout'); } catch(e){} session = null; try { sessionStorage.removeItem('gaa'); } catch(e){} $('app').classList.add('hide'); $('login').classList.remove('hide'); }
 function start(){ $('login').classList.add('hide'); $('app').classList.remove('hide'); $('who').textContent = session.name + ' · ' + session.role; go('overview'); }
+
+let swToken = null;
+async function openSetPw(tok){
+  swToken = tok; $('login').classList.add('hide'); $('setpw').classList.remove('hide');
+  if (DEMO) return;
+  try { const r = await call('admin_token_check', { token: tok }); $('swSub').textContent = r.name + ', choose the password you will use for the master admin.'; $('lEmail').value = r.email; }
+  catch(e){ $('swErr').textContent = e.message; $('swBtn').disabled = true; }
+}
+async function doSetPw(ev){
+  ev.preventDefault(); $('swErr').textContent = '';
+  if ($('swP1').value !== $('swP2').value){ $('swErr').textContent = 'The two passwords do not match.'; return; }
+  $('swBtn').disabled = true;
+  try { if (!DEMO) await call('admin_setpw', { token: swToken, password: $('swP1').value });
+    try { history.replaceState(null, '', location.pathname); } catch(e){}
+    $('setpw').classList.add('hide'); $('login').classList.remove('hide'); $('lErr').style.color = 'var(--good,#3b9)'; $('lErr').textContent = 'Password saved. Sign in now.'; $('lPass').focus(); }
+  catch(e){ $('swErr').textContent = e.message; } finally { $('swBtn').disabled = false; }
+}
+async function resetAdminPw(email){ try { const r = await call('admin_reset', { email }); toast(r.email && r.email.sent ? 'Password link emailed' : 'Link created. Email not sent: ' + ((r.email && r.email.error) || 'check mail settings')); viewTeam(); } catch(e){ toast(e.message); } }
 
 /* ================= navigation ================= */
 function go(v, arg){
@@ -428,6 +458,7 @@ function tabDetails(){
   $('tabBody').innerHTML = `<div class="card"><div class="form2">
   <div><label>Business name</label><input type="text" id="dName" value="${esc(c.name)}"></div><div><label>Business type</label><input type="text" id="dType" value="${esc(c.type)}"></div>
   <div><label>Contact name</label><input type="text" id="dContact" value="${esc(c.contact)}"></div><div><label>Admin email</label><input type="email" id="dEmail" value="${esc(c.ownerEmail)}"></div>
+<div><label>Group</label><input type="text" id="dGrp" value="${esc(c.group||'')}" placeholder="Optional, for multi-site owners"></div><div><label>Region</label><input type="text" id="dReg" value="${esc(c.region||'')}"></div><div><label>Area</label><input type="text" id="dArea" value="${esc(c.area||'')}"></div>
   <div><label>Time zone</label><select id="dTz">${TZ.map(z => `<option ${z === c.tz ? 'selected' : ''}>${z}</option>`).join('')}</select></div><div><label>Currency</label><select id="dCcy">${CCY.map(x => `<option value="${x[0]}" ${x[0] === c.currency ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div>
   <div><label>Electricity (per kWh)</label><input type="number" step="0.01" id="dKwh" value="${s.tariff_kwh}"></div><div><label>Gas (per kg)</label><input type="number" step="0.01" id="dGas" value="${s.tariff_gas_kg}"></div>
   <div><label>Water (per kilolitre)</label><input type="number" step="0.01" id="dWater" value="${s.tariff_water_kl}"></div><div class="full"><label>Internal notes</label><textarea id="dNotes" rows="3">${esc(c.notes || '')}</textarea></div></div>
@@ -435,7 +466,7 @@ function tabDetails(){
   <p class="sub">Changing the admin email affects where invites and reset links go. The client can still adjust tariffs and rates inside their own app.</p></div>`;
 }
 async function saveDetails(){
-  try { await call('client_update', { id: state.client.client.id, name: $('dName').value, type: $('dType').value, contact: $('dContact').value, ownerEmail: $('dEmail').value, tz: $('dTz').value, currency: $('dCcy').value,
+  try { await call('client_update', { id: state.client.client.id, name: $('dName').value, type: $('dType').value, contact: $('dContact').value, ownerEmail: $('dEmail').value, tz: $('dTz').value, currency: $('dCcy').value, group: $('dGrp').value, region: $('dReg').value, area: $('dArea').value,
     settings: { tariff_kwh: +$('dKwh').value, tariff_gas_kg: +$('dGas').value, tariff_water_kl: +$('dWater').value }, notes: $('dNotes').value }); toast('Saved'); viewClient(state.client.client.id); }
   catch(e){ toast(e.message); }
 }
@@ -455,6 +486,7 @@ function renderWiz(){
   let body = '';
   if (w.step === 1) body = `<div class="form2"><div class="full"><label>Business name</label><input type="text" id="wName" value="${esc(d.name)}" placeholder="e.g. Karoo Table"></div>
     <div><label>Business type</label><input type="text" id="wType" value="${esc(d.type)}"></div><div><label>Contact name</label><input type="text" id="wContact" value="${esc(d.contact)}"></div>
+<div><label>Group</label><input type="text" id="wGrp" value="${esc(d.group||'')}" placeholder="Optional, for multi-site owners"></div><div><label>Region</label><input type="text" id="wReg" value="${esc(d.region||'')}"></div><div><label>Area</label><input type="text" id="wArea" value="${esc(d.area||'')}"></div>
     <div class="full"><label>Admin email (the client signs in with this)</label><input type="email" id="wEmail" value="${esc(d.email)}" placeholder="owner@example.com"></div>
     <div><label>Time zone</label><select id="wTz">${TZ.map(z => `<option ${z === d.tz ? 'selected' : ''}>${z}</option>`).join('')}</select></div>
     <div><label>Currency</label><select id="wCcy">${CCY.map(x => `<option value="${x[0]}" ${x[0] === d.currency ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div></div>`;
@@ -483,7 +515,7 @@ function wizAll(on){ Object.values(state.wiz.d.pick).forEach(p => p.on = on); re
 function wizBack(){ wizRead(); state.wiz.step--; renderWiz(); }
 function wizRead(){
   const w = state.wiz, d = w.d, v = id => $(id) ? $(id).value : null;
-  if (w.step === 1) { d.name = v('wName').trim(); d.type = v('wType').trim(); d.contact = v('wContact').trim(); d.email = v('wEmail').trim(); d.tz = v('wTz'); d.currency = v('wCcy'); }
+  if (w.step === 1) { d.name = v('wName').trim(); d.type = v('wType').trim(); d.contact = v('wContact').trim(); d.email = v('wEmail').trim(); d.group = v('wGrp').trim(); d.region = v('wReg').trim(); d.area = v('wArea').trim(); d.tz = v('wTz'); d.currency = v('wCcy'); }
   if (w.step === 2) { d.kwh = +v('wKwh') || 0; d.gas = +v('wGas') || 0; d.water = +v('wWater') || 0; }
   if (w.step === 4) d.send = $('wSend').checked;
 }
@@ -492,7 +524,7 @@ async function wizNext(){
   if (w.step === 1) { if (!d.name) return $('wErr').textContent = 'Enter the business name.'; if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) return $('wErr').textContent = 'Enter a valid admin email.'; }
   if (w.step < 4) { w.step++; return renderWiz(); }
   try {
-    const r = await call('client_create', { name:d.name, type:d.type, contact:d.contact, ownerEmail:d.email, tz:d.tz, currency:d.currency, settings:{ tariff_kwh:d.kwh, tariff_gas_kg:d.gas, tariff_water_kl:d.water },
+    const r = await call('client_create', { name:d.name, type:d.type, contact:d.contact, ownerEmail:d.email, group:d.group, region:d.region, area:d.area, tz:d.tz, currency:d.currency, settings:{ tariff_kwh:d.kwh, tariff_gas_kg:d.gas, tariff_water_kl:d.water },
       devices: PILLARS.filter(p => d.pick[p.t].on).map(p => ({ target:p.t, kind:p.kind, adapter:d.pick[p.t].ad, name:p.n, unitIn:p.unit || '' })), sendInvite: d.send });
     wizDone(r);
   } catch(e){ $('wErr').textContent = e.message; }
@@ -511,7 +543,7 @@ function wizDone(r){
 async function viewTeam(){
   $('main').innerHTML = '<div class="top"><div><h1>Team &amp; audit</h1><p>Who can use the master admin, and what has been done.</p></div></div><div id="tmBody" class="sub">Loading…</div>';
   const [a, l] = await Promise.all([call('admins_list'), call('audit_list')]);
-  $('tmBody').innerHTML = `<div class="grid2"><div class="card"><h3 style="margin-bottom:8px">Administrators</h3><div class="tw"><table><tbody>${a.admins.map(x => `<tr><td><b>${esc(x.name)}</b><div class="sub">${esc(x.email)}</div></td><td><span class="pill p-mute">${esc(x.role)}</span></td><td class="sub">${esc(x.lastLogin || 'never')}</td></tr>`).join('')}</tbody></table></div>
+  $('tmBody').innerHTML = `<div class="grid2"><div class="card"><h3 style="margin-bottom:8px">Administrators</h3><div class="tw"><table><tbody>${a.admins.map(x => `<tr><td><b>${esc(x.name)}</b><div class="sub">${esc(x.email)}</div></td><td><span class="pill p-mute">${esc(x.role)}</span></td><td class="sub">${esc(x.lastLogin || (x.invited ? 'invited' : 'never'))}</td>${session.role === 'owner' && x.role !== 'owner' ? `<td><button class="btn small ghost" onclick="resetAdminPw('${esc(x.email)}')">Send password link</button></td>` : '<td></td>'}</tr>`).join('')}</tbody></table></div>
     ${session.role === 'owner' ? '<div style="margin-top:10px"><button class="btn small ghost" onclick="addAdmin()">Add an administrator</button></div>' : ''}</div>
     <div class="card"><h3 style="margin-bottom:8px">Recent activity</h3><div style="max-height:420px;overflow:auto"><table><tbody>${l.audit.map(x => `<tr><td class="sub" style="white-space:nowrap">${esc(x.ts)}</td><td><b>${esc(x.who)}</b> ${esc(x.what)}${x.client ? ' <span class="sub">· ' + esc(x.client) + '</span>' : ''}</td></tr>`).join('')}</tbody></table></div></div></div>`;
 }
@@ -585,6 +617,8 @@ function drawLooks(){ const cur = document.documentElement.dataset.look || 'c'; 
 /* ================= boot ================= */
 (function(){
   if (DEMO) { document.body.classList.add('isdemo'); $('demoBar').classList.remove('hide'); $('lEmail').value = 'admin@gildedac.co.za'; $('lPass').value = 'demo-password'; }
+  const pw = new URLSearchParams(location.search).get('setpw');
+  if (pw) { openSetPw(pw); return; }
   try { const s = JSON.parse(sessionStorage.getItem('gaa') || 'null'); if (s && !DEMO) { session = s; start(); } } catch(e){}
 })();
 </script>

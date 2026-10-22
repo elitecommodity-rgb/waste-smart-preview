@@ -443,6 +443,7 @@ html,body{max-width:100%;overflow-x:hidden}
   .bi-bar .btn{margin-left:0!important}
 }
 @media (max-width:640px){.bi-row input[type=date]{font-size:16px;min-height:44px}}
+.auth-alt{margin:14px 0 0;text-align:center;font-size:13px}.auth-alt a{color:var(--accent)}
 
 </style></head><body>
 <!-- ================= AUTH ================= -->
@@ -453,24 +454,25 @@ html,body{max-width:100%;overflow-x:hidden}
     <p class="lock-sub" id="authSub">Sign in with your business email and admin PIN. New sites are set up for you by Gilded Age.</p>
     <div class="auth-tabs">
       <button type="button" class="auth-tab active" id="authTabLogin" onclick="showAuthPanel('login')">Log in</button>
-      <button type="button" class="auth-tab" id="authTabRegister" onclick="showAuthPanel('register')" hidden>New site</button>
     </div>
     <div id="authLoginPanel">
       <div class="field"><label class="field-label" for="loginEmail">Business email</label><input type="email" id="loginEmail" placeholder="you@yourbusiness.co.za" autocomplete="username"></div>
       <div class="field"><label class="field-label" for="loginPin">Admin PIN</label><input type="password" inputmode="numeric" id="loginPin" placeholder="4–6 digits" maxlength="6" autocomplete="current-password"></div>
       <div id="authLoginErr" class="lock-err"></div>
       <button class="btn primary block" id="authLoginBtn" onclick="submitLogin()">Log in</button>
+      <p class="auth-alt"><a href="#" onclick="showAuthPanel('forgot');return false">Forgot your PIN?</a></p>
     </div>
-    <div id="authRegisterPanel" hidden>
-      <div class="field"><label class="field-label" for="regName">Business name</label><input type="text" id="regName" placeholder="e.g. House of Curries"></div>
-      <div class="form-grid">
-        <div class="field"><label class="field-label" for="regType">Business type</label><select id="regType"><option>Independent Restaurant</option><option>QSR / Takeaway</option><option>Canteen / Cafeteria</option><option>Catering / Events</option><option>Hotel Kitchen</option><option>Multi-Site Chain</option></select></div>
-        <div class="field"><label class="field-label" for="regCurrency">Currency symbol</label><input type="text" id="regCurrency" value="R" maxlength="3"></div>
-      </div>
-      <div class="field"><label class="field-label" for="regEmail">Your email</label><input type="email" id="regEmail" autocomplete="username"></div>
-      <div class="field"><label class="field-label" for="regAdminPin">Admin PIN</label><input type="text" inputmode="numeric" id="regAdminPin" placeholder="4–6 digits" maxlength="6" autocomplete="new-password"></div>
-      <div id="authRegisterErr" class="lock-err"></div>
-      <button class="btn primary block" id="authRegisterBtn" onclick="submitRegister()">Create my site</button>
+    <div id="authForgotPanel" hidden>
+      <div class="field"><label class="field-label" for="forgotEmail">Business email</label><input type="email" id="forgotEmail" placeholder="you@yourbusiness.co.za" autocomplete="username"></div>
+      <div id="authForgotErr" class="lock-err"></div>
+      <button class="btn primary block" id="authForgotBtn" onclick="submitForgot()">Email me a reset link</button>
+      <p class="auth-alt"><a href="#" onclick="showAuthPanel('login');return false">Back to log in</a></p>
+    </div>
+    <div id="authSetPanel" hidden>
+      <div class="field"><label class="field-label" for="setPin1">New admin PIN</label><input type="password" inputmode="numeric" id="setPin1" placeholder="4–6 digits" maxlength="6" autocomplete="new-password"></div>
+      <div class="field"><label class="field-label" for="setPin2">Repeat PIN</label><input type="password" inputmode="numeric" id="setPin2" maxlength="6" autocomplete="new-password"></div>
+      <div id="authSetErr" class="lock-err"></div>
+      <button class="btn primary block" id="authSetBtn" onclick="submitSetPin()">Save PIN</button>
     </div>
   </div>
 </div>
@@ -767,16 +769,55 @@ function periodBounds(period, offset){
 let currentPeriod = 'month';
 
 /* ---------- auth / unlock ---------- */
+const MASTER_URL = window.WS_MASTER_URL || 'master.php';
+let setToken = null;
+async function masterCall(action, body){
+  const r = await fetch(MASTER_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(Object.assign({ action }, body||{})) });
+  let d = {}; try { d = await r.json(); } catch(e){}
+  if (!r.ok) throw new Error(d.error || 'Something went wrong. Please try again.');
+  return d;
+}
 function wireAuthScreen(){
   $('loginPin').addEventListener('keydown', e => { if (e.key==='Enter') submitLogin(); });
-  $('regAdminPin').addEventListener('keydown', e => { if (e.key==='Enter') submitRegister(); });
+  $('forgotEmail').addEventListener('keydown', e => { if (e.key==='Enter') submitForgot(); });
+  $('setPin2').addEventListener('keydown', e => { if (e.key==='Enter') submitSetPin(); });
 }
 function showAuthPanel(which){
-  const isLogin = which === 'login';
-  $('authTabLogin').classList.toggle('active', isLogin); $('authTabRegister').classList.toggle('active', !isLogin);
-  $('authLoginPanel').hidden = !isLogin; $('authRegisterPanel').hidden = isLogin;
-  $('authHeading').innerHTML = isLogin ? 'Welcome <span class="hl">back</span>' : 'Set up your <span class="hl">site</span>';
-  $('authSub').textContent = isLogin ? 'Log in with your business email and admin PIN.' : 'Choose your business details and an admin PIN. This happens once.';
+  $('authTabLogin').classList.toggle('active', which === 'login');
+  $('authLoginPanel').hidden = which !== 'login'; $('authForgotPanel').hidden = which !== 'forgot'; $('authSetPanel').hidden = which !== 'set';
+  const h = { login:'Welcome <span class="hl">back</span>', forgot:'Reset your <span class="hl">PIN</span>', set:'Choose your <span class="hl">PIN</span>' };
+  const s = { login:'Log in with your business email and admin PIN.', forgot:'Enter your business email and we will send a single-use link that lasts one hour.', set:'Choose a 4 to 6 digit admin PIN. You will use it each time you log in.' };
+  $('authHeading').innerHTML = h[which]; $('authSub').textContent = s[which];
+  $('authTabLogin').hidden = which === 'set';
+}
+async function submitForgot(){
+  const email = $('forgotEmail').value.trim(); $('authForgotErr').textContent = ''; $('authForgotErr').style.color = '';
+  if (!email){ $('authForgotErr').textContent = 'Enter your business email.'; return; }
+  $('authForgotBtn').disabled = true;
+  try{ const r = await masterCall('pin_forgot', { email }); $('authForgotErr').style.color = 'var(--good,#5EEAD4)'; $('authForgotErr').textContent = r.message; }
+  catch(e){ $('authForgotErr').textContent = e.message; }
+  finally{ $('authForgotBtn').disabled = false; }
+}
+async function openSetPinLink(tok){
+  setToken = tok; $('authScreen').hidden = false;
+  try{
+    const r = await masterCall('pin_token_check', { token: tok });
+    showAuthPanel('set'); $('authSub').textContent = (r.business ? r.business + ': ' : '') + 'choose a 4 to 6 digit admin PIN. You will use it each time you log in.';
+    $('loginEmail').value = r.email || '';
+  }catch(e){ showAuthPanel('forgot'); $('authForgotErr').textContent = e.message; }
+}
+async function submitSetPin(){
+  const a = $('setPin1').value.trim(), b = $('setPin2').value.trim(); $('authSetErr').textContent = '';
+  if (!/^\d{4,6}$/.test(a)){ $('authSetErr').textContent = 'The PIN must be 4 to 6 digits.'; return; }
+  if (a !== b){ $('authSetErr').textContent = 'The two PINs do not match.'; return; }
+  $('authSetBtn').disabled = true;
+  try{
+    await masterCall('pin_set', { token: setToken, pin: a }); setToken = null;
+    try{ history.replaceState(null, '', location.pathname); }catch(e){}
+    $('setPin1').value = ''; $('setPin2').value = ''; showAuthPanel('login');
+    $('authLoginErr').style.color = 'var(--good,#5EEAD4)'; $('authLoginErr').textContent = 'PIN saved. Log in with it now.'; $('loginPin').focus();
+  }catch(e){ $('authSetErr').textContent = e.message; }
+  finally{ $('authSetBtn').disabled = false; }
 }
 async function submitLogin(){
   const email = $('loginEmail').value.trim(), pin = $('loginPin').value.trim();
@@ -791,27 +832,6 @@ async function submitLogin(){
     await enterApp();
   }catch(e){ $('authLoginErr').textContent = e.message || 'Could not log in.'; }
   finally{ $('authLoginBtn').disabled = false; }
-}
-async function submitRegister(){
-  const name = $('regName').value.trim(), type = $('regType').value, currency = $('regCurrency').value.trim() || 'R';
-  const email = $('regEmail').value.trim(), adminPin = $('regAdminPin').value.trim();
-  $('authRegisterErr').textContent = '';
-  if (!name){ $('authRegisterErr').textContent = 'Enter a business name.'; return; }
-  if (!email){ $('authRegisterErr').textContent = 'Enter your email.'; return; }
-  if (adminPin.length < 4){ $('authRegisterErr').textContent = 'The PIN needs at least 4 digits.'; return; }
-  // The server still keeps a second (staff) PIN slot. This app has no staff role, so it gets a random one nobody is given.
-  let staffPin = ''; do { staffPin = String(Math.floor(100000 + Math.random()*900000)); } while (staffPin === adminPin);
-  $('authRegisterBtn').disabled = true;
-  try{
-    const r = await apiCall('register', { businessName:name, businessType:type, currency, ownerEmail:email, staffPin, adminPin }, { noAuth:true });
-    setAuthSession(r.token, r.site); role = 'admin'; feedAdminPin = adminPin;
-    setup = { id:r.site.id, name:r.site.name, type:r.site.type, currency:r.site.currency, createdAt: isoDate(new Date()) };
-    await sSet(K.SETUP, JSON.stringify(setup));
-    await sSet(K.ENV, JSON.stringify(DEFAULT_ENV)); await sSet(K.DISPOSAL, JSON.stringify(DEFAULT_DISPOSAL));
-    await sSet(K.OILSETTINGS, JSON.stringify(DEFAULT_OIL)); await sSet(K.RECYCLING, JSON.stringify(DEFAULT_RATES)); await sSet(K.ENTRIES, '[]');
-    await enterApp();
-  }catch(e){ $('authRegisterErr').textContent = e.message || 'Could not create your site.'; }
-  finally{ $('authRegisterBtn').disabled = false; }
 }
 async function tryUnlock(){
   const v = $('pinInput').value.trim(); if (!v) return;
@@ -2096,7 +2116,11 @@ window.addEventListener('DOMContentLoaded', ()=>{
   $('pinInput').addEventListener('keydown', e=>{ if (e.key==='Enter') tryUnlock(); });
   const site = getAuthSite();
   if (getAuthToken() && site){ $('lockBrand').textContent = site.name || 'Waste Smart'; $('lockScreen').hidden = false; $('pinInput').focus(); }
-  else { $('authScreen').hidden = false; showAuthPanel('login'); }
+  else {
+    $('authScreen').hidden = false; showAuthPanel('login');
+    const q = new URLSearchParams(location.search), t = q.get('setpin') || q.get('reset');
+    if (t) openSetPinLink(t);
+  }
 });
 
 </script>
