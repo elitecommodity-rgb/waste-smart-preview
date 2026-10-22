@@ -3,7 +3,7 @@
 <script src="shim.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Waste Smart</title><meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Manrope:wght@700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ============ Waste Smart v6.4 — one component set, three looks (data-look = a | b | c) ============ */
 :root{
@@ -43,6 +43,43 @@
   --grid:rgba(17,18,20,.18); --tip-bg:#111214; --tip-ink:#F6F6F3; --heat0:#D6D8D3; --heat1:#FF5A00; --heat-ink:#111214;
   --nav-bg:#111214; --nav-ink:#F6F6F3; --hero-bg:#FF5A00; --hero-ink:#111214;
 }
+:root[data-look="d"]{ /* Boardroom: navy sidebar, crisp white cards, electric blue */
+  --bg:#EEF1F6; --surface:#FFFFFF; --surface2:#E4E9F1; --ink:#0B1B33; --mute:#5A6B82; --line:#D5DDE9;
+  --accent:#2563EB; --accent-ink:#FFFFFF; --accent-soft:#DCE8FF; --coral:#F97316;
+  --good:#16A34A; --warn:#D97706; --bad:#DC2626;
+  --radius:12px; --radius-s:8px; --shadow:0 1px 2px rgba(11,27,51,.06),0 10px 30px rgba(11,27,51,.08);
+  --font-display:'Manrope','Inter',system-ui,sans-serif; --font-body:'Inter',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --dw:800; --dcase:none; --dtrack:-.02em; --btn-case:none; --btn-track:0;
+  --grid:rgba(11,27,51,.1); --tip-bg:#0B1B33; --tip-ink:#EEF1F6; --heat0:#E4E9F1; --heat1:#2563EB; --heat-ink:#FFFFFF;
+  --nav-bg:#0B1B33; --nav-ink:#DCE6F5; --hero-bg:linear-gradient(135deg,#2563EB,#0B1B33); --hero-ink:#FFFFFF;
+}
+:root[data-look="e"]{ /* Midnight: deep indigo dark, violet glow */
+  --bg:#0A0D1A; --surface:#131830; --surface2:#1B2140; --ink:#EEF0FF; --mute:#8E96BD; --line:#262D55;
+  --accent:#8B7BFF; --accent-ink:#0A0D1A; --accent-soft:#2A2660; --coral:#FF7A8A;
+  --good:#3DDC97; --warn:#FFC857; --bad:#FF6B7A;
+  --radius:16px; --radius-s:10px; --shadow:0 12px 40px rgba(0,0,0,.35);
+  --font-display:'Space Grotesk','Inter',system-ui,sans-serif; --font-body:'Inter',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --dw:700; --dcase:none; --dtrack:-.02em; --btn-case:none; --btn-track:0;
+  --c-waste:#FF8A5B; --c-plastic:#3DDC97; --c-paper:#F5C84C; --c-glass:#5CC8FF; --c-cans:#B79CFF; --c-oil:#B39283;
+  --c-gas:#FF6FA3; --c-elec:#7C9BFF; --c-water:#2DD4BF; --c-sales:#EEF0FF; --c-recyc:#3DDC97;
+  --grid:rgba(238,240,255,.1); --tip-bg:#EEF0FF; --tip-ink:#0A0D1A; --heat0:#1B2140; --heat1:#8B7BFF; --heat-ink:#0A0D1A;
+  --nav-bg:#0D1122; --nav-ink:#EEF0FF; --hero-bg:linear-gradient(135deg,#5B49E8,#2A1E8F); --hero-ink:#FFFFFF;
+}
+:root[data-look="f"]{ /* Terracotta: warm paper, espresso nav, editorial serif */
+  --bg:#F7F1E6; --surface:#FFFDF8; --surface2:#EFE6D4; --ink:#2B1B12; --mute:#7A6656; --line:#E2D6C0;
+  --accent:#C2410C; --accent-ink:#FFFFFF; --accent-soft:#FBE0CF; --coral:#C2410C;
+  --good:#3F7D3A; --warn:#B7791F; --bad:#B42318;
+  --radius:10px; --radius-s:6px; --shadow:0 1px 0 rgba(43,27,18,.05),0 8px 22px rgba(43,27,18,.07);
+  --font-display:'Fraunces',Georgia,serif; --font-body:'DM Sans',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --dw:700; --dcase:none; --dtrack:-.01em; --btn-case:none; --btn-track:0;
+  --grid:rgba(43,27,18,.12); --tip-bg:#2B1B12; --tip-ink:#F7F1E6; --heat0:#EFE6D4; --heat1:#C2410C; --heat-ink:#FFFFFF;
+  --nav-bg:#2B1B12; --nav-ink:#F7F1E6; --hero-bg:linear-gradient(135deg,#C2410C,#7C2D12); --hero-ink:#FFFFFF;
+}
+:root[data-look="d"] .card,:root[data-look="e"] .card,:root[data-look="f"] .card{box-shadow:var(--shadow)}
+:root[data-look="d"] .btn,:root[data-look="e"] .btn{border-radius:var(--radius-s)}
+:root[data-look="e"] .btn.primary{box-shadow:0 0 24px color-mix(in srgb,var(--accent) 45%,transparent)}
+:root[data-look="e"] .hero-total{box-shadow:0 20px 60px color-mix(in srgb,#5B49E8 40%,transparent)}
+:root[data-look="f"] h1,:root[data-look="f"] h2,:root[data-look="f"] h3{font-variation-settings:"opsz" 72}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
@@ -123,18 +160,18 @@ textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
 .nav-right{display:flex;gap:10px;align-items:center}
 .biz{font-family:var(--font-mono);font-size:12px;opacity:.7;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .topnav .btn.ghost{color:var(--nav-ink);border-color:color-mix(in srgb,var(--nav-ink) 30%,transparent)}
-:root[data-look="a"] #app{display:grid;grid-template-columns:232px minmax(0,1fr)}
-:root[data-look="a"] .topnav{position:sticky;top:0;height:100vh;flex-direction:column;align-items:stretch;padding:22px 14px;border-bottom:0;border-right:1.5px solid var(--line);gap:22px}
-:root[data-look="a"] .tabs{flex-direction:column;overflow:visible;flex:1}
-:root[data-look="a"] .tab{text-align:left;font-size:17px;padding:12px 14px}
-:root[data-look="a"] .nav-right{flex-direction:column;align-items:stretch}
-:root[data-look="a"] .biz{max-width:none}
-:root[data-look="a"] #appMain{min-width:0}
+:root[data-look="a"] #app,:root[data-look="d"] #app,:root[data-look="e"] #app{display:grid;grid-template-columns:232px minmax(0,1fr)}
+:root[data-look="a"] .topnav,:root[data-look="d"] .topnav,:root[data-look="e"] .topnav{position:sticky;top:0;height:100vh;flex-direction:column;align-items:stretch;padding:22px 14px;border-bottom:0;border-right:1.5px solid var(--line);gap:22px}
+:root[data-look="a"] .tabs,:root[data-look="d"] .tabs,:root[data-look="e"] .tabs{flex-direction:column;overflow:visible;flex:1}
+:root[data-look="a"] .tab,:root[data-look="d"] .tab,:root[data-look="e"] .tab{text-align:left;font-size:17px;padding:12px 14px}
+:root[data-look="a"] .nav-right,:root[data-look="d"] .nav-right,:root[data-look="e"] .nav-right{flex-direction:column;align-items:stretch}
+:root[data-look="a"] .biz,:root[data-look="d"] .biz,:root[data-look="e"] .biz{max-width:none}
+:root[data-look="a"] #appMain,:root[data-look="d"] #appMain,:root[data-look="e"] #appMain{min-width:0}
 @media (max-width:860px){
-  :root[data-look="a"] #app{display:block}
-  :root[data-look="a"] .topnav{height:auto;position:sticky;top:0;flex-direction:row;align-items:center;border-right:0;border-bottom:1.5px solid var(--line);padding:10px 16px;gap:12px}
-  :root[data-look="a"] .tabs{flex-direction:row;overflow-x:auto}
-  :root[data-look="a"] .nav-right{flex-direction:row}
+  :root[data-look="a"] #app,:root[data-look="d"] #app,:root[data-look="e"] #app{display:block}
+  :root[data-look="a"] .topnav,:root[data-look="d"] .topnav,:root[data-look="e"] .topnav{height:auto;position:sticky;top:0;flex-direction:row;align-items:center;border-right:0;border-bottom:1.5px solid var(--line);padding:10px 16px;gap:12px}
+  :root[data-look="a"] .tabs,:root[data-look="d"] .tabs,:root[data-look="e"] .tabs{flex-direction:row;overflow-x:auto}
+  :root[data-look="a"] .nav-right,:root[data-look="d"] .nav-right,:root[data-look="e"] .nav-right{flex-direction:row}
   .biz{display:none}
 }
 .view{padding-bottom:90px}
@@ -181,8 +218,8 @@ textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
 .mini{height:46px;width:100%}
 .devline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--mute)}
 .savebar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--nav-bg);color:var(--nav-ink);border-top:1.5px solid var(--line);padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:14px;align-items:center;justify-content:space-between}
-:root[data-look="a"] .savebar{left:232px}
-@media (max-width:860px){:root[data-look="a"] .savebar{left:0}}
+:root[data-look="a"] .savebar,:root[data-look="d"] .savebar,:root[data-look="e"] .savebar{left:232px}
+@media (max-width:860px){:root[data-look="a"] .savebar,:root[data-look="d"] .savebar,:root[data-look="e"] .savebar{left:0}}
 .savebar .msg{font-family:var(--font-mono);font-size:12.5px;opacity:.8}
 
 /* ---- tables / bits ---- */
@@ -544,7 +581,8 @@ function parseISO(s){ const [y,m,d] = s.split('-').map(Number); return new Date(
 function nf(n, dp){ return (Number(n)||0).toLocaleString('en-ZA', { maximumFractionDigits: dp==null?1:dp, minimumFractionDigits: 0 }); }
 
 /* ---------- looks (three skins over one component set) ---------- */
-const LOOKS = { a:['Control Room','Graphite and electric lime. Condensed, loud, built for a back-office screen.'], b:['Fresh','Bright and friendly. Soft cards, deep green, big rounded numbers.'], c:['Stainless','Steel grey, black ink and safety orange. Hard edges, label-tape feel.'] };
+const LOOKS = { b:['Fresh','Bright and friendly. Soft cards, deep green, big rounded numbers.'], a:['Control Room','Graphite and electric lime. Condensed, loud, built for a back-office screen.'], c:['Stainless','Steel grey, black ink and safety orange. Hard edges, label-tape feel.'],
+  d:['Boardroom','Navy sidebar, crisp white cards, electric blue. Sharp and corporate.'], e:['Midnight','Deep indigo dark mode with a violet glow. Modern and punchy.'], f:['Terracotta','Warm paper, espresso nav, editorial serif. Crafted, kitchen-professional.'] };
 function applyLook(l){ if (!LOOKS[l]) l = 'a'; document.documentElement.setAttribute('data-look', l); try{ localStorage.setItem(LOOK_KEY, l); }catch(e){} }
 (function(){ let l = 'a'; try{ l = new URLSearchParams(location.search).get('look') || localStorage.getItem(LOOK_KEY) || 'a'; }catch(e){} applyLook(l); })();
 function renderLookPicker(){
