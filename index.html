@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="en" data-look="a"><head>
+<script src="shim.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Waste Smart</title><meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ Waste Smart v6.4 — one component set, three looks (data-look = a | b | c) ============ */
+:root{
+  /* Look B "Fresh" is the default */
+  --bg:#F3F6F2; --surface:#FFFFFF; --surface2:#EAF0E8; --ink:#10201A; --mute:#5C6B63; --line:#DCE4DA;
+  --accent:#0E7C4A; --accent-ink:#FFFFFF; --accent-soft:#D7F0E1; --coral:#FF6B4A;
+  --good:#1E9E57; --warn:#C98500; --bad:#D6402B;
+  --radius:18px; --radius-s:10px; --shadow:0 1px 2px rgba(16,32,26,.06),0 8px 24px rgba(16,32,26,.06);
+  --font-display:'Plus Jakarta Sans',system-ui,sans-serif; --font-body:'DM Sans',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --dw:800; --dcase:none; --dtrack:-.02em; --btn-case:none; --btn-track:0;
+  --c-waste:#E8590C; --c-plastic:#2F9E44; --c-paper:#C99700; --c-glass:#1C7ED6; --c-cans:#7048E8; --c-oil:#8D6E63;
+  --c-gas:#D6336C; --c-elec:#3B5BDB; --c-water:#0CA678; --c-sales:#10201A; --c-recyc:#2F9E44;
+  --grid:rgba(16,32,26,.1); --tip-bg:#10201A; --tip-ink:#F3F6F2; --heat0:#E6EEE3; --heat1:#0E7C4A; --heat-ink:#FFFFFF;
+  --nav-bg:#FFFFFF; --nav-ink:#10201A; --hero-bg:linear-gradient(135deg,#0E7C4A,#0A5C37); --hero-ink:#FFFFFF;
+}
+:root[data-look="a"]{ /* Control Room: graphite + electric lime */
+  --bg:#0B0E10; --surface:#14191C; --surface2:#1B2125; --ink:#F2F5F0; --mute:#8D9AA2; --line:#273036;
+  --accent:#D4FF3A; --accent-ink:#0B0E10; --accent-soft:#2A3410; --coral:#FF5A36;
+  --good:#3DDC84; --warn:#FFC53D; --bad:#FF5A36;
+  --radius:4px; --radius-s:3px; --shadow:none;
+  --font-display:'Barlow Condensed','Arial Narrow',sans-serif; --font-body:'Barlow',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --dw:800; --dcase:uppercase; --dtrack:.01em; --btn-case:uppercase; --btn-track:.08em;
+  --c-waste:#FF7A45; --c-plastic:#3DDC84; --c-paper:#F2C94C; --c-glass:#4FC3F7; --c-cans:#B388FF; --c-oil:#A1887F;
+  --c-gas:#FF5C8A; --c-elec:#5B8CFF; --c-water:#2DD4BF; --c-sales:#F2F5F0; --c-recyc:#3DDC84;
+  --grid:rgba(242,245,240,.1); --tip-bg:#F2F5F0; --tip-ink:#0B0E10; --heat0:#1B2125; --heat1:#D4FF3A; --heat-ink:#0B0E10;
+  --nav-bg:#0F1315; --nav-ink:#F2F5F0; --hero-bg:#D4FF3A; --hero-ink:#0B0E10;
+}
+:root[data-look="c"]{ /* Stainless: steel, black ink, safety orange */
+  --bg:#E4E5E1; --surface:#F6F6F3; --surface2:#D6D8D3; --ink:#111214; --mute:#555A5E; --line:#111214;
+  --accent:#FF5A00; --accent-ink:#111214; --accent-soft:#FFD9C2; --coral:#FF5A00;
+  --good:#16803C; --warn:#B07A00; --bad:#C2210B;
+  --radius:0px; --radius-s:0px; --shadow:4px 4px 0 #111214;
+  --font-display:'Archivo',system-ui,sans-serif; --font-body:'Archivo',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --dw:900; --dcase:uppercase; --dtrack:-.01em; --btn-case:uppercase; --btn-track:.04em;
+  --c-waste:#E8590C; --c-plastic:#2F9E44; --c-paper:#C99700; --c-glass:#1C7ED6; --c-cans:#7048E8; --c-oil:#8D6E63;
+  --c-gas:#D6336C; --c-elec:#3B5BDB; --c-water:#0CA678; --c-sales:#111214; --c-recyc:#2F9E44;
+  --grid:rgba(17,18,20,.18); --tip-bg:#111214; --tip-ink:#F6F6F3; --heat0:#D6D8D3; --heat1:#FF5A00; --heat-ink:#111214;
+  --nav-bg:#111214; --nav-ink:#F6F6F3; --hero-bg:#FF5A00; --hero-ink:#111214;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;-webkit-tap-highlight-color:transparent;min-height:100vh}
+[hidden]{display:none!important}
+a{color:var(--accent)} :root[data-look="a"] a{color:var(--accent)}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+:root[data-look="c"] :focus-visible{outline-color:var(--ink)}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:var(--dw);text-transform:var(--dcase);letter-spacing:var(--dtrack);line-height:1.05}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
+
+/* ---- buttons / inputs ---- */
+.btn{font-family:var(--font-display);font-weight:800;font-size:14px;letter-spacing:var(--btn-track);text-transform:var(--btn-case);padding:13px 20px;border:2px solid transparent;border-radius:var(--radius-s);display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;min-height:46px;transition:transform .08s}
+:root[data-look="b"] .btn,:root:not([data-look]) .btn{border-radius:999px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+:root[data-look="c"] .btn.primary{border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.btn.primary:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+:root[data-look="a"] .btn.ghost{border-color:#3a464d}
+:root[data-look="c"] .btn.ghost{border-color:var(--ink)}
+.btn.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
+.btn.small{padding:8px 13px;font-size:12.5px;min-height:38px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.5;cursor:default}
+input,select,textarea{font-family:var(--font-body);font-size:16px;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius-s);padding:11px 13px;width:100%;min-height:46px}
+:root[data-look="a"] input,:root[data-look="a"] select,:root[data-look="a"] textarea{background:#0B0E10;border-color:#2c373e}
+:root[data-look="c"] input,:root[data-look="c"] select,:root[data-look="c"] textarea{border-width:2px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 28%,transparent)}
+:root[data-look="c"] input:focus,:root[data-look="c"] select:focus{border-color:var(--ink);box-shadow:3px 3px 0 var(--accent)}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;min-width:0}
+.field-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 16px}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap}
+textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
+
+/* ---- cards ---- */
+.card,.editor-card{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+:root[data-look="c"] .card,:root[data-look="c"] .editor-card{border-width:2px}
+.editor-card h4,.card h4{font-size:19px;margin-bottom:10px}
+.section-sub{color:var(--mute);max-width:70ch;margin:0 0 16px}
+.view-head{padding-block:28px 6px;display:grid;gap:6px}
+.view-head h2{font-size:clamp(30px,5vw,48px)}
+.eyebrow{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+:root[data-look="b"] .eyebrow,:root:not([data-look]) .eyebrow{color:var(--accent)}
+:root[data-look="c"] .eyebrow{color:var(--ink);background:var(--accent);display:inline-block;padding:2px 8px;justify-self:start}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px}
+
+/* ---- auth / lock ---- */
+#authScreen,#lockScreen{min-height:100svh;display:grid;place-items:center;padding:24px;background:var(--bg)}
+.lock-card{width:100%;max-width:440px;display:grid;gap:14px}
+.lock-card h1{font-size:clamp(38px,9vw,58px)}
+.lock-card h1 .hl{color:var(--accent)}
+:root[data-look="b"] .lock-card h1 .hl,:root:not([data-look]) .lock-card h1 .hl{color:var(--accent)}
+:root[data-look="c"] .lock-card h1 .hl{background:var(--accent);padding:0 8px}
+.lock-sub{color:var(--mute)}
+.lock-err{color:var(--bad);font-size:13.5px;min-height:18px}
+.auth-tabs{display:flex;border:1.5px solid var(--line);border-radius:var(--radius-s);overflow:hidden}
+.auth-tab{flex:1;background:transparent;border:0;padding:12px;font-family:var(--font-display);font-weight:800;text-transform:var(--btn-case);letter-spacing:var(--btn-track);color:var(--mute)}
+.auth-tab.active{background:var(--accent);color:var(--accent-ink)}
+.pin-input{text-align:center;letter-spacing:.4em;font-family:var(--font-mono);font-size:22px}
+.lock-row{display:flex;gap:10px}
+
+/* ---- shell / nav ---- */
+#app{min-height:100vh}
+.topnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--nav-bg);color:var(--nav-ink);display:flex;align-items:center;gap:18px;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));border-bottom:1.5px solid var(--line)}
+:root[data-look="c"] .topnav{border-bottom:4px solid var(--accent)}
+.brand{font-family:var(--font-display);font-weight:var(--dw);font-size:22px;letter-spacing:var(--dtrack);text-transform:var(--dcase);white-space:nowrap;display:flex;align-items:center;gap:9px}
+.brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+:root[data-look="c"] .brand .dot{border-radius:0}
+.tabs{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:transparent;border:0;color:inherit;font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:var(--btn-track);text-transform:var(--btn-case);padding:9px 14px;border-radius:var(--radius-s);white-space:nowrap;opacity:.72}
+:root[data-look="b"] .tab,:root:not([data-look]) .tab{border-radius:999px}
+.tab:hover{opacity:1}
+.tab[aria-current="page"]{opacity:1;background:var(--accent);color:var(--accent-ink)}
+.nav-right{display:flex;gap:10px;align-items:center}
+.biz{font-family:var(--font-mono);font-size:12px;opacity:.7;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topnav .btn.ghost{color:var(--nav-ink);border-color:color-mix(in srgb,var(--nav-ink) 30%,transparent)}
+:root[data-look="a"] #app{display:grid;grid-template-columns:232px minmax(0,1fr)}
+:root[data-look="a"] .topnav{position:sticky;top:0;height:100vh;flex-direction:column;align-items:stretch;padding:22px 14px;border-bottom:0;border-right:1.5px solid var(--line);gap:22px}
+:root[data-look="a"] .tabs{flex-direction:column;overflow:visible;flex:1}
+:root[data-look="a"] .tab{text-align:left;font-size:17px;padding:12px 14px}
+:root[data-look="a"] .nav-right{flex-direction:column;align-items:stretch}
+:root[data-look="a"] .biz{max-width:none}
+:root[data-look="a"] #appMain{min-width:0}
+@media (max-width:860px){
+  :root[data-look="a"] #app{display:block}
+  :root[data-look="a"] .topnav{height:auto;position:sticky;top:0;flex-direction:row;align-items:center;border-right:0;border-bottom:1.5px solid var(--line);padding:10px 16px;gap:12px}
+  :root[data-look="a"] .tabs{flex-direction:row;overflow-x:auto}
+  :root[data-look="a"] .nav-right{flex-direction:row}
+  .biz{display:none}
+}
+.view{padding-bottom:90px}
+
+/* ---- Today ---- */
+.datebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 18px}
+.datebar input[type=date]{width:auto;min-width:170px;font-family:var(--font-mono)}
+.livechip{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:12px;color:var(--mute)}
+.pulse{width:9px;height:9px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 60%,transparent);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.hero-total{background:var(--hero-bg);color:var(--hero-ink);border-radius:var(--radius);padding:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;margin-bottom:18px;border:1.5px solid transparent}
+:root[data-look="c"] .hero-total{border:2px solid var(--ink);box-shadow:var(--shadow)}
+.hero-total .n{font-family:var(--font-display);font-weight:var(--dw);font-size:clamp(34px,6vw,54px);line-height:1;letter-spacing:var(--dtrack)}
+.hero-total .l{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.78;margin-top:6px}
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:16px}
+.pillar{position:relative;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);padding:18px 18px 16px;box-shadow:var(--shadow);display:grid;gap:12px;align-content:start;overflow:hidden}
+:root[data-look="c"] .pillar{border-width:2px}
+.pillar::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--pc,var(--accent))}
+.pillar.wide{grid-column:1/-1}
+.pillar h3{font-size:22px;display:flex;align-items:center;gap:10px}
+.pillar h3 .sw{width:14px;height:14px;border-radius:50%;background:var(--pc,var(--accent));flex:none}
+:root[data-look="c"] .pillar h3 .sw,:root[data-look="a"] .pillar h3 .sw{border-radius:0}
+.pillar .hint{color:var(--mute);font-size:13.5px}
+.bigfield{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
+.bigfield input{font-family:var(--font-display);font-weight:var(--dw);font-size:32px;padding:10px 14px;min-height:62px;letter-spacing:var(--dtrack)}
+.bigfield .unit{font-family:var(--font-mono);color:var(--mute);padding-bottom:16px;font-size:14px}
+.rowfield{display:grid;grid-template-columns:minmax(0,1fr) 130px auto;gap:10px;align-items:center;padding:8px 0;border-top:1px dashed var(--line)}
+.rowfield:first-of-type{border-top:0}
+.rowfield label{font-weight:600;display:flex;align-items:center;gap:9px}
+.rowfield label .sw{width:11px;height:11px;border-radius:50%;background:var(--pc);flex:none}
+:root[data-look="c"] .rowfield label .sw,:root[data-look="a"] .rowfield label .sw{border-radius:0}
+.rowfield input{min-height:42px;text-align:right;font-family:var(--font-mono);font-size:16px;padding:8px 10px}
+.src{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1.5px solid currentColor;white-space:nowrap;display:inline-block}
+:root[data-look="a"] .src,:root[data-look="c"] .src{border-radius:0}
+.src.feed{color:var(--c-elec)} :root[data-look="a"] .src.feed{color:var(--accent)}
+.src.manual{color:var(--mute)}
+.src.est{color:var(--warn)}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.linkbtn{background:none;border:0;color:var(--accent);font-family:var(--font-mono);font-size:12px;text-decoration:underline;padding:4px 0}
+:root[data-look="c"] .linkbtn{color:var(--ink)}
+.addrow{display:flex;gap:8px;align-items:center}
+.addrow input{max-width:110px;min-height:40px;padding:6px 10px;font-family:var(--font-mono)}
+.costline{font-family:var(--font-mono);font-size:12.5px;color:var(--mute)}
+.mini{height:46px;width:100%}
+.devline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--mute)}
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--nav-bg);color:var(--nav-ink);border-top:1.5px solid var(--line);padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:14px;align-items:center;justify-content:space-between}
+:root[data-look="a"] .savebar{left:232px}
+@media (max-width:860px){:root[data-look="a"] .savebar{left:0}}
+.savebar .msg{font-family:var(--font-mono);font-size:12.5px;opacity:.8}
+
+/* ---- tables / bits ---- */
+.htable{width:100%;border-collapse:collapse;font-size:14px}
+.htable th{text-align:left;font-family:var(--font-mono);font-size:11px;letter-spacing:.07em;color:var(--mute);text-transform:uppercase;padding:9px 10px;border-bottom:2px solid var(--line);white-space:nowrap}
+.htable td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+.htable th.num,.htable td.num{text-align:right;font-family:var(--font-mono)}
+.report-out{overflow-x:auto}
+.okbox,.warnbox{border:1.5px solid;border-radius:var(--radius-s);padding:10px 14px;font-size:14px;margin:8px 0}
+.okbox{border-color:var(--good);color:var(--good)} .warnbox{border-color:var(--warn);color:var(--warn)}
+.cred{font-family:var(--font-mono);font-size:12.5px;background:var(--surface2);border:1.5px solid var(--line);border-radius:var(--radius-s);padding:9px 11px;word-break:break-all;margin:4px 0 12px}
+.fm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:flex;align-items:flex-start;justify-content:center;padding:24px 14px;overflow-y:auto}
+.fm-box{background:var(--surface);color:var(--ink);border:2px solid var(--accent);border-radius:var(--radius);padding:22px;width:100%;max-width:700px}
+.fm-box h3{margin-bottom:10px;font-size:24px}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:var(--radius-s);font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:400;max-width:92vw}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.st{font-family:var(--font-mono);font-size:12px;white-space:nowrap}
+.st.live{color:var(--good)} .st.quiet{color:var(--warn)} .st.stale{color:var(--bad)} .st.never,.st.disabled{color:var(--mute)}
+.bi-dev{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;font-size:14px}
+.bi-dev:last-child{border-bottom:0}
+.segment-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;margin-bottom:18px}
+.foot{padding:34px 0 20px;color:var(--mute);font-size:13px}
+
+/* ---- the Board ---- */
+.bi-bar{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin:14px 0;display:grid;gap:10px;box-shadow:var(--shadow)}
+.bi-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bi-lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);min-width:54px}
+.bi-chips{display:flex;gap:6px;flex-wrap:wrap}
+.bi-chip{background:transparent;border:1.5px solid var(--line);color:var(--ink);padding:6px 12px;font-size:13px;font-weight:600;border-radius:var(--radius-s);min-height:34px}
+:root[data-look="b"] .bi-chip,:root:not([data-look]) .bi-chip{border-radius:999px}
+.bi-chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+:root[data-look="a"] .bi-chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+:root[data-look="c"] .bi-chip.on{background:var(--accent);color:var(--ink)}
+.bi-row input[type=date]{width:auto;min-height:34px;padding:4px 8px;font-size:13px}
+.board-live-status{font-size:12px;color:var(--mute)} .board-live-status.err{color:var(--bad)}
+.bi-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+.bi-kpi{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);display:grid;gap:3px}
+.bi-kpi .v{font-family:var(--font-display);font-weight:var(--dw);font-size:30px;line-height:1.05;letter-spacing:var(--dtrack)}
+.bi-kpi .l{font-size:13px;color:var(--mute);display:flex;align-items:center;gap:7px}
+.bi-kpi .l .sw{width:10px;height:10px;border-radius:50%;flex:none}
+:root[data-look="c"] .bi-kpi .l .sw,:root[data-look="a"] .bi-kpi .l .sw{border-radius:0}
+.bi-kpi .d{font-family:var(--font-mono);font-size:11.5px;color:var(--mute)} .bi-kpi .d.good{color:var(--good)} .bi-kpi .d.bad{color:var(--bad)}
+.bi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:14px;margin-bottom:14px}
+.bi-card{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);min-width:0}
+.bi-card.wide{grid-column:1/-1}
+.bi-card h3{font-size:20px;margin-bottom:2px}
+.bi-card .sub{font-size:13px;color:var(--mute);margin-bottom:10px}
+.bi-card svg{display:block;width:100%;height:auto;overflow:visible}
+.bi-card svg text{font-family:var(--font-body)}
+.t1{fill:var(--ink)} .t2{fill:var(--mute)}
+.bi-empty{color:var(--mute);padding:18px 0;font-size:14px}
+.bi-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--mute);margin-top:8px}
+.bi-legend .k{display:inline-block;width:10px;height:10px;margin-right:6px;border-radius:2px}
+.bi-seg{cursor:pointer} .bi-hit{fill:transparent;cursor:pointer} .bi-hit:hover{fill:color-mix(in srgb,var(--ink) 7%,transparent)}
+.bi-dim{opacity:.25}
+.bi-hlist{list-style:none;display:grid;gap:8px}
+.bi-hlist li{display:flex;gap:10px;align-items:baseline;font-size:14.5px}
+.bi-hlist .ic{font-family:var(--font-mono);font-size:11px;padding:2px 8px;border:1.5px solid currentColor;border-radius:999px;white-space:nowrap}
+:root[data-look="a"] .bi-hlist .ic,:root[data-look="c"] .bi-hlist .ic{border-radius:0}
+.bi-hlist .ic.up{color:var(--bad)} .bi-hlist .ic.down{color:var(--good)} .bi-hlist .ic.info{color:var(--mute)}
+.bi-spark{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
+.bi-spark .t{font-size:13px;color:var(--mute);display:flex;align-items:center;gap:6px} .bi-spark .n{font-family:var(--font-display);font-weight:var(--dw);font-size:28px;letter-spacing:var(--dtrack)}
+.bi-tablewrap{overflow-x:auto}
+.bi-table tr.open td{background:var(--surface2)} .bi-table tr.drill td{background:var(--surface2);font-size:13.5px}
+.bi-table th[data-sort]{cursor:pointer}
+#biTip{position:fixed;display:none;z-index:500;background:var(--tip-bg);color:var(--tip-ink);padding:9px 12px;border-radius:var(--radius-s);font-size:12.5px;pointer-events:none;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.bi-sel{display:flex;gap:8px;flex-wrap:wrap}
+.looks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.lookopt{border:2px solid var(--line);border-radius:var(--radius);padding:14px;background:var(--surface);text-align:left;color:var(--ink)}
+.lookopt[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+.lookopt b{font-family:var(--font-display);font-size:20px;display:block}
+@media (max-width:640px){.rowfield{grid-template-columns:minmax(0,1fr) 108px}.rowfield .src{grid-column:1/-1;justify-self:start}.hero-total{grid-template-columns:repeat(2,1fr)}}
+
+/* ---- profit lines ---- */
+.costgrp{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:14px 0 6px}
+.costgrp:first-child{margin-top:4px}
+.costrow{display:grid;grid-template-columns:minmax(120px,190px) 1fr 104px 118px 62px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.costrow:last-child{border-bottom:0}
+.costrow .nm{display:flex;align-items:center;gap:8px;font-weight:600}
+.costrow .nm .sw{width:10px;height:10px;border-radius:2px;background:var(--pc);flex:none}
+.costrow .bar{height:12px;background:var(--surface2);border-radius:var(--radius-s);overflow:hidden}
+.costrow .bar i{display:block;height:100%;background:var(--pc);border-radius:var(--radius-s)}
+.costrow .am{font-family:var(--font-display);font-weight:var(--dw);font-size:19px;text-align:right;letter-spacing:var(--dtrack)}
+.costrow .pc{font-size:12.5px;color:var(--mute);text-align:right}
+.costrow .dl{font-family:var(--font-mono);font-size:12px;text-align:right;color:var(--mute)} .costrow .dl.bad{color:var(--bad)} .costrow .dl.good{color:var(--good)}
+.costrow.slim{grid-template-columns:minmax(90px,150px) 1fr 80px 70px;padding:7px 0}
+.costrow.slim .am{font-size:16px}
+@media (max-width:640px){
+  .costrow{grid-template-columns:1fr auto;grid-template-areas:"nm am" "bar bar" "pc dl";row-gap:6px}
+  .costrow .nm{grid-area:nm}.costrow .am{grid-area:am}.costrow .bar{grid-area:bar}.costrow .pc{grid-area:pc;text-align:left}.costrow .dl{grid-area:dl}
+  .costrow.slim{grid-template-columns:1fr auto;grid-template-areas:"nm am" "bar bar"} .costrow.slim .pc{display:none}
+}
+
+.pf-hero .n{font-size:clamp(24px,3.4vw,40px)}
+.pf-hero{gap:18px 28px}
+
+</style></head><body>
+<!-- ================= AUTH ================= -->
+<div id="authScreen" hidden>
+  <div class="lock-card">
+    <div class="eyebrow">Waste Smart</div>
+    <h1 id="authHeading">Welcome <span class="hl">back</span></h1>
+    <p class="lock-sub" id="authSub">Log in with your business email and admin PIN.</p>
+    <div class="auth-tabs">
+      <button type="button" class="auth-tab active" id="authTabLogin" onclick="showAuthPanel('login')">Log in</button>
+      <button type="button" class="auth-tab" id="authTabRegister" onclick="showAuthPanel('register')">New site</button>
+    </div>
+    <div id="authLoginPanel">
+      <div class="field"><label class="field-label" for="loginEmail">Business email</label><input type="email" id="loginEmail" placeholder="you@yourbusiness.co.za" autocomplete="username"></div>
+      <div class="field"><label class="field-label" for="loginPin">Admin PIN</label><input type="password" inputmode="numeric" id="loginPin" placeholder="4–6 digits" maxlength="6" autocomplete="current-password"></div>
+      <div id="authLoginErr" class="lock-err"></div>
+      <button class="btn primary block" id="authLoginBtn" onclick="submitLogin()">Log in</button>
+    </div>
+    <div id="authRegisterPanel" hidden>
+      <div class="field"><label class="field-label" for="regName">Business name</label><input type="text" id="regName" placeholder="e.g. House of Curries"></div>
+      <div class="form-grid">
+        <div class="field"><label class="field-label" for="regType">Business type</label><select id="regType"><option>Independent Restaurant</option><option>QSR / Takeaway</option><option>Canteen / Cafeteria</option><option>Catering / Events</option><option>Hotel Kitchen</option><option>Multi-Site Chain</option></select></div>
+        <div class="field"><label class="field-label" for="regCurrency">Currency symbol</label><input type="text" id="regCurrency" value="R" maxlength="3"></div>
+      </div>
+      <div class="field"><label class="field-label" for="regEmail">Your email</label><input type="email" id="regEmail" autocomplete="username"></div>
+      <div class="field"><label class="field-label" for="regAdminPin">Admin PIN</label><input type="text" inputmode="numeric" id="regAdminPin" placeholder="4–6 digits" maxlength="6" autocomplete="new-password"></div>
+      <div id="authRegisterErr" class="lock-err"></div>
+      <button class="btn primary block" id="authRegisterBtn" onclick="submitRegister()">Create my site</button>
+    </div>
+  </div>
+</div>
+
+<div id="lockScreen" hidden>
+  <div class="lock-card">
+    <div class="eyebrow" id="lockBrand">Waste Smart</div>
+    <h1>Admin <span class="hl">access</span></h1>
+    <p class="lock-sub">Enter the admin PIN to open the board.</p>
+    <div class="lock-row"><input class="pin-input" type="password" inputmode="numeric" id="pinInput" placeholder="PIN" maxlength="6" aria-label="Admin PIN"><button class="btn primary" id="pinUnlockBtn" onclick="tryUnlock()">Unlock</button></div>
+    <div id="lockErr" class="lock-err"></div>
+    <p class="lock-sub" style="font-size:13px"><a href="#" onclick="logoutSite();return false;">Not your site? Log out this device</a></p>
+  </div>
+</div>
+
+<!-- ================= APP (admin only) ================= -->
+<div id="app" hidden>
+  <header class="topnav">
+    <div class="brand"><span class="dot"></span>Waste Smart</div>
+    <nav class="tabs" id="tabs" aria-label="Sections">
+      <button class="tab" data-view="profit">Profit</button>
+      <button class="tab" data-view="today">Today</button>
+      <button class="tab" data-view="board">Board</button>
+      <button class="tab" data-view="impact">Impact</button>
+      <button class="tab" data-view="reports">Reports</button>
+      <button class="tab" data-view="integrations">Devices</button>
+      <button class="tab" data-view="settings">Settings</button>
+    </nav>
+    <div class="nav-right"><span class="biz" id="bizName"></span><button class="btn ghost small" onclick="lockApp()">Lock</button></div>
+  </header>
+  <main id="appMain">
+
+  <!-- PROFIT -->
+  <section class="view" id="v_profit" hidden><div class="wrap">
+    <div class="view-head"><div class="eyebrow">Money</div><h2>Profit</h2>
+      <p class="section-sub">What each thing you track costs you, what it earns back, and how it compares with your sales.</p></div>
+    <div class="bi-chips" id="pfPeriod" style="margin-bottom:14px"><button class="bi-chip" data-r="period:month">This month</button><button class="bi-chip" data-r="lastmonth">Last month</button><button class="bi-chip" data-r="last:30">30 days</button><button class="bi-chip" data-r="last:90">90 days</button><button class="bi-chip" data-r="period:year">This year</button></div>
+    <div id="pfSetup"></div>
+    <div class="hero-total pf-hero" id="pfHero"></div>
+    <div class="bi-card wide" style="margin-bottom:14px"><h3>Where the money goes</h3><div class="sub" id="pfLinesSub"></div><div id="pfLines"></div></div>
+    <div class="bi-card wide" style="margin-bottom:14px"><h3>What to look at first</h3><div class="sub">Worked out from your own numbers.</div><ul class="bi-hlist" id="pfActions"></ul></div>
+    <div class="bi-grid">
+      <div class="bi-card"><h3>Cost per sale</h3><div class="sub">How hard each sale works your kitchen. Needs a connected POS.</div><div id="pfRatios"></div></div>
+      <div class="bi-card"><h3>Left running while closed</h3><div class="sub">Power and water used in the hours you do not trade.</div><div id="pfAfter"></div></div>
+      <div class="bi-card"><h3>Written off at the till</h3><div class="sub">Voids and wasted items logged on the POS, by reason.</div><div id="pfVoids"></div></div>
+      <div class="bi-card"><h3>Staff time</h3><div class="sub">Hours on the clock by role, and time worked after the last sale.</div><div id="pfLabor"></div></div>
+      <div class="bi-card wide"><h3>Waste against how busy you were</h3><div class="sub" id="pfNormSub"></div><div id="pfNorm"></div></div>
+      <div class="bi-card wide"><h3>Trading hours against power</h3><div class="sub">Average per hour of the day. Power that stays high when sales drop is the saving.</div><div class="bi-grid" style="margin:0;gap:12px"><div id="pfHourSales"></div><div id="pfHourPower"></div></div></div>
+    </div>
+  </div></section>
+
+  <!-- TODAY -->
+  <section class="view" id="v_today" hidden><div class="wrap">
+    <div class="view-head"><div class="eyebrow">Daily log</div><h2>Today</h2>
+      <p class="section-sub">Scales and meters fill this in on their own. Anything can be typed in by hand as a backup, and a typed figure always wins for that day.</p></div>
+    <div class="datebar">
+      <button class="btn ghost small" onclick="shiftDay(-1)" aria-label="Previous day">◀</button>
+      <input type="date" id="entryDate" onchange="onEntryDateChange()" aria-label="Date">
+      <button class="btn ghost small" onclick="shiftDay(1)" aria-label="Next day">▶</button>
+      <button class="btn ghost small" onclick="gotoToday()">Today</button>
+      <span class="livechip" id="liveChip"><span class="pulse"></span><span id="liveTxt">Checking devices…</span></span>
+    </div>
+    <div class="hero-total" id="heroTotal"></div>
+    <div class="pillars" id="pillars"></div>
+  </div>
+  <div class="savebar"><span class="msg" id="saveMsg">Nothing changed yet.</span><div class="btnrow"><button class="btn ghost small" onclick="onEntryDateChange()">Discard changes</button><button class="btn primary" id="saveBtn" onclick="saveEntry()">Save day</button></div></div>
+  </section>
+
+  <!-- BOARD -->
+  <section class="view" id="v_board" hidden><div class="wrap">
+    <div class="view-head"><div class="eyebrow">Live report</div><h2>The Board</h2>
+      <p class="section-sub">Every figure rolled up from your scales and meters, plus anything typed in by hand. Click a bar or a weekday to filter everything else; click again to clear. The same data feeds Power BI.</p></div>
+    <div class="bi-bar" id="biBar">
+      <div class="bi-row"><span class="bi-lbl">Period</span>
+        <div class="bi-chips" id="biPeriod"><button class="bi-chip" data-r="period:day">Today</button><button class="bi-chip" data-r="period:week">This week</button><button class="bi-chip" data-r="period:month">This month</button><button class="bi-chip" data-r="last:30">30 days</button><button class="bi-chip" data-r="last:90">90 days</button><button class="bi-chip" data-r="period:year">This year</button><button class="bi-chip" data-r="all">All</button></div>
+        <input type="date" id="biFrom" aria-label="From date" onchange="biCustomRange()"><input type="date" id="biTo" aria-label="To date" onchange="biCustomRange()"></div>
+      <div class="bi-row"><span class="bi-lbl">Source</span>
+        <div class="bi-chips" id="biSource"><button class="bi-chip on" data-v="all">All</button><button class="bi-chip" data-v="feed">Devices</button><button class="bi-chip" data-v="manual">Hand-keyed</button></div>
+        <span class="board-live-status mono" id="boardLiveStatus">Live — checking…</span>
+        <button class="btn ghost small" id="boardRefreshBtn" onclick="refreshBoardFromServer(true)">Refresh</button>
+        <button class="btn ghost small" onclick="biClearAll()">Clear filters</button>
+        <button class="btn primary small" onclick="biOpenPowerBi()" style="margin-left:auto">Open in Power BI</button></div>
+      <div class="bi-row bi-sel" id="biSelRow" hidden></div>
+    </div>
+    <div class="bi-kpis" id="biKpis"></div>
+    <div class="bi-card wide" style="margin-bottom:14px"><h3>What moved</h3><div class="sub">Plain rules over your own numbers, compared with the previous period.</div><ul class="bi-hlist" id="biHighlights"></ul></div>
+    <div class="bi-grid">
+      <div class="bi-card wide"><h3>Waste and recycling over time</h3><div class="sub" id="biTrendSub"></div><div id="biTrend"></div><div class="bi-legend" id="biTrendLegend"></div></div>
+      <div class="bi-card"><h3>Where the weight goes</h3><div class="sub">Share of everything weighed.</div><div id="biDonut"></div></div>
+      <div class="bi-card"><h3>Weekday pattern</h3><div class="sub">Waste kg by weekday. Click a day header to filter.</div><div id="biHeat"></div></div>
+      <div class="bi-card wide"><h3>Recycling by material</h3><div class="sub">Plastic, paper and cardboard, glass and cans.</div><div id="biRecyc"></div><div class="bi-legend" id="biRecycLegend"></div></div>
+      <div class="bi-card wide"><h3>Gas, electricity and water</h3><div class="sub">Totals for the period. Cost per cover appears when a POS supplies covers.</div><div class="bi-spark" id="biUtil"></div></div>
+      <div class="bi-card wide"><h3>Meter profile by hour</h3><div class="sub">When the kitchen actually uses power, water and gas, from the hourly meter readings.</div><div class="bi-grid" style="margin:0;gap:12px"><div id="biHourElec"></div><div id="biHourWater"></div><div id="biHourGas"></div></div></div>
+      <div class="bi-card"><h3>Running costs</h3><div class="sub">Waste disposal and utilities. Set the rates under Impact and Devices.</div><div id="biBridge"></div></div>
+      <div class="bi-card"><h3>Used cooking oil</h3><div class="sub">Collected per period.</div><div id="biOil"></div></div>
+      <div class="bi-card wide"><h3>Device health</h3><div class="sub" id="biHealthSub"></div><div id="biHealth"></div></div>
+    </div>
+    <div class="bi-card wide" style="margin-bottom:18px">
+      <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;justify-content:space-between"><div><h3>Day by day</h3><div class="sub">Click a header to sort, a row to see where each figure came from.</div></div><button class="btn ghost small" onclick="biExportCsv()">Download CSV</button></div>
+      <div class="bi-tablewrap"><table class="htable bi-table"><thead id="biTHead"></thead><tbody id="biTBody"></tbody></table></div><div id="biMore" style="margin-top:8px"></div>
+    </div>
+    <details class="card" style="margin-bottom:18px"><summary style="cursor:pointer;font-weight:700">Manage entries (delete a day)</summary><div class="report-out" style="margin-top:10px"><table class="htable"><thead><tr><th>Date</th><th class="num">Waste kg</th><th class="num">Recycling kg</th><th class="num">Oil kg</th><th></th></tr></thead><tbody id="historyBody"></tbody></table></div></details>
+    <div id="biTip"></div>
+  </div></section>
+
+  <!-- IMPACT -->
+  <section class="view" id="v_impact" hidden><div class="wrap">
+    <div class="view-head"><div class="eyebrow">Savings</div><h2>Impact and costs</h2>
+      <p class="section-sub">What recycling saves the planet and what disposal costs you, for the period chosen on the Board.</p></div>
+    <div class="hero-total" id="envHero"></div>
+    <div class="card" style="margin-bottom:16px"><h4>Disposal rates</h4>
+      <div class="form-grid">
+        <div class="field"><label class="field-label" for="dcProvider">Who collects your waste?</label><select id="dcProvider"><option value="muni">Municipality</option><option value="priv">Private company</option></select></div>
+        <div class="field"><label class="field-label" for="dcMuniBase">Municipal base fee (per month)</label><input type="number" id="dcMuniBase" placeholder="0"></div>
+        <div class="field"><label class="field-label" for="dcMuniRate">Municipal rate (per kg)</label><input type="number" step="0.01" id="dcMuniRate" placeholder="1.50"></div>
+        <div class="field"><label class="field-label" for="dcPrivBase">Private company base fee (per month)</label><input type="number" id="dcPrivBase" placeholder="0"></div>
+        <div class="field"><label class="field-label" for="dcPrivRate">Private company rate (per kg)</label><input type="number" step="0.01" id="dcPrivRate" placeholder="2.20"></div>
+        <div class="field"><label class="field-label" for="dcBaselineKg">Waste per month before Waste Smart (kg)</label><input type="number" id="dcBaselineKg" placeholder="240"></div>
+      </div><button class="btn primary small" onclick="saveDisposalRates()">Save rates</button></div>
+    <div class="hero-total" id="dcHero" style="background:var(--surface);color:var(--ink);border:1.5px solid var(--line)"></div>
+    <div class="bi-grid"><div class="bi-card"><h3>Baseline vs now</h3><div class="sub">Monthly disposal cost.</div><div id="dcCompare"></div></div><div class="bi-card"><h3>Waste, last six months</h3><div class="sub">Kg of waste per month.</div><div id="dcTrend"></div></div></div>
+  </div></section>
+
+  <!-- REPORTS -->
+  <section class="view" id="v_reports" hidden><div class="wrap">
+    <div class="view-head"><div class="eyebrow">Export</div><h2>Reports</h2><p class="section-sub">Choose a date range, preview a report and download it as CSV.</p></div>
+    <div class="card" style="margin-bottom:16px"><div class="form-grid"><div class="field"><label class="field-label" for="repFrom">From</label><input type="date" id="repFrom"></div><div class="field"><label class="field-label" for="repTo">To</label><input type="date" id="repTo"></div></div>
+      <div class="btnrow"><button class="btn ghost small" onclick="setReportRange('week')">This week</button><button class="btn ghost small" onclick="setReportRange('month')">This month</button><button class="btn ghost small" onclick="setReportRange('lastmonth')">Last month</button><button class="btn ghost small" onclick="setReportRange('year')">This year</button><button class="btn ghost small" onclick="setReportRange('all')">All</button></div></div>
+    <div class="grid-2" id="reportCards"></div>
+  </div></section>
+
+  <!-- DEVICES -->
+  <section class="view" id="v_integrations" hidden><div class="wrap">
+    <div class="view-head"><div class="eyebrow">Connections</div><h2>Devices</h2>
+      <p class="section-sub">Connect any scale, meter or POS. Each device gets its own key and is told where its numbers go: kitchen waste, a recycling material, used oil, gas, electricity, water or sales.</p></div>
+    <div id="feedStatus" class="okbox" hidden></div>
+    <div class="editor-card" style="margin-bottom:16px"><h4>Connected devices</h4><div id="devList"></div>
+      <div class="btnrow" style="margin-top:12px"><button class="btn primary small" onclick="devOpenEditor()">Add a device</button><button class="btn ghost small" onclick="loadFeeds().then(renderIntegrations)">Reload</button></div></div>
+    <div id="devEditor"></div>
+    <div class="editor-card" style="margin-bottom:16px"><h4>How often should meters report?</h4>
+      <p class="section-sub" style="margin-bottom:10px">Gas, electricity and water meters send a running total every 1 to 2 hours. Waste Smart works out what was used between two readings and spreads it over the hours it covers, so a reading at 00:30 is shared between yesterday and today instead of landing on one day. If a meter goes quiet for longer than 2.5 times its interval, the device shows as late and the catch-up is marked as an estimate. Set each meter's interval when you add it.</p>
+      <div class="grid-2"><div><b>Every hour</b><div class="costline">Best detail. Right for electricity and water on a smart meter or logger.</div></div><div><b>Every 2 hours</b><div class="costline">Fine for gas and for loggers on weak signal. Hourly profile gets coarser.</div></div></div></div>
+    <div class="segment-grid">
+      <div class="editor-card"><h4>Time zone and tariffs</h4><p class="section-sub" style="margin-bottom:12px">Used to read device timestamps and to cost utilities.</p>
+        <div class="form-grid"><div class="field"><label class="field-label" for="cfgTz">Time zone</label><input type="text" id="cfgTz" placeholder="Africa/Johannesburg"></div>
+          <div class="field"><label class="field-label" for="cfgKwh">Electricity per kWh</label><input type="number" id="cfgKwh" min="0" step="0.01"></div>
+          <div class="field"><label class="field-label" for="cfgGas">Gas per kg</label><input type="number" id="cfgGas" min="0" step="0.01"></div>
+          <div class="field"><label class="field-label" for="cfgWater">Water per kilolitre</label><input type="number" id="cfgWater" min="0" step="0.01"></div>
+          <div class="field"><label class="field-label" for="cfgNoise">Cylinder noise filter (kg)</label><input type="number" id="cfgNoise" min="0" step="0.01"></div></div>
+        <button class="btn primary small" onclick="saveFeedSettings()">Save</button></div>
+      <div class="editor-card"><h4>Power BI and Excel</h4><p class="section-sub" style="margin-bottom:12px">Create a read-only token, then in Power BI choose Get data, OData feed. Username: anything. Password: the token.</p>
+        <div class="field"><label class="field-label">OData feed address</label><div class="cred" id="biUrl"></div></div>
+        <div class="btnrow" style="margin-bottom:12px"><button class="btn ghost small" onclick="biCopy(BI_ODATA_URL)">Copy address</button><button class="btn ghost small" onclick="biDownloadPbids()">Download .pbids</button></div>
+        <div class="btnrow" style="margin-bottom:10px"><input type="text" id="biTokLabel" placeholder="Label, e.g. Head office PC" style="max-width:260px"><button class="btn primary small" onclick="biCreateToken()">Create token</button></div>
+        <div id="biTokNew"></div><div id="biTokList"></div></div>
+    </div>
+    <div class="editor-card"><h4>Recent activity</h4><div id="feedLog" class="report-out"></div></div>
+  </div></section>
+
+  <!-- SETTINGS -->
+  <section class="view" id="v_settings" hidden><div class="wrap">
+    <div class="view-head"><div class="eyebrow">Admin</div><h2>Settings</h2></div>
+    <div class="editor-card" style="margin-bottom:16px"><h4>Look and feel</h4><p class="section-sub">Pick how Waste Smart looks on this device.</p><div class="looks" id="lookPicker"></div></div>
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="editor-card"><h4>Business profile</h4><div class="form-grid"><div class="field"><label class="field-label" for="setBizName">Business name</label><input type="text" id="setBizName"></div><div class="field"><label class="field-label" for="setBizCurrency">Currency symbol</label><input type="text" id="setBizCurrency" maxlength="3"></div></div><button class="btn primary small" onclick="saveBusinessProfile()">Save profile</button></div>
+      <div class="editor-card"><h4>Change admin PIN</h4><div class="form-grid"><div class="field"><label class="field-label" for="pinChangeCurrentAdmin">Current admin PIN</label><input type="password" id="pinChangeCurrentAdmin" inputmode="numeric" maxlength="6"></div><div class="field"><label class="field-label" for="pinChangeNewAdmin">New admin PIN</label><input type="password" id="pinChangeNewAdmin" inputmode="numeric" maxlength="6"></div></div><p class="lock-err" id="pinChangeErr"></p><button class="btn primary small" onclick="updateSitePins()">Update PIN</button></div>
+    </div>
+    <div class="editor-card" style="margin-bottom:16px"><h4>Recovery values</h4><p class="section-sub">What you earn per kg for recyclables and used oil (leave at 0 if you are not paid), and what the food you throw away costs you per kg on average. The food figure turns kilograms of waste into rand.</p>
+      <div class="form-grid"><div class="field"><label class="field-label" for="rvPlastic">Plastic (per kg)</label><input type="number" step="0.01" id="rvPlastic"></div><div class="field"><label class="field-label" for="rvPaper">Paper and cardboard (per kg)</label><input type="number" step="0.01" id="rvPaper"></div><div class="field"><label class="field-label" for="rvGlass">Glass (per kg)</label><input type="number" step="0.01" id="rvGlass"></div><div class="field"><label class="field-label" for="rvCans">Cans (per kg)</label><input type="number" step="0.01" id="rvCans"></div><div class="field"><label class="field-label" for="rvOil">Used cooking oil (per kg)</label><input type="number" step="0.01" id="rvOil"></div><div class="field"><label class="field-label" for="rvFlag">Flag a day when waste per cover is this % above usual</label><input type="number" step="1" min="5" id="rvFlag" placeholder="30"></div><div class="field"><label class="field-label" for="rvFood">Average cost of food thrown away (per kg)</label><input type="number" step="0.01" id="rvFood"></div></div>
+      <button class="btn primary small" onclick="saveRates()">Save values</button></div>
+    <div class="editor-card" style="margin-bottom:16px"><h4>Environmental factors</h4><p class="section-sub">Saved per kg of material diverted from landfill.</p>
+      <div class="form-grid"><div class="field"><label class="field-label" for="envWaterFactor">Litres of water saved per kg</label><input type="number" step="any" id="envWaterFactor"></div><div class="field"><label class="field-label" for="envTreesFactor">Trees saved per 1,000 kg</label><input type="number" step="any" id="envTreesFactor"></div><div class="field"><label class="field-label" for="envLandfillFactor">Landfill saved (m³ per kg)</label><input type="number" step="any" id="envLandfillFactor"></div><div class="field"><label class="field-label" for="envCo2Factor">CO₂ saved (kg per kg)</label><input type="number" step="any" id="envCo2Factor"></div></div>
+      <button class="btn primary small" onclick="saveEnvFactors()">Save factors</button></div>
+    <div class="editor-card" style="margin-bottom:16px"><h4>Hand-keyed sales (optional)</h4><p class="section-sub">Sales arrive on their own from a connected POS. Key a day's total here only for a till that is not connected. A typed figure wins over the feed.</p>
+      <div class="form-grid"><div class="field"><label class="field-label" for="salesReportDate">Date</label><input type="date" id="salesReportDate"></div><div class="field"><label class="field-label" for="salesReportTotal">Total sales</label><input type="number" step="0.01" min="0" id="salesReportTotal" placeholder="0.00"></div></div>
+      <button class="btn primary small" onclick="saveSalesReportTotal()">Save sales figure</button><div id="salesReportHistory" class="report-out" style="margin-top:12px"></div></div>
+    <div class="editor-card" id="billingCard"><h4>Billing: R600 per site per month</h4><p class="section-sub">Pay by direct EFT. Use your business name as the reference, then email proof of payment to craig@gildedac.co.za.</p><div id="eftDetailsBlock" style="margin-bottom:12px"></div><button class="btn ghost small" onclick="copyEftDetails()">Copy banking details</button></div>
+    <div class="foot"><b id="footBizName">Waste Smart</b> · Powered by Waste Smart, Gilded Age Consulting · <span class="mono" id="buildVersionNote"></span></div>
+  </div></section>
+
+  </main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ===================== Waste Smart v6.4 — admin app ===================== */
+// One admin login. Scales, meters and the POS feed in on their own (see ingest.php); anything can be typed by hand
+// as a backup, and a typed figure always wins for that day.
+const API_ENDPOINT = 'https://gildedac.co.za/app/api.php'; // set to match your live deployment
+const BUILD_VERSION = 'v6.4.1';
+const BUILD_DATE = '2026-10-22';
+const AUTH_TOKEN_KEY = 'ws_auth_token', AUTH_SITE_KEY = 'ws_auth_site', LOOK_KEY = 'ws_look';
+
+function getAuthToken(){ try{ return localStorage.getItem(AUTH_TOKEN_KEY); }catch(e){ return null; } }
+function getAuthSite(){ try{ const r = localStorage.getItem(AUTH_SITE_KEY); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
+function setAuthSession(token, site){ try{ localStorage.setItem(AUTH_TOKEN_KEY, token); localStorage.setItem(AUTH_SITE_KEY, JSON.stringify(site)); }catch(e){} }
+function clearAuthSession(){ try{ localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_SITE_KEY); }catch(e){} }
+
+async function apiCall(action, payload, opts){
+  opts = opts || {};
+  const headers = {'Content-Type':'application/json'};
+  const token = getAuthToken();
+  if (token && !opts.noAuth) headers['Authorization'] = 'Bearer ' + token;
+  const res = await fetch(API_ENDPOINT, { method:'POST', headers, body: JSON.stringify({ action, ...payload }) });
+  let body = null;
+  try{ body = await res.json(); }catch(e){}
+  if (!res.ok){ const err = new Error((body && body.error) ? body.error : ('Request failed: ' + res.status)); err.status = res.status; err.body = body; throw err; }
+  return body;
+}
+async function sGet(key){
+  try{ const r = await apiCall('get', { key }); return (r && r.value !== undefined) ? r.value : null; }
+  catch(e){ console.error('sGet failed for', key, e); return null; }
+}
+async function sSet(key, value){
+  try{ const r = await apiCall('set', { key, value }); return !!(r && r.ok); }
+  catch(e){ console.error('sSet failed for', key, e); toast(e.message || 'Could not save. Check your connection and try again.'); return false; }
+}
+
+const K = { SETUP:'ws_setup', ENV:'ws_env', ENTRIES:'ws_entries', DISPOSAL:'ws_disposal', OILSETTINGS:'ws_oil_settings', RECYCLING:'ws_recycling_settings' };
+const DEFAULT_ENV = { water:1000, trees:17, landfill:0.0037, co2:2.5 };
+const DEFAULT_DISPOSAL = { provider:'muni', muniBase:0, muniRate:1.50, privBase:0, privRate:2.20, baselineKg:0 };
+const DEFAULT_OIL = { usedRatePerKg: 0 };
+const DEFAULT_RATES = { plastic:0, paper:0, glass:0, cans:0, foodCostPerKg:0, wasteFlagPct:30 };
+
+let setup = null, envFactors = DEFAULT_ENV, disposalRates = DEFAULT_DISPOSAL, oilSettings = DEFAULT_OIL, rates = DEFAULT_RATES, entries = [];
+let role = null;
+
+/* ---------- helpers ---------- */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtMoney(n){ return (setup && setup.currency ? setup.currency : 'R') + Math.round(n||0).toLocaleString('en-ZA'); }
+function fmtKg(n){ return (Math.round((n||0)*10)/10).toLocaleString('en-ZA') + ' kg'; }
+function toast(msg){ const t = $('toast'); if (!t) return; t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('show'), 2600); }
+function isoDate(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function parseISO(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+function nf(n, dp){ return (Number(n)||0).toLocaleString('en-ZA', { maximumFractionDigits: dp==null?1:dp, minimumFractionDigits: 0 }); }
+
+/* ---------- looks (three skins over one component set) ---------- */
+const LOOKS = { a:['Control Room','Graphite and electric lime. Condensed, loud, built for a back-office screen.'], b:['Fresh','Bright and friendly. Soft cards, deep green, big rounded numbers.'], c:['Stainless','Steel grey, black ink and safety orange. Hard edges, label-tape feel.'] };
+function applyLook(l){ if (!LOOKS[l]) l = 'a'; document.documentElement.setAttribute('data-look', l); try{ localStorage.setItem(LOOK_KEY, l); }catch(e){} }
+(function(){ let l = 'a'; try{ l = new URLSearchParams(location.search).get('look') || localStorage.getItem(LOOK_KEY) || 'a'; }catch(e){} applyLook(l); })();
+function renderLookPicker(){
+  const cur = document.documentElement.getAttribute('data-look');
+  $('lookPicker').innerHTML = Object.keys(LOOKS).map(k=>`<button class="lookopt" aria-pressed="${k===cur}" onclick="applyLook('${k}');renderLookPicker()"><b>${esc(LOOKS[k][0])}</b><span class="costline">${esc(LOOKS[k][1])}</span></button>`).join('');
+}
+
+/* ---------- the entry model ---------- */
+const REC_KEYS = ['plastic','paper','glass','cans'];
+const REC_LABEL = { plastic:'Plastic', paper:'Paper & cardboard', glass:'Glass', cans:'Cans' };
+function getPath(o, p){ return p.split('.').reduce((a,k)=> a == null ? undefined : a[k], o); }
+function setPath(o, p, v){ const ks = p.split('.'); let a = o; ks.slice(0,-1).forEach(k=>{ a[k] = a[k] || {}; a = a[k]; }); a[ks[ks.length-1]] = v; }
+const FIELD_PATHS = ['kitchenWaste','recycling.plastic','recycling.paper','recycling.glass','recycling.cans','usedOil','util.gasKg','util.kwh','util.waterL'];
+
+function sumAmPm(map){ return Object.values(map||{}).reduce((s,r)=>{ if (r == null) return s; if (typeof r === 'number') return s + r; return s + (+r.am||0) + (+r.pm||0); }, 0); }
+// Older entries (AM/PM, plate waste, itemised waste, blended recycling, fresh/used oil) fold into the new pillars. Nothing is deleted from the entry.
+function normEntry(e){
+  if (e.kitchenWaste == null){
+    const lw = (+e.kitchenWasteAM||0)+(+e.kitchenWastePM||0)+(+e.plateWasteAM||0)+(+e.plateWastePM||0)+sumAmPm(e.wasted);
+    if (lw > 0) e.kitchenWaste = Math.round(lw*1000)/1000;
+  }
+  e.recycling = e.recycling || {};
+  if (e.recycling.mixed == null){
+    const m = (+e.recycPM||0)+(+e.recycAM||0) || Object.values(e.recyc||{}).reduce((s,v)=>s+(parseFloat(v)||0),0);
+    if (m > 0) e.recycling.mixed = m;
+  }
+  if (e.usedOil == null && e.oil && +e.oil.usedKg > 0) e.usedOil = +e.oil.usedKg;
+  return e;
+}
+function eWaste(e){ return +e.kitchenWaste || 0; }
+function eRecycBy(e, k){ return +((e.recycling||{})[k]) || 0; }
+function eRecyc(e){ return REC_KEYS.reduce((s,k)=>s+eRecycBy(e,k),0) + eRecycBy(e,'mixed'); }
+function eOil(e){ return +e.usedOil || 0; }
+function recValue(e){ return REC_KEYS.reduce((s,k)=>s+eRecycBy(e,k)*(rates[k]||0),0); }
+function oilValue(e){ return eOil(e) * (oilSettings.usedRatePerKg||0); }
+function findEntryIndexForDate(date){ return entries.findIndex(e => e.date === date); }
+function periodBounds(period, offset){
+  const now = new Date(); offset = offset||0; let start, end;
+  if (period==='day'){ start = new Date(now.getFullYear(), now.getMonth(), now.getDate()-offset); end = new Date(start); end.setDate(end.getDate()+1); }
+  else if (period==='week'){ const dow = (now.getDay()+6)%7; start = new Date(now.getFullYear(), now.getMonth(), now.getDate()-dow-7*offset); end = new Date(start); end.setDate(end.getDate()+7); }
+  else if (period==='month'){ start = new Date(now.getFullYear(), now.getMonth()-offset, 1); end = new Date(start.getFullYear(), start.getMonth()+1, 1); }
+  else { start = new Date(now.getFullYear()-offset, 0, 1); end = new Date(start.getFullYear()+1, 0, 1); }
+  return { start, end };
+}
+let currentPeriod = 'month';
+
+/* ---------- auth / unlock ---------- */
+function wireAuthScreen(){
+  $('loginPin').addEventListener('keydown', e => { if (e.key==='Enter') submitLogin(); });
+  $('regAdminPin').addEventListener('keydown', e => { if (e.key==='Enter') submitRegister(); });
+}
+function showAuthPanel(which){
+  const isLogin = which === 'login';
+  $('authTabLogin').classList.toggle('active', isLogin); $('authTabRegister').classList.toggle('active', !isLogin);
+  $('authLoginPanel').hidden = !isLogin; $('authRegisterPanel').hidden = isLogin;
+  $('authHeading').innerHTML = isLogin ? 'Welcome <span class="hl">back</span>' : 'Set up your <span class="hl">site</span>';
+  $('authSub').textContent = isLogin ? 'Log in with your business email and admin PIN.' : 'Choose your business details and an admin PIN. This happens once.';
+}
+async function submitLogin(){
+  const email = $('loginEmail').value.trim(), pin = $('loginPin').value.trim();
+  $('authLoginErr').textContent = '';
+  if (!email || !pin){ $('authLoginErr').textContent = 'Enter your email and admin PIN.'; return; }
+  $('authLoginBtn').disabled = true;
+  try{
+    const r = await apiCall('login', { email, pin }, { noAuth:true });
+    if (r.role !== 'admin'){ throw new Error('This app is for admins only. Use the admin PIN.'); }
+    setAuthSession(r.token, r.site); role = 'admin'; feedAdminPin = pin;
+    setup = { id:r.site.id, name:r.site.name, type:r.site.type, currency:r.site.currency };
+    await enterApp();
+  }catch(e){ $('authLoginErr').textContent = e.message || 'Could not log in.'; }
+  finally{ $('authLoginBtn').disabled = false; }
+}
+async function submitRegister(){
+  const name = $('regName').value.trim(), type = $('regType').value, currency = $('regCurrency').value.trim() || 'R';
+  const email = $('regEmail').value.trim(), adminPin = $('regAdminPin').value.trim();
+  $('authRegisterErr').textContent = '';
+  if (!name){ $('authRegisterErr').textContent = 'Enter a business name.'; return; }
+  if (!email){ $('authRegisterErr').textContent = 'Enter your email.'; return; }
+  if (adminPin.length < 4){ $('authRegisterErr').textContent = 'The PIN needs at least 4 digits.'; return; }
+  // The server still keeps a second (staff) PIN slot. This app has no staff role, so it gets a random one nobody is given.
+  let staffPin = ''; do { staffPin = String(Math.floor(100000 + Math.random()*900000)); } while (staffPin === adminPin);
+  $('authRegisterBtn').disabled = true;
+  try{
+    const r = await apiCall('register', { businessName:name, businessType:type, currency, ownerEmail:email, staffPin, adminPin }, { noAuth:true });
+    setAuthSession(r.token, r.site); role = 'admin'; feedAdminPin = adminPin;
+    setup = { id:r.site.id, name:r.site.name, type:r.site.type, currency:r.site.currency, createdAt: isoDate(new Date()) };
+    await sSet(K.SETUP, JSON.stringify(setup));
+    await sSet(K.ENV, JSON.stringify(DEFAULT_ENV)); await sSet(K.DISPOSAL, JSON.stringify(DEFAULT_DISPOSAL));
+    await sSet(K.OILSETTINGS, JSON.stringify(DEFAULT_OIL)); await sSet(K.RECYCLING, JSON.stringify(DEFAULT_RATES)); await sSet(K.ENTRIES, '[]');
+    await enterApp();
+  }catch(e){ $('authRegisterErr').textContent = e.message || 'Could not create your site.'; }
+  finally{ $('authRegisterBtn').disabled = false; }
+}
+async function tryUnlock(){
+  const v = $('pinInput').value.trim(); if (!v) return;
+  $('pinUnlockBtn').disabled = true; $('lockErr').textContent = '';
+  try{
+    const r = await apiCall('verify_pin', { pin: v });
+    if (r.role !== 'admin') throw new Error('This app is for admins only. Use the admin PIN.');
+    role = 'admin'; feedAdminPin = v; $('pinInput').value = '';
+    await enterApp();
+  }catch(e){
+    if (e.status === 401 && e.body && /device is not paired|paired with a site/.test(e.body.error||'')){
+      clearAuthSession(); $('lockScreen').hidden = true; $('authScreen').hidden = false; showAuthPanel('login'); $('authLoginErr').textContent = e.message;
+    } else { $('lockErr').textContent = e.message || 'Incorrect PIN. Try again.'; $('pinInput').value = ''; }
+  }finally{ $('pinUnlockBtn').disabled = false; }
+}
+function lockApp(){
+  role = null; feedAdminPin = null; stopLive();
+  $('app').hidden = true; $('pinInput').value = ''; $('lockErr').textContent = ''; $('lockScreen').hidden = false;
+}
+function logoutSite(){
+  feedAdminPin = null; stopLive(); feedState.days = {}; feedState.devices = []; feedState.ok = false;
+  clearAuthSession(); role = null; setup = null;
+  $('app').hidden = true; $('lockScreen').hidden = true; $('pinInput').value = ''; $('lockErr').textContent = '';
+  $('authScreen').hidden = false; showAuthPanel('login');
+}
+async function enterApp(){
+  envFactors = Object.assign({}, DEFAULT_ENV, JSON.parse((await sGet(K.ENV)) || '{}'));
+  disposalRates = Object.assign({}, DEFAULT_DISPOSAL, JSON.parse((await sGet(K.DISPOSAL)) || '{}'));
+  oilSettings = Object.assign({}, DEFAULT_OIL, JSON.parse((await sGet(K.OILSETTINGS)) || '{}'));
+  rates = Object.assign({}, DEFAULT_RATES, JSON.parse((await sGet(K.RECYCLING)) || '{}'));
+  entries = JSON.parse((await sGet(K.ENTRIES)) || '[]').map(normEntry);
+  await loadFeeds();
+  const rawSetup = await sGet(K.SETUP);
+  if (rawSetup) setup = Object.assign({}, setup, JSON.parse(rawSetup));
+  if (!setup.createdAt){ setup.createdAt = entries.length ? entries.map(e=>e.date).sort()[0] : isoDate(new Date()); await sSet(K.SETUP, JSON.stringify(setup)); }
+  $('authScreen').hidden = true; $('lockScreen').hidden = true; $('app').hidden = false;
+  boot();
+}
+
+/* ---------- shell ---------- */
+const VIEWS = ['profit','today','board','impact','reports','integrations','settings'];
+let currentView = 'profit';
+function showView(v){
+  if (!VIEWS.includes(v)) v = 'profit';
+  currentView = v;
+  VIEWS.forEach(x=>{ const el = $('v_'+x); if (el) el.hidden = x !== v; });
+  document.querySelectorAll('#tabs .tab').forEach(b=>{ if (b.dataset.view === v) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  try{ history.replaceState(null, '', '#'+v); }catch(e){}
+  window.scrollTo(0, 0);
+  if (v === 'profit') renderProfit();
+  else if (v === 'today') renderToday();
+  else if (v === 'board') renderBoard();
+  else if (v === 'impact') renderImpact();
+  else if (v === 'reports') renderReports();
+  else if (v === 'integrations') renderIntegrations();
+  else if (v === 'settings') renderSettings();
+}
+function boot(){
+  $('bizName').textContent = setup.name; $('footBizName').textContent = setup.name;
+  $('buildVersionNote').textContent = `Build ${BUILD_VERSION} · ${BUILD_DATE}`;
+  $('entryDate').value = isoDate(new Date());
+  if (!boot._wired){
+    boot._wired = true;
+    $('tabs').addEventListener('click', e=>{ const b = e.target.closest('.tab'); if (b) showView(b.dataset.view); });
+    window.addEventListener('beforeunload', e=>{ if (todayDirty){ e.preventDefault(); e.returnValue = ''; } });
+  }
+  const h = (location.hash||'').replace('#','');
+  showView(VIEWS.includes(h) ? h : 'profit');
+  startLive();
+}
+
+/* ---------- live refresh (every 45 s while the tab is visible) ---------- */
+const LIVE_MS = 45000; let liveTimer = null, liveBusy = false;
+function startLive(){ if (liveTimer) return; liveTimer = setInterval(()=>refreshBoardFromServer(false), LIVE_MS); document.addEventListener('visibilitychange', ()=>{ if (document.visibilityState==='visible' && role) refreshBoardFromServer(false); }); }
+function stopLive(){ clearInterval(liveTimer); liveTimer = null; }
+async function refreshBoardFromServer(manual){
+  if (!role || !setup || liveBusy) return;
+  if (!manual && document.visibilityState !== 'visible') return;
+  liveBusy = true;
+  const st = $('boardLiveStatus'), btn = $('boardRefreshBtn');
+  if (manual && btn) btn.disabled = true;
+  if (st){ st.classList.remove('err'); st.textContent = 'Checking for updates…'; }
+  try{
+    const raw = await apiCall('get', { key: K.ENTRIES });
+    const fromServer = JSON.parse((raw && raw.value) || '[]').map(normEntry);
+    entries = fromServer;
+    await loadFeeds();
+    const stamp = new Date().toLocaleTimeString('en-ZA', {hour:'2-digit', minute:'2-digit'});
+    if (st) st.textContent = 'Live — updated ' + stamp + (feedState.ok ? '' : ' · devices offline');
+    if (currentView === 'board') renderBoard();
+    if (currentView === 'profit') renderProfit();
+    if (currentView === 'today') renderToday(true);
+    if (currentView === 'impact') renderImpact();
+    if (currentView === 'integrations') renderIntegrations();
+  }catch(e){
+    console.error('Live refresh failed', e);
+    if (st){ st.classList.add('err'); st.textContent = 'Could not refresh. Will keep trying.'; }
+    if (manual) toast(e.message || 'Could not refresh. Check your connection.');
+  }finally{ liveBusy = false; if (btn) btn.disabled = false; }
+}
+async function deleteEntry(id){
+  if (!confirm('Delete this day? This cannot be undone.')) return;
+  const before = entries; entries = entries.filter(e=>e.id!==id);
+  const ok = await sSet(K.ENTRIES, JSON.stringify(entries));
+  if (!ok){ entries = before; return; }
+  toast('Day deleted.'); renderBoard();
+}
+
+/* ===================== TODAY ===================== */
+// `dr` holds what is in the boxes right now; `touched` is which boxes the admin has typed in.
+let dr = {}, touched = {}, todayDirty = false;
+const PILLAR_COLORS = { kitchenWaste:'--c-waste', plastic:'--c-plastic', paper:'--c-paper', glass:'--c-glass', cans:'--c-cans', usedOil:'--c-oil', gas:'--c-gas', elec:'--c-elec', water:'--c-water' };
+const fid = p => 'f_' + p.replace(/\./g,'_');
+function curDate(){ return $('entryDate').value || isoDate(new Date()); }
+function curEntry(){ const i = findEntryIndexForDate(curDate()); return i >= 0 ? entries[i] : null; }
+function shiftDay(n){ if (todayDirty && !confirm('You have unsaved changes for this day. Leave without saving?')) return; const d = parseISO(curDate()); d.setDate(d.getDate()+n); $('entryDate').value = isoDate(d); onEntryDateChange(true); }
+function gotoToday(){ if (todayDirty && !confirm('You have unsaved changes for this day. Leave without saving?')) return; $('entryDate').value = isoDate(new Date()); onEntryDateChange(true); }
+function onEntryDateChange(force){ todayDirty = false; touched = {}; renderToday(false); }
+function loadDraft(){
+  const e = curEntry(); dr = {};
+  FIELD_PATHS.forEach(p=>{ const v = e ? getPath(e, p) : undefined; dr[p] = (v != null && +v > 0) ? String(Math.round(+v*1000)/1000) : ''; });
+}
+function srcOf(p){
+  const e = curEntry(), fs = (e && e.feedSrc) || {}, v = parseFloat(dr[p]) || 0;
+  if (touched[p]) return v > 0 ? 'manual' : '';
+  if (fs[p] && v > 0) return 'feed';
+  return v > 0 ? 'manual' : '';
+}
+function feedVal(p){ const fd = (feedState.days||{})[curDate()] || {}; const v = getPath(fd, p); return feedHas(v) ? v : null; }
+function badge(p){
+  const s = srcOf(p); if (!s) return '<span class="src manual" style="opacity:.55">empty</span>';
+  const fd = (feedState.days||{})[curDate()] || {}; const util = p.startsWith('util.') ? p.slice(5) : null;
+  const est = s === 'feed' && util && getPath(fd, 'utilEst.'+util) > 0;
+  return s === 'feed' ? `<span class="src feed">Device</span>${est ? ' <span class="src est" title="Part of this figure was estimated across a gap in the meter readings">Estimated</span>' : ''}` : '<span class="src manual">Typed</span>';
+}
+function toolsFor(p, mass){
+  const fv = feedVal(p);
+  const reset = (touched[p] && fv != null) ? `<button class="linkbtn" onclick="useDevice('${p}')">Use device value (${nf(fv, 2)})</button>` : '';
+  const add = mass ? `<span class="addrow"><input type="number" min="0" step="0.01" id="add_${fid(p)}" placeholder="+ kg" aria-label="Add a weighing" onkeydown="if(event.key==='Enter'){addWeight('${p}')}"><button class="btn ghost small" onclick="addWeight('${p}')">Add</button></span>` : '';
+  return `<div class="tools"><span id="bd_${fid(p)}">${badge(p)}</span>${add}${reset}</div>`;
+}
+function bigField(p, unit, step){
+  return `<div class="bigfield"><input type="number" inputmode="decimal" min="0" step="${step||'0.01'}" id="${fid(p)}" value="${esc(dr[p])}" placeholder="0" oninput="onField('${p}')" aria-label="${esc(p)}"><span class="unit">${unit}</span></div>`;
+}
+function devLine(targets, label){
+  const devs = (feedState.devices||[]).filter(d=>targets.includes(d.target));
+  if (!feedState.ok) return '<div class="devline">Devices are not reachable right now. Type the figure by hand.</div>';
+  if (!devs.length) return `<div class="devline">No ${label} device connected yet. Type the figure by hand, or add one under Devices.</div>`;
+  return devs.map(d=>`<div class="devline"><span class="st ${esc(d.health)}">${esc(healthLabel(d.health))}</span><b style="color:var(--ink)">${esc(d.name)}</b><span class="mono">${d.intervalMin ? 'every '+(d.intervalMin>=60 ? (d.intervalMin/60)+' h' : d.intervalMin+' min')+' · ' : ''}last ${esc(agoText(d.lastSeen))}</span></div>`).join('');
+}
+function hourSpark(target, color){
+  const rows = (feedState.hourly||[]).filter(h=>h.date===curDate() && h.metric===target);
+  const vals = Array(24).fill(0); rows.forEach(h=>{ vals[h.hour] += h.value; });
+  const mx = Math.max(...vals);
+  if (!(mx > 0)) return '<div class="costline" style="padding:8px 0">No hourly readings for this day yet.</div>';
+  const W = 240, H = 46, bw = W/24;
+  return `<svg class="mini" viewBox="0 0 ${W} ${H}" role="img" aria-label="Readings by hour">${vals.map((v,h)=>{ const hh = v/mx*(H-6); return hh > 0 ? `<rect x="${h*bw+1}" y="${H-hh}" width="${bw-2}" height="${hh}" rx="1.5" fill="${color}"/>` : `<rect x="${h*bw+1}" y="${H-1.5}" width="${bw-2}" height="1.5" fill="var(--grid)"/>`; }).join('')}</svg><div class="costline">By hour, 00 to 23</div>`;
+}
+function renderToday(soft){
+  if (!$('pillars')) return;
+  // a background refresh must never wipe what is being typed
+  if (soft && todayDirty){ updateLiveChip(); return; }
+  if (!soft || !Object.keys(touched).length) loadDraft();
+  const t = feedState.settings || {};
+  const pc = k => `style="--pc:var(${PILLAR_COLORS[k]})"`;
+  const gasKg = parseFloat(dr['util.gasKg'])||0, kwh = parseFloat(dr['util.kwh'])||0, wl = parseFloat(dr['util.waterL'])||0;
+  $('pillars').innerHTML = `
+    <div class="pillar" ${pc('kitchenWaste')}><h3><span class="sw"></span>Kitchen waste</h3><p class="hint">Everything thrown away today: preparation waste and plate waste together.</p>
+      ${bigField('kitchenWaste','kg')}${toolsFor('kitchenWaste', true)}<div class="costline" id="wasteNorm"></div>${devLine(['kitchen_waste'],'kitchen waste scale')}</div>
+    <div class="pillar" ${pc('usedOil')}><h3><span class="sw"></span>Used cooking oil</h3><p class="hint">Oil collected for recycling.</p>
+      ${bigField('usedOil','kg')}${toolsFor('usedOil', true)}<div class="costline" id="oilVal"></div>${devLine(['used_oil'],'oil scale')}</div>
+    <div class="pillar wide" style="--pc:var(--c-recyc)"><h3><span class="sw"></span>Recycling</h3><p class="hint">Everything thrown into recycling, weighed by material.</p>
+      ${REC_KEYS.map(k=>`<div class="rowfield" style="--pc:var(${PILLAR_COLORS[k]})"><label for="${fid('recycling.'+k)}"><span class="sw"></span>${esc(REC_LABEL[k])}</label><input type="number" inputmode="decimal" min="0" step="0.01" id="${fid('recycling.'+k)}" value="${esc(dr['recycling.'+k])}" placeholder="0 kg" oninput="onField('recycling.${k}')"><span id="bd_${fid('recycling.'+k)}">${badge('recycling.'+k)}</span></div>`).join('')}
+      <div class="tools"><span class="costline" id="recycTotal"></span><span class="addrow"><select id="addRecKey" aria-label="Material" style="min-height:40px;padding:6px 10px;width:auto">${REC_KEYS.map(k=>`<option value="${k}">${esc(REC_LABEL[k])}</option>`).join('')}</select><input type="number" min="0" step="0.01" id="addRecVal" placeholder="+ kg" aria-label="Add a weighing" onkeydown="if(event.key==='Enter'){addRecWeight()}"><button class="btn ghost small" onclick="addRecWeight()">Add</button></span></div>
+      ${devLine(['recycling_plastic','recycling_paper','recycling_glass','recycling_cans'],'recycling scale')}</div>
+    <div class="pillar" ${pc('gas')}><h3><span class="sw"></span>Gas</h3><p class="hint">LPG used today.</p>${bigField('util.gasKg','kg')}${toolsFor('util.gasKg', false)}<div class="costline" id="gasCost"></div>${hourSpark('gas','var(--c-gas)')}${devLine(['gas'],'gas meter')}</div>
+    <div class="pillar" ${pc('elec')}><h3><span class="sw"></span>Electricity</h3><p class="hint">Power used today.</p>${bigField('util.kwh','kWh')}${toolsFor('util.kwh', false)}<div class="costline" id="elecCost"></div>${hourSpark('electricity','var(--c-elec)')}${devLine(['electricity'],'electricity meter')}</div>
+    <div class="pillar" ${pc('water')}><h3><span class="sw"></span>Water</h3><p class="hint">Water used today, in litres.</p>${bigField('util.waterL','L','1')}${toolsFor('util.waterL', false)}<div class="costline" id="waterCost"></div>${hourSpark('water','var(--c-water)')}${devLine(['water'],'water meter')}</div>`;
+  updateHero(); updateLiveChip(); setSaveMsg();
+}
+function updateLiveChip(){
+  const devs = (feedState.devices||[]).filter(d=>d.enabled);
+  const live = devs.filter(d=>d.health==='live').length, late = devs.filter(d=>d.health==='quiet'||d.health==='stale').length;
+  const el = $('liveTxt'); if (!el) return;
+  if (!feedState.ok) el.textContent = 'Devices offline. Typing by hand works.';
+  else if (!devs.length) el.textContent = 'No devices connected yet';
+  else el.textContent = `${live} of ${devs.length} devices reporting${late ? ` · ${late} late` : ''}`;
+}
+function num(p){ return parseFloat(dr[p]) || 0; }
+function updateHero(){
+  const waste = num('kitchenWaste'), rec = REC_KEYS.reduce((s,k)=>s+num('recycling.'+k),0), oil = num('usedOil');
+  const div = (waste+rec) > 0 ? rec/(waste+rec)*100 : null;
+  const t = feedState.settings || {};
+  const uc = num('util.gasKg')*(t.tariff_gas_kg||0) + num('util.kwh')*(t.tariff_kwh||0) + num('util.waterL')/1000*(t.tariff_water_kl||0);
+  const tile = (n,l)=>`<div><div class="n">${n}</div><div class="l">${l}</div></div>`;
+  $('heroTotal').innerHTML = tile(nf(waste)+' kg','Kitchen waste') + tile(nf(rec)+' kg','Recycled') + tile(div==null?'—':nf(div,0)+'%','Diverted') + tile(nf(oil)+' kg','Used oil') + tile(uc>0?fmtMoney(uc):'—','Utilities cost');
+  const set = (id, txt)=>{ const el = $(id); if (el) el.textContent = txt; };
+  set('recycTotal', 'Recycling total: ' + nf(rec,1) + ' kg' + (rec ? ' · value ' + fmtMoney(REC_KEYS.reduce((s,k)=>s+num('recycling.'+k)*(rates[k]||0),0)) : ''));
+  if ($('wasteNorm')) $('wasteNorm').innerHTML = todayNormText();
+  set('oilVal', oil > 0 && oilSettings.usedRatePerKg ? 'Recovery value ' + fmtMoney(oil*oilSettings.usedRatePerKg) : '');
+  set('gasCost', t.tariff_gas_kg ? 'Cost ' + fmtMoney(num('util.gasKg')*t.tariff_gas_kg) : 'Set a gas tariff under Devices to see cost.');
+  set('elecCost', t.tariff_kwh ? 'Cost ' + fmtMoney(num('util.kwh')*t.tariff_kwh) : 'Set an electricity tariff under Devices to see cost.');
+  set('waterCost', t.tariff_water_kl ? 'Cost ' + fmtMoney(num('util.waterL')/1000*t.tariff_water_kl) : 'Set a water tariff under Devices to see cost.');
+}
+function setSaveMsg(){
+  const e = curEntry();
+  $('saveMsg').textContent = todayDirty ? 'Unsaved changes' : (e && !e.feedOnly ? 'Saved' : (e ? 'Filled by devices. Save to keep it.' : 'Nothing logged for this day yet.'));
+}
+function onField(p){
+  const el = $(fid(p)); dr[p] = el.value; touched[p] = true; todayDirty = true;
+  const b = $('bd_'+fid(p)); if (b) b.innerHTML = badge(p);
+  updateHero(); setSaveMsg();
+}
+function addWeight(p){
+  const inp = $('add_'+fid(p)); const v = parseFloat(inp && inp.value); if (!(v > 0)) return;
+  const cur = parseFloat(dr[p]) || 0; dr[p] = String(Math.round((cur + v)*1000)/1000); touched[p] = true; todayDirty = true;
+  $(fid(p)).value = dr[p]; inp.value = ''; const b = $('bd_'+fid(p)); if (b) b.innerHTML = badge(p); updateHero(); setSaveMsg();
+}
+function addRecWeight(){
+  const k = $('addRecKey').value, v = parseFloat($('addRecVal').value); if (!(v > 0)) return;
+  const p = 'recycling.'+k, cur = parseFloat(dr[p]) || 0; dr[p] = String(Math.round((cur + v)*1000)/1000); touched[p] = true; todayDirty = true;
+  $(fid(p)).value = dr[p]; $('addRecVal').value = ''; const b = $('bd_'+fid(p)); if (b) b.innerHTML = badge(p); updateHero(); setSaveMsg();
+}
+function useDevice(p){ const fv = feedVal(p); dr[p] = fv != null ? String(Math.round(fv*1000)/1000) : ''; delete touched[p]; todayDirty = Object.keys(touched).length > 0; renderToday(true); const e = curEntry(); }
+
+async function saveEntry(){
+  const date = curDate();
+  const idx = findEntryIndexForDate(date);
+  const prev = idx >= 0 ? entries[idx] : null;
+  const entry = prev ? JSON.parse(JSON.stringify(prev)) : { id:'e'+Date.now(), date, service:'—' };
+  delete entry.feedOnly;
+  FIELD_PATHS.forEach(p=>{ const v = parseFloat(dr[p]); setPath(entry, p, v > 0 ? Math.round(v*1000)/1000 : 0); });
+  if (!FIELD_PATHS.some(p=>parseFloat(dr[p]) > 0) && !prev){ toast('Nothing entered yet.'); return; }
+  entry.recovValue = recValue(entry); entry.usedOilValue = oilValue(entry);
+  reconcileFeedSrc(entry);
+  if (idx >= 0) entries[idx] = entry; else entries.push(entry);
+  $('saveBtn').disabled = true;
+  const ok = await sSet(K.ENTRIES, JSON.stringify(entries));
+  $('saveBtn').disabled = false;
+  if (!ok){ if (idx >= 0) entries[idx] = prev; else entries.pop(); return; }
+  todayDirty = false; touched = {};
+  toast(idx >= 0 ? 'Day updated.' : 'Day saved.');
+  renderToday(false);
+}
+
+/* ===================== DEVICES: INTEGRATION LAYER (client) ===================== */
+// Everything that arrives from a scale, meter or POS lands in the feeds tables on the server (see ingest.php).
+// This reads the day totals back and lays them over the entries. A typed figure always wins; a figure the
+// devices filled is flagged in entry.feedSrc and refreshes itself.
+const FEEDS_ENDPOINT = API_ENDPOINT.replace(/api\.php.*$/, 'feeds.php');
+const INGEST_URL = API_ENDPOINT.replace(/api\.php.*$/, 'ingest.php');
+const BI_ODATA_URL = API_ENDPOINT.replace(/api\.php.*$/, 'bi.php') + '/odata';
+let feedState = { devices:[], settings:{ tz:'Africa/Johannesburg', tariff_kwh:0, tariff_gas_kg:0, tariff_water_kl:0, noise_kg:0.02 }, days:{}, hourly:[], pos:{}, ok:false, error:'', loadedAt:null };
+let feedAdminPin = null; // kept in memory only, for the current unlock
+let feedCatalog = null;
+
+async function feedsCall(action, payload){
+  const headers = {'Content-Type':'application/json'};
+  const token = getAuthToken();
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const ctl = new AbortController();
+  const timer = setTimeout(()=>ctl.abort(), 12000);
+  let res;
+  try{
+    res = await fetch(FEEDS_ENDPOINT, { method:'POST', headers, body: JSON.stringify({ action, ...(payload||{}) }), signal: ctl.signal });
+  }catch(e){ throw new Error('The integration service could not be reached.'); }
+  finally{ clearTimeout(timer); }
+  let body = null;
+  try{ body = await res.json(); }catch(e){ /* not JSON */ }
+  if (!res.ok){
+    const err = new Error((body && body.error) ? body.error : ('Request failed: ' + res.status));
+    err.status = res.status; err.body = body; throw err;
+  }
+  return body;
+}
+
+async function loadFeeds(){
+  try{
+    const from = isoDate(new Date(Date.now() - 400*86400000)), to = isoDate(new Date(Date.now() + 86400000));
+    const [dl, fd, hr, po] = await Promise.all([ feedsCall('device_list'), feedsCall('feed_days', { from, to }), feedsCall('hourly', { from, to }), feedsCall('pos_ops', { from, to }) ]);
+    feedState.devices = dl.devices || [];
+    feedState.settings = Object.assign(feedState.settings, dl.settings || {});
+    feedState.days = fd.days || {};
+    feedState.hourly = hr.rows || []; feedState.pos = po || {};
+    feedState.ok = true; feedState.error = ''; feedState.loadedAt = Date.now();
+    applyFeedOverlay();
+  }catch(e){
+    feedState.ok = false; feedState.error = (e && e.message) || 'unavailable';
+    if (e && e.status === 404) feedState.error = 'The integration service (feeds.php) is not installed on the server yet.';
+  }
+}
+
+
+function feedHas(v){ return typeof v === 'number' && isFinite(v); }
+function manualVal(v){ return typeof v === 'number' && v > 0; }
+
+// Lays device day-totals over `entries`, in memory. A hand-typed value always wins; a value the devices
+// filled (flagged in e.feedSrc) is refreshed from them each time.
+function applyFeedOverlay(){
+  Object.keys(feedState.days || {}).forEach(date=>{
+    const fd = feedState.days[date] || {};
+    let idx = findEntryIndexForDate(date), created = false, e;
+    if (idx < 0){ e = { id:'f'+date.replace(/-/g,''), date, service:'—', feedOnly:true }; created = true; }
+    else e = entries[idx];
+    e.feedSrc = e.feedSrc || {};
+    let took = 0;
+    FIELD_PATHS.forEach(p=>{
+      const fv = getPath(fd, p);
+      if (!feedHas(fv)) return;
+      const cur = getPath(e, p);
+      if (!manualVal(cur) || e.feedSrc[p]){ setPath(e, p, Math.round(fv*1000)/1000); e.feedSrc[p] = true; took++; }
+    });
+    if (typeof fd.salesTotal === 'number' && !e.salesTyped){ e.salesTotal = fd.salesTotal; e.covers = fd.covers || 0; }
+    if (!Object.keys(e.feedSrc).length) delete e.feedSrc;
+    if (created){ if (took || e.salesTotal) entries.push(e); }
+    if (took){ e.recovValue = recValue(e); e.usedOilValue = oilValue(e); }
+  });
+}
+
+// On save: a field whose value still equals what the devices say stays flagged as device-sourced; a field the
+// admin changed becomes a typed override.
+function reconcileFeedSrc(entry){
+  const fd = (feedState.days || {})[entry.date];
+  const flags = {};
+  if (fd){
+    FIELD_PATHS.forEach(p=>{
+      const a = getPath(entry, p), b = getPath(fd, p);
+      if (feedHas(a) && feedHas(b) && Math.abs(a-b) < 0.0006) flags[p] = true;
+    });
+  }
+  if (Object.keys(flags).length) entry.feedSrc = flags; else delete entry.feedSrc;
+}
+
+function healthLabel(h){ return ({live:'● Live', quiet:'◐ Late', stale:'○ Stale', never:'○ No data yet', disabled:'– Off'})[h] || h; }
+function agoText(ts){
+  if (!ts) return 'never';
+  const s = (Date.now() - Date.parse(String(ts).replace(' ','T') + 'Z')) / 1000;
+  if (!isFinite(s)) return String(ts);
+  if (s < 90) return 'just now';
+  if (s < 5400) return Math.round(s/60) + ' min ago';
+  if (s < 129600) return Math.round(s/3600) + ' h ago';
+  return Math.round(s/86400) + ' d ago';
+}
+const TARGETS = { pos_voids:'POS write-offs and voids', labor:'Staff shifts', kitchen_waste:'Kitchen waste', recycling_plastic:'Recycling: plastic', recycling_paper:'Recycling: paper & cardboard', recycling_glass:'Recycling: glass', recycling_cans:'Recycling: cans', used_oil:'Used cooking oil', gas:'Gas', electricity:'Electricity', water:'Water', sales:'Sales (POS)', other:'Other' };
+function targetLabel(t){ return TARGETS[t] || t; }
+
+/* ---------- small UI helpers ---------- */
+function fmOpen(html){
+  fmClose();
+  const o = document.createElement('div'); o.className = 'fm-overlay'; o.id = 'fmOverlay';
+  o.innerHTML = `<div class="fm-box" role="dialog" aria-modal="true">${html}</div>`;
+  document.body.appendChild(o);
+  const first = o.querySelector('input,button,textarea'); if (first) first.focus();
+  return o;
+}
+function fmClose(){ const o = $('fmOverlay'); if (o) o.remove(); }
+function biCopy(text){
+  try{ navigator.clipboard.writeText(text).then(()=>toast('Copied.'), ()=>toast('Select the text and copy it by hand.')); }
+  catch(e){ toast('Select the text and copy it by hand.'); }
+}
+function ensureAdminPin(){
+  if (feedAdminPin) return Promise.resolve(feedAdminPin);
+  return new Promise((resolve, reject)=>{
+    fmOpen(`<h3>Admin PIN</h3><p class="section-sub" style="margin-top:0;">Changing integrations needs the admin PIN.</p>
+      <div class="field"><input type="password" inputmode="numeric" id="fmPin" maxlength="6" placeholder="Admin PIN" autocomplete="off"></div>
+      <div class="btnrow"><button class="btn primary small" id="fmPinOk">Continue</button><button class="btn ghost small" id="fmPinNo">Cancel</button></div>`);
+    const done = ok => { const v = $('fmPin').value.trim(); fmClose(); ok && v ? (feedAdminPin = v, resolve(v)) : reject(new Error('cancelled')); };
+    $('fmPinOk').onclick = ()=>done(true); $('fmPinNo').onclick = ()=>done(false);
+    $('fmPin').onkeydown = ev => { if (ev.key === 'Enter') done(true); };
+  });
+}
+async function feedsWrite(action, payload){
+  const pin = await ensureAdminPin();
+  try{ return await feedsCall(action, Object.assign({ adminPin: pin }, payload||{})); }
+  catch(e){ if (e.status === 403) feedAdminPin = null; throw e; }
+}
+function feedErr(e){ if (e && e.message !== 'cancelled') toast(e.message || 'Something went wrong.'); }
+
+/* ---------- Integrations screen ---------- */
+async function renderIntegrations(){
+  const st = $('feedStatus');
+  if (!st) return;
+  if (!feedState.ok){ st.hidden = false; st.className = 'warnbox'; st.textContent = feedState.error || 'The integration service is not reachable.'; }
+  else { st.hidden = false; st.className = 'okbox'; st.textContent = `Integration service connected · ${feedState.devices.length} device${feedState.devices.length===1?'':'s'}.`; }
+  $('devList').innerHTML = feedState.devices.length ? `
+    <div class="report-out"><table class="htable"><thead><tr><th>Device</th><th>Goes to</th><th>How it connects</th><th>Status</th><th></th></tr></thead><tbody>
+    ${feedState.devices.map(d=>`<tr>
+      <td><b>${esc(d.name)}</b><br><span class="mono" style="font-size:11px;color:var(--mute);">${esc(d.kind)} · ${esc(d.uid)}</span></td>
+      <td>${esc(targetLabel(d.target))}${d.intervalMin ? '<div class="mono" style="font-size:11px;color:var(--mute)">every '+(d.intervalMin>=60 ? (d.intervalMin/60)+' h' : d.intervalMin+' min')+'</div>' : ''}</td>
+      <td>${esc(d.protocol)} · ${esc(d.adapter)}</td>
+      <td><span class="st ${esc(d.health)}">${esc(healthLabel(d.health))}</span><div class="mono" style="font-size:11px;color:var(--mute);">${esc(agoText(d.lastSeen))}${d.lastValue!=null ? ' · last '+esc(String(Math.round(d.lastValue*1000)/1000)) : ''}</div></td>
+      <td style="white-space:nowrap;">
+        <button class="btn ghost small" onclick="devOpenEditor(${d.id})">Edit</button>
+        <button class="btn ghost small" onclick="devKeys(${d.id})">Keys</button>
+        <button class="btn ghost small" onclick="devImport(${d.id})">Import file</button>
+        ${d.protocol==='pull' ? `<button class="btn ghost small" onclick="devPull(${d.id})">Pull now</button>` : ''}
+        <button class="btn ghost small" onclick="devToggle(${d.id}, ${d.enabled?'false':'true'})">${d.enabled?'Turn off':'Turn on'}</button>
+        <button class="btn danger small" onclick="devDelete(${d.id})">Delete</button>
+      </td></tr>`).join('')}
+    </tbody></table></div>` : '<p class="section-sub" style="margin:0;">No devices yet. Add a scale, a meter or your POS.</p>';
+  const s = feedState.settings;
+  if ($('cfgTz')){ $('cfgTz').value = s.tz; $('cfgKwh').value = s.tariff_kwh; $('cfgGas').value = s.tariff_gas_kg; $('cfgWater').value = s.tariff_water_kl; $('cfgNoise').value = s.noise_kg; }
+  if ($('biUrl')) $('biUrl').textContent = BI_ODATA_URL;
+  renderBiTokens(); renderFeedLog();
+}
+async function saveFeedSettings(){
+  try{
+    const r = await feedsWrite('settings_save', { settings:{ tz:$('cfgTz').value.trim(), tariff_kwh:parseFloat($('cfgKwh').value)||0, tariff_gas_kg:parseFloat($('cfgGas').value)||0, tariff_water_kl:parseFloat($('cfgWater').value)||0, noise_kg:parseFloat($('cfgNoise').value)||0 } });
+    feedState.settings = Object.assign(feedState.settings, r.settings); toast('Saved.'); await loadFeeds(); renderBoard(); renderIntegrations();
+  }catch(e){ feedErr(e); }
+}
+
+async function ensureCatalog(){
+  if (feedCatalog) return feedCatalog;
+  feedCatalog = await feedsCall('adapters');
+  return feedCatalog;
+}
+
+let devEditing = null;
+async function devOpenEditor(id){
+  let cat;
+  try{ cat = await ensureCatalog(); }catch(e){ feedErr(e); return; }
+  const d = id ? feedState.devices.find(x=>x.id===id) : null;
+  devEditing = d || { adapter:'standard', kind:'meter', target:'electricity', mode:'counter', agg:'sum', unitIn:'', multiplier:1, tare:0, protocol:'api', intervalMin:60, maxRate:0 };
+  const ad = cat.adapters;
+  const adapterOpts = ad.map(a=>`<option value="${esc(a.key)}"${a.key===devEditing.adapter?' selected':''}>${esc(a.label)}${a.verified===false?' (unverified)':''}</option>`).join('');
+  const targetOpts = cat.targets.map(t=>`<option value="${esc(t.key)}"${t.key===devEditing.target?' selected':''}>${esc(t.label)}</option>`).join('');
+  $('devEditor').innerHTML = `<div class="editor-card" style="margin-bottom:18px; " id="devEditCard">
+    <h4>${d ? 'Edit device' : 'Add a device'}</h4>
+    <div class="field"><label class="field-label">What is it? (pick the closest — everything can be adjusted)</label><select id="devAdapter" onchange="devAdapterChanged()" ${d?'disabled':''}>${adapterOpts}</select></div>
+    <div id="devAdapterNote" class="section-sub" style="max-width:none; margin-top:0;"></div>
+    <div class="form-grid">
+      <div class="field"><label class="field-label">Name</label><input type="text" id="devName" placeholder="e.g. Main DB board meter" value="${esc(d?d.name:'')}"></div>
+      <div class="field"><label class="field-label">Type</label><select id="devKind"><option value="meter">Meter</option><option value="scale">Scale</option><option value="pos">POS</option><option value="other">Other</option></select></div>
+      <div class="field"><label class="field-label">Where do its numbers go?</label><select id="devTarget" onchange="devTargetChanged()">${targetOpts}</select></div>
+      <div class="field"><label class="field-label">How readings arrive</label><select id="devMode"><option value="delta">Each reading is an amount (e.g. one weighing)</option><option value="counter">Cumulative counter (meter total)</option><option value="instant">Level / snapshot</option></select></div>
+      <div class="field"><label class="field-label">How a day is worked out</label><select id="devAgg"><option value="sum">Add them up</option><option value="latest">Take the latest (AM / PM stock)</option><option value="level_drop">Sum of drops (gas cylinder scale)</option></select></div>
+      <div class="field"><label class="field-label">Unit it reports</label><input type="text" id="devUnit" placeholder="kg, g, kWh, Wh, L, m3 …" value="${esc(devEditing.unitIn||'')}"></div>
+      <div class="field"><label class="field-label">Multiplier (e.g. litres per pulse)</label><input type="number" id="devMult" step="any" value="${esc(devEditing.multiplier||1)}"></div>
+      <div class="field" id="devTareWrap"><label class="field-label">Empty weight / tare (kg)</label><input type="number" id="devTare" step="any" value="${esc(devEditing.tare||0)}"></div>
+      <div class="field" id="devIntWrap"><label class="field-label">Reports every (minutes)</label><input type="number" id="devInterval" min="0" step="1" placeholder="60 or 120" value="${esc(devEditing.intervalMin==null?'':devEditing.intervalMin)}"></div>
+      <div class="field" id="devRateWrap"><label class="field-label">Largest believable jump per hour (0 = no limit)</label><input type="number" id="devMaxRate" min="0" step="any" value="${esc(devEditing.maxRate||0)}"></div>
+    </div>
+    <div id="devMapWrap">
+      <div class="field"><label class="field-label">Field mapping (JSON) — leave as is for standard events</label><textarea class="code" id="devMapping" spellcheck="false" placeholder='{"records":"$.items[*]","fields":{"event_uid":"{{id}}","ts":"{{time}}","value":"{{reading | float}}"}}'></textarea></div>
+      <div class="field"><label class="field-label">Paste a sample payload or CSV to test the mapping</label><textarea class="code" id="devSample" spellcheck="false"></textarea></div>
+      <div class="btnrow" style="margin-bottom:10px;"><button class="btn ghost small" onclick="devTestMapping()">Test mapping</button></div>
+      <div id="devTestOut" class="report-out"></div>
+    </div>
+    <div id="devPullWrap" hidden>
+      <div class="form-grid">
+        <div class="field"><label class="field-label">Pull URL (https)</label><input type="text" id="pullUrl"></div>
+        <div class="field"><label class="field-label">Authentication</label><select id="pullAuth"><option value="none">None</option><option value="bearer">Bearer token</option><option value="header">API key header</option><option value="basic">Basic (user / password)</option></select></div>
+        <div class="field"><label class="field-label">Token / API key / password</label><input type="text" id="pullToken" autocomplete="off"></div>
+        <div class="field"><label class="field-label">Every (minutes)</label><input type="number" id="pullEvery" min="1" value="15"></div>
+      </div>
+    </div>
+    <div class="btnrow"><button class="btn primary small" onclick="devSave()">Save device</button><button class="btn ghost small" onclick="$('devEditor').innerHTML=''">Cancel</button></div>
+  </div>`;
+  $('devKind').value = devEditing.kind; $('devMode').value = devEditing.mode; $('devAgg').value = devEditing.agg;
+  if (d && d.mapping) $('devMapping').value = JSON.stringify(d.mapping, null, 2);
+  if (d && d.pull){ $('pullUrl').value = d.pull.url||''; $('pullAuth').value = d.pull.auth||'none'; $('pullToken').value = d.pull.token||d.pull.password||''; $('pullEvery').value = d.pull.interval_min||15; }
+  if (!d) devAdapterChanged(); else { devTargetChanged(); devAdapterNote(); }
+  $('devEditCard').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function devAdapterNote(){
+  const a = feedCatalog.adapters.find(x=>x.key===$('devAdapter').value) || {};
+  $('devAdapterNote').innerHTML = esc(a.notes||'') + (a.verified===false ? ' <span class="warnbox" style="display:block;">Not verified against a live account. Capture a real sample from the device or service and run it through “Test mapping” before relying on it.</span>' : '');
+  const proto = (devEditing && devEditing.protocol) || a.protocol || 'api';
+  $('devPullWrap').hidden = (a.protocol !== 'pull' && proto !== 'pull');
+}
+function devAdapterChanged(){
+  const a = feedCatalog.adapters.find(x=>x.key===$('devAdapter').value) || {};
+  const df = a.defaults || {};
+  if (a.kinds && a.kinds.length) $('devKind').value = a.kinds[0];
+  if (a.target) $('devTarget').value = a.target;
+  if (df.mode) $('devMode').value = df.mode; else $('devMode').value = 'delta';
+  if (df.agg) $('devAgg').value = df.agg; else $('devAgg').value = 'sum';
+  $('devUnit').value = df.unit_in || '';
+  $('devMapping').value = a.mapping ? JSON.stringify(a.mapping, null, 2) : '';
+  if (a.pull){ $('pullUrl').value = a.pull.url||''; $('pullAuth').value = a.pull.auth||'bearer'; $('pullEvery').value = a.pull.interval_min||15; }
+  devAdapterNote(); devTargetChanged();
+  if (['gas','electricity','water'].includes($('devTarget').value)){ if ($('devInterval') && !$('devInterval').value) $('devInterval').value = 60; if (!df.mode) $('devMode').value = 'counter'; }
+}
+function devTargetChanged(){
+  const t = $('devTarget').value;
+  const isMeter = ['gas','electricity','water'].includes(t);
+  if ($('devIntWrap')) $('devIntWrap').hidden = !isMeter;
+  if ($('devRateWrap')) $('devRateWrap').hidden = !isMeter;
+  $('devTareWrap').hidden = !(t === 'gas');
+}
+function devCollect(){
+  const adapter = $('devAdapter').value;
+  const a = feedCatalog.adapters.find(x=>x.key===adapter) || {};
+  const o = { adapter, name:$('devName').value.trim(), kind:$('devKind').value, target:$('devTarget').value, targetRef:'', intervalMin: parseInt(($('devInterval')||{}).value,10)||0, maxRate: parseFloat(($('devMaxRate')||{}).value)||0,
+    mode:$('devMode').value, agg:$('devAgg').value, unitIn:$('devUnit').value.trim(), multiplier:parseFloat($('devMult').value)||1, tare:parseFloat($('devTare').value)||0 };
+  const m = $('devMapping').value.trim();
+  if (m){ try{ o.mapping = JSON.parse(m); }catch(e){ throw new Error('The field mapping is not valid JSON.'); } }
+  else if (devEditing && devEditing.id) o.mapping = null;
+  if (!$('devPullWrap').hidden){
+    const auth = $('pullAuth').value, tok = $('pullToken').value;
+    o.protocol = 'pull';
+    o.pull = { url:$('pullUrl').value.trim(), method:'GET', auth, interval_min:parseInt($('pullEvery').value,10)||15 };
+    if (auth==='basic'){ const p = tok.split(':'); o.pull.username = p[0]; o.pull.password = p.slice(1).join(':'); } else if (tok) o.pull.token = tok;
+  } else if (a.protocol && !(devEditing && devEditing.id)) o.protocol = a.protocol;
+  return o;
+}
+async function devSave(){
+  try{
+    const o = devCollect();
+    if (!o.name){ toast('Give the device a name.'); return; }
+    if (devEditing && devEditing.id) o.id = devEditing.id;
+    const r = await feedsWrite('device_save', o);
+    $('devEditor').innerHTML = '';
+    await loadFeeds(); renderIntegrations();
+    if (r.credentials) showCredentials(r.credentials, r.device);
+    else toast('Saved.');
+  }catch(e){ feedErr(e); }
+}
+async function devTestMapping(){
+  try{
+    const o = devCollect(); const sample = $('devSample').value.trim();
+    if (!sample){ toast('Paste a sample payload or CSV first.'); return; }
+    const payload = { target:o.target, unitIn:o.unitIn, multiplier:o.multiplier, adapter:o.adapter, mapping:o.mapping||null };
+    let parsed = null; try{ parsed = JSON.parse(sample); }catch(e){ /* maybe CSV */ }
+    if (parsed !== null) payload.payload = parsed; else payload.csv = sample;
+    const r = await feedsCall('mapping_test', payload);
+    const rows = r.normalised || [];
+    $('devTestOut').innerHTML = `<p class="section-sub" style="max-width:none; margin:6px 0;">${r.recordCount} record${r.recordCount===1?'':'s'} found, ${rows.length} usable.${(r.errors||[]).length ? ' <span style="color:var(--bad);">'+esc(r.errors.slice(0,3).join('; '))+'</span>' : ''}</p>` +
+      (rows.length ? `<table class="htable"><thead><tr><th>When (local date, hour)</th><th>Value stored</th><th>Detail</th></tr></thead><tbody>${rows.slice(0,8).map(x=>`<tr><td class="mono">${esc(x.ldate)} ${String(x.lhour).padStart(2,'0')}h</td><td class="mono">${x.type==='sale' ? esc(fmtMoney(x.net)) : esc(String(Math.round(x.value*10000)/10000)) + ' ' + esc(metricUnit(x.metric))}</td><td>${x.type==='sale' ? esc(x.item||'')+' ×'+esc(String(x.qty)) : 'raw '+esc(String(x.raw))}</td></tr>`).join('')}</tbody></table>` : '');
+  }catch(e){ feedErr(e); }
+}
+function metricUnit(m){ return ({mass_kg:'kg', energy_kwh:'kWh', volume_l:'L', gas_kg:'kg'})[m] || ''; }
+
+function showCredentials(c, dev){
+  const url = INGEST_URL;
+  const curl = `curl -X POST "${url}" \\\n  -H "Authorization: Bearer ${c.apiKey}" \\\n  -H "Content-Type: application/json" \\\n  -d '{"events":[{"uid":"test-1","ts":"${new Date().toISOString()}","value":1.5,"unit":"${(dev && dev.unitIn) || 'kg'}"}]}'`;
+  fmOpen(`<h3>Keys for ${esc(dev ? dev.name : 'device')}</h3>
+    <div class="warnbox">Copy these now — the key is shown only once. You can always make a new one from “Keys”.</div>
+    <label class="field-label">Ingest address</label><div class="cred">${esc(url)}</div>
+    <label class="field-label">Device ID</label><div class="cred">${esc(c.deviceId)}</div>
+    <label class="field-label">API key (Bearer)</label><div class="cred">${esc(c.apiKey)}</div>
+    <label class="field-label">Webhook address (for systems that can only call a URL)</label><div class="cred">${esc(url + '?key=' + c.apiKey)}</div>
+    <label class="field-label">Signing secret (HMAC — optional, for the bridge and signed webhooks)</label><div class="cred">${esc(c.hmacSecret)}</div>
+    <label class="field-label">Test it from any computer</label><div class="cred" style="white-space:pre-wrap;">${esc(curl)}</div>
+    <div class="btnrow"><button class="btn ghost small" onclick="biCopy(${JSON.stringify(c.apiKey).replace(/"/g,'&quot;')})">Copy key</button><button class="btn primary small" onclick="fmClose()">Done</button></div>`);
+}
+async function devKeys(id){
+  if (!confirm('Make a new key for this device? The old key stops working immediately.')) return;
+  try{ const r = await feedsWrite('device_rotate_key', { id }); showCredentials(r.credentials, feedState.devices.find(d=>d.id===id)); }catch(e){ feedErr(e); }
+}
+async function devToggle(id, on){ try{ await feedsWrite('device_toggle', { id, enabled:on }); await loadFeeds(); renderIntegrations(); }catch(e){ feedErr(e); } }
+async function devDelete(id){
+  if (!confirm('Delete this device and all the readings it has sent? Entries already saved keep their figures.')) return;
+  try{ await feedsWrite('device_delete', { id }); await loadFeeds(); renderIntegrations(); renderBoard(); }catch(e){ feedErr(e); }
+}
+async function devPull(id){ try{ const r = await feedsWrite('pull_now', { id }); toast(r.ok ? `Pulled: ${r.accepted} new, ${r.duplicates} already had.` : (r.error||'Pull failed.')); await loadFeeds(); renderIntegrations(); }catch(e){ feedErr(e); } }
+function devImport(id){
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.json,.txt';
+  inp.onchange = ()=>{
+    const f = inp.files[0]; if (!f) return;
+    const rd = new FileReader();
+    rd.onload = async ()=>{
+      try{
+        const text = String(rd.result); let body = { id };
+        try{ body.payload = JSON.parse(text); }catch(e){ body.csv = text; }
+        const r = await feedsWrite('import', body);
+        toast(`Imported ${r.accepted} new, ${r.duplicates} already had, ${r.rejected} skipped.`);
+        await refreshBoardFromServer(true); renderIntegrations();
+      }catch(e){ feedErr(e); }
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+}
+async function renderFeedLog(){
+  const el = $('feedLog'); if (!el) return;
+  if (!feedState.ok){ el.innerHTML = ''; return; }
+  try{
+    const r = await feedsCall('log', { limit:30 });
+    el.innerHTML = (r.log||[]).length ? `<table class="htable"><thead><tr><th>When (UTC)</th><th>Device</th><th>Level</th><th>Message</th></tr></thead><tbody>${r.log.map(l=>`<tr><td class="mono">${esc(l.ts)}</td><td>${esc(l.device||'—')}</td><td>${esc(l.level)}</td><td>${esc(l.message)}</td></tr>`).join('')}</tbody></table>` : '<p class="section-sub" style="margin:0;">Nothing to report — no warnings or rejected readings.</p>';
+  }catch(e){ el.textContent = ''; }
+}
+
+/* ---------- Power BI ---------- */
+async function renderBiTokens(){
+  const el = $('biTokList'); if (!el) return;
+  if (!feedState.ok){ el.innerHTML = ''; return; }
+  try{
+    const r = await feedsCall('bi_tokens');
+    el.innerHTML = (r.tokens||[]).map(t=>`<div class="bi-dev"><b>${esc(t.label)}</b><span class="mono" style="color:var(--mute);">${esc(t.prefix)}… · ${t.last_used ? 'used '+esc(agoText(t.last_used)) : 'never used'}</span><button class="btn danger small" style="margin-left:auto;" onclick="biRevoke(${t.id})">Revoke</button></div>`).join('');
+  }catch(e){ el.innerHTML = ''; }
+}
+async function biCreateToken(){
+  try{
+    const r = await feedsWrite('bi_token_create', { label: $('biTokLabel').value.trim() || 'Power BI' });
+    $('biTokNew').innerHTML = `<div class="okbox">Token (shown once): <div class="cred">${esc(r.token)}</div><button class="btn ghost small" onclick="biCopy(${JSON.stringify(r.token).replace(/"/g,'&quot;')})">Copy</button></div>`;
+    $('biTokLabel').value = ''; renderBiTokens();
+  }catch(e){ feedErr(e); }
+}
+async function biRevoke(id){ if (!confirm('Revoke this token? Anything using it stops working.')) return; try{ await feedsWrite('bi_token_revoke', { id }); renderBiTokens(); }catch(e){ feedErr(e); } }
+function biDownloadPbids(){
+  const j = { version:'0.1', connections:[{ details:{ protocol:'odata', address:{ url: BI_ODATA_URL } }, mode:'Import' }] };
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(j, null, 2)], {type:'application/json'}));
+  a.download = 'WasteSmart.pbids'; document.body.appendChild(a); a.click(); a.remove();
+  toast('Open the file in Power BI Desktop, then sign in with any username and your token as the password.');
+}
+
+/* ===================== THE BOARD (Power BI style) ===================== */
+const biF = { rangeKey:'last:30', from:null, to:null, source:'all', weekday:null, bucket:null };
+const MATS = [['plastic','Plastic','--c-plastic'],['paper','Paper & cardboard','--c-paper'],['glass','Glass','--c-glass'],['cans','Cans','--c-cans']];
+const WD = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+function biResolveRange(key){
+  const k = key || biF.rangeKey, today = new Date(); today.setHours(0,0,0,0);
+  let from, to = new Date(today);
+  if (k === 'custom'){ from = biF.from ? parseISO(biF.from) : new Date(today); to = biF.to ? parseISO(biF.to) : to; }
+  else if (k === 'all'){ const ds = entries.map(e=>e.date).sort(); from = ds.length ? parseISO(ds[0]) : new Date(today); }
+  else if (k === 'lastmonth'){ const n = new Date(); from = new Date(n.getFullYear(), n.getMonth()-1, 1); to = new Date(n.getFullYear(), n.getMonth(), 0); }
+  else if (k.startsWith('last:')){ from = new Date(today); from.setDate(from.getDate() - (parseInt(k.slice(5),10)-1)); }
+  else { const b = periodBounds(k.slice(7), 0); from = b.start; to = new Date(b.end); to.setDate(to.getDate()-1); if (to > today) to = new Date(today); }
+  return { from: isoDate(from), to: isoDate(to) };
+}
+function biCustomRange(){ biF.rangeKey = 'custom'; biF.from = $('biFrom').value || null; biF.to = $('biTo').value || null; biF.bucket = null; renderBoard(); }
+function biClearAll(){ biF.weekday = null; biF.bucket = null; biF.source = 'all'; biF.rangeKey = 'last:30'; renderBoard(); }
+function biSetWeekday(i){ biF.weekday = biF.weekday === i ? null : i; renderBoard(); }
+function biSetBucket(a,b){ biF.bucket = (biF.bucket && biF.bucket[0]===a) ? null : [a,b]; renderBoard(); }
+
+/* one row per day, honouring the Source filter field by field */
+function fieldIn(e, p){
+  const fs = e.feedSrc || {}, isFeed = !!fs[p];
+  if (biF.source === 'feed') return isFeed; if (biF.source === 'manual') return !isFeed; return true;
+}
+function rowFor(e){
+  const g = p => fieldIn(e,p) ? (+getPath(e,p)||0) : 0;
+  const fd = (feedState.days||{})[e.date] || {};
+  const r = { date:e.date, id:e.id, feedOnly:!!e.feedOnly, waste:g('kitchenWaste'), oil:g('usedOil'), gas:g('util.gasKg'), kwh:g('util.kwh'), water:g('util.waterL'), mixed: biF.source==='feed' ? 0 : (+((e.recycling||{}).mixed)||0) };
+  MATS.forEach(m=> r[m[0]] = g('recycling.'+m[0]));
+  r.recyc = MATS.reduce((s,m)=>s+r[m[0]],0) + r.mixed;
+  r.est = !!(fd.utilEst && (fd.utilEst.gasKg>0 || fd.utilEst.kwh>0 || fd.utilEst.waterL>0));
+  r.sales = e.salesTyped ? (+e.salesTotal||0) : ((typeof fd.salesTotal === 'number') ? fd.salesTotal : (+e.salesTotal||0));
+  r.covers = e.salesTyped ? 0 : (fd.covers || e.covers || 0);
+  r.orders = e.salesTyped ? 0 : (fd.orders || 0);
+  r.src = {}; FIELD_PATHS.forEach(p=>{ r.src[p] = (e.feedSrc||{})[p] ? 'Device' : ((+getPath(e,p)||0) > 0 ? 'Typed' : ''); });
+  return r;
+}
+function biRows(from, to, applySel){
+  return entries.filter(e=>e.date >= from && e.date <= to).map(rowFor).filter(r=>{
+    if (!applySel) return true;
+    if (biF.weekday != null && (parseISO(r.date).getDay()+6)%7 !== biF.weekday) return false;
+    if (biF.bucket && (r.date < biF.bucket[0] || r.date > biF.bucket[1])) return false;
+    return true;
+  }).sort((a,b)=>a.date<b.date?-1:1);
+}
+const sumOf = (rows,k)=>rows.reduce((s,r)=>s+(r[k]||0),0);
+function dayDiff(a,b){ return Math.round((parseISO(b)-parseISO(a))/86400000); }
+function addDays(s,n){ const d = parseISO(s); d.setDate(d.getDate()+n); return isoDate(d); }
+function biUtilCost(rows){ const t = feedState.settings||{}; return sumOf(rows,'gas')*(t.tariff_gas_kg||0) + sumOf(rows,'kwh')*(t.tariff_kwh||0) + sumOf(rows,'water')/1000*(t.tariff_water_kl||0); }
+
+/* ---------- tooltip ---------- */
+document.addEventListener('mousemove', ev=>{
+  const t = ev.target.closest && ev.target.closest('[data-tip]'), tip = $('biTip'); if (!tip) return;
+  if (!t){ tip.style.display = 'none'; return; }
+  tip.innerHTML = t.getAttribute('data-tip'); tip.style.display = 'block';
+  const w = tip.offsetWidth; tip.style.left = Math.min(window.innerWidth - w - 8, ev.clientX + 14) + 'px'; tip.style.top = (ev.clientY + 16) + 'px';
+});
+
+/* ---------- chart helpers ---------- */
+function niceMax(v){ if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); const n = v/p; return (n<=1?1:n<=2?2:n<=5?5:10)*p; }
+function bucketize(rows, from, to){
+  const span = dayDiff(from, to) + 1, mode = span <= 45 ? 'day' : span <= 200 ? 'week' : 'month', map = new Map();
+  rows.forEach(r=>{
+    let key, a, b; const d = parseISO(r.date);
+    if (mode === 'day'){ key = r.date; a = b = r.date; }
+    else if (mode === 'week'){ const dow = (d.getDay()+6)%7; a = addDays(r.date, -dow); b = addDays(a, 6); key = a; }
+    else { a = isoDate(new Date(d.getFullYear(), d.getMonth(), 1)); b = isoDate(new Date(d.getFullYear(), d.getMonth()+1, 0)); key = a; }
+    if (!map.has(key)) map.set(key, { a, b, label:key, rows:[] }); map.get(key).rows.push(r);
+  });
+  return { mode, list:[...map.values()].sort((x,y)=>x.a<y.a?-1:1) };
+}
+function bucketLabel(b, mode){ const d = parseISO(b.a); return mode==='month' ? d.toLocaleDateString('en-ZA',{month:'short'}) : d.getDate()+' '+d.toLocaleDateString('en-ZA',{month:'short'}); }
+function barChart(groups, series, opts){
+  // groups: [{label, tip, vals:[...], a, b}], series: [{name,color}], stacked or grouped
+  opts = opts || {}; const W = 720, H = opts.h || 220, L = 40, B = 24, T = 8, R = 6, n = groups.length;
+  if (!n) return '<div class="bi-empty">Nothing in this period yet.</div>';
+  const tot = g => opts.stacked ? g.vals.reduce((s,v)=>s+v,0) : Math.max(...g.vals);
+  const mx = niceMax(Math.max(...groups.map(tot), 0.0001));
+  const iw = W-L-R, ih = H-T-B, slot = iw/n, bw = Math.max(2, Math.min(34, slot*0.7)), y = v => T + ih - v/mx*ih;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label||'Chart')}">`;
+  [0,.5,1].forEach(f=>{ const v = mx*f; s += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--mute)">${nf(v, v<10?1:0)}</text>`; });
+  const every = Math.ceil(n/8);
+  groups.forEach((g,i)=>{
+    const cx = L + slot*i + slot/2; const sel = biF.bucket && biF.bucket[0] === g.a;
+    const dim = biF.bucket && !sel ? ' class="bi-dim"' : '';
+    if (opts.stacked){
+      let acc = 0;
+      g.vals.forEach((v,k)=>{ if (v<=0) return; const y1 = y(acc+v), y0 = y(acc); s += `<rect${dim} x="${cx-bw/2}" y="${y1}" width="${bw}" height="${Math.max(0,y0-y1-(acc>0?2:0))}" rx="2" fill="var(${series[k].color})"/>`; acc += v; });
+    } else {
+      const gw = bw/g.vals.length;
+      g.vals.forEach((v,k)=>{ if (v<=0) return; s += `<rect${dim} x="${cx-bw/2+gw*k+(k?1:0)}" y="${y(v)}" width="${Math.max(1,gw-(g.vals.length>1?2:0))}" height="${ih+T-y(v)}" rx="2" fill="var(${series[k].color})"/>`; });
+    }
+    s += `<rect class="bi-hit" x="${cx-slot/2}" y="${T}" width="${slot}" height="${ih+B}" data-tip="${esc(g.tip)}" onclick="biSetBucket('${g.a}','${g.b}')"/>`;
+    if (i % every === 0) s += `<text x="${cx}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--mute)">${esc(g.label)}</text>`;
+  });
+  return s + '</svg>';
+}
+function spark(vals, color){
+  const W = 220, H = 44, n = vals.length; if (!n || !vals.some(v=>v>0)) return '<div class="costline">No readings yet.</div>';
+  const mx = Math.max(...vals), pts = vals.map((v,i)=>[(n===1?W/2:i/(n-1)*(W-4)+2), H-3-(v/mx)*(H-8)]);
+  return `<svg viewBox="0 0 ${W} ${H}" aria-hidden="true"><polyline fill="none" stroke="var(${color})" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ')}"/></svg>`;
+}
+function donut(parts){
+  const total = parts.reduce((s,p)=>s+p.v,0); if (!(total > 0)) return '<div class="bi-empty">Nothing weighed in this period.</div>';
+  const R = 70, r = 44, cx = 90, cy = 90; let a0 = -Math.PI/2, s = '<div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 180 180" style="width:180px;flex:none" role="img" aria-label="Share of weight by category">';
+  parts.filter(p=>p.v>0).forEach(p=>{
+    const frac = p.v/total, a1 = a0 + Math.min(frac, .9999)*2*Math.PI, big = (a1-a0) > Math.PI ? 1 : 0;
+    const pt = (rad,a)=>[cx+rad*Math.cos(a), cy+rad*Math.sin(a)].map(x=>x.toFixed(2)).join(',');
+    s += `<path d="M${pt(R,a0)} A${R},${R} 0 ${big} 1 ${pt(R,a1)} L${pt(r,a1)} A${r},${r} 0 ${big} 0 ${pt(r,a0)} Z" fill="var(${p.color})" stroke="var(--surface)" stroke-width="2" data-tip="<b>${esc(p.name)}</b><br>${nf(p.v)} kg · ${nf(frac*100,0)}%"/>`;
+    a0 = a1;
+  });
+  s += `<text x="${cx}" y="${cy-2}" text-anchor="middle" font-size="20" font-weight="800" fill="var(--ink)">${nf(total,0)}</text><text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="11" fill="var(--mute)">kg weighed</text></svg><div class="bi-legend" style="flex-direction:column;gap:6px;margin:0">`;
+  parts.forEach(p=>{ s += `<span><span class="k" style="background:var(${p.color})"></span>${esc(p.name)} <b style="color:var(--ink)">${nf(p.v)} kg</b></span>`; });
+  return s + '</div></div>';
+}
+function legend(series){ return series.map(s=>`<span><span class="k" style="background:var(${s.color})"></span>${esc(s.name)}</span>`).join(''); }
+function delta(cur, prev, lowerIsGood, unit){
+  if (!(prev > 0)) return '<span class="d">no earlier period to compare</span>';
+  const p = (cur-prev)/prev*100; if (Math.abs(p) < 0.5) return '<span class="d">level with the previous period</span>';
+  const good = lowerIsGood ? p < 0 : p > 0;
+  return `<span class="d ${good?'good':'bad'}">${p>0?'▲':'▼'} ${nf(Math.abs(p),0)}% vs previous${unit?'':''}</span>`;
+}
+
+/* ---------- render ---------- */
+function renderBoard(){
+  if (!$('biKpis')) return;
+  const rg = biResolveRange(), from = rg.from, to = rg.to;
+  document.querySelectorAll('#biPeriod .bi-chip').forEach(b=>b.classList.toggle('on', b.dataset.r === biF.rangeKey || (b.dataset.r === 'all' && biF.rangeKey==='all')));
+  document.querySelectorAll('#biSource .bi-chip').forEach(b=>b.classList.toggle('on', b.dataset.v === biF.source));
+  $('biFrom').value = from; $('biTo').value = to;
+  const rows = biRows(from, to, true), allRows = biRows(from, to, false);
+  const span = dayDiff(from, to) + 1, pFrom = addDays(from, -span), pTo = addDays(from, -1);
+  const prev = biRows(pFrom, pTo, false);
+  // selection row
+  const sel = []; if (biF.weekday != null) sel.push(['Weekday: '+WD[biF.weekday], 'biF.weekday=null']); if (biF.bucket) sel.push(['Bucket: '+biF.bucket[0]+(biF.bucket[1]!==biF.bucket[0]?' to '+biF.bucket[1]:''), 'biF.bucket=null']);
+  $('biSelRow').hidden = !sel.length; $('biSelRow').innerHTML = sel.map(x=>`<button class="bi-chip on" onclick="${x[1]};renderBoard()">${esc(x[0])} ✕</button>`).join('');
+  biKpis(rows, prev, span); biHighlights(rows, prev, allRows);
+  biTrend(rows, from, to); biDonutC(rows); biWeekday(allRows); biRecycC(rows, from, to); biUtilC(rows); biHourly(rows, from, to);
+  biCosts(rows); biOilC(rows); biHealthC(rows); biTableC(rows); historyList();
+}
+function biKpis(rows, prev, span){
+  const w = sumOf(rows,'waste'), rc = sumOf(rows,'recyc'), oil = sumOf(rows,'oil'), gas = sumOf(rows,'gas'), kwh = sumOf(rows,'kwh'), wl = sumOf(rows,'water');
+  const pw = sumOf(prev,'waste'), prc = sumOf(prev,'recyc'), poil = sumOf(prev,'oil'), pgas = sumOf(prev,'gas'), pkwh = sumOf(prev,'kwh'), pwl = sumOf(prev,'water');
+  const div = (w+rc) > 0 ? rc/(w+rc)*100 : null, pdiv = (pw+prc) > 0 ? prc/(pw+prc)*100 : 0;
+  const cov = sumOf(rows,'covers'), sales = sumOf(rows,'sales');
+  const k = (c,l,v,d)=>`<div class="bi-kpi"><div class="v">${v}</div><div class="l"><span class="sw" style="background:var(${c})"></span>${l}</div>${d}</div>`;
+  let h = k('--c-waste','Kitchen waste', nf(w)+' kg', delta(w,pw,true)) + k('--c-recyc','Recycled', nf(rc)+' kg', delta(rc,prc,false))
+    + k('--c-plastic','Diverted from landfill', div==null?'—':nf(div,0)+'%', pdiv>0&&div!=null ? `<span class="d ${div>=pdiv?'good':'bad'}">${div>=pdiv?'▲':'▼'} ${nf(Math.abs(div-pdiv),0)} pts vs previous</span>` : '<span class="d">weight recycled ÷ total weighed</span>')
+    + k('--c-oil','Used cooking oil', nf(oil)+' kg', delta(oil,poil,false))
+    + k('--c-gas','Gas', nf(gas)+' kg', delta(gas,pgas,true)) + k('--c-elec','Electricity', nf(kwh,0)+' kWh', delta(kwh,pkwh,true)) + k('--c-water','Water', nf(wl/1000,1)+' kL', delta(wl,pwl,true));
+  const uc = biUtilCost(rows); if (uc > 0) h += k('--c-sales','Utilities cost', fmtMoney(uc), '<span class="d">at your tariffs</span>');
+  if (cov > 0) h += k('--c-sales','Waste per cover', nf(w/cov*1000,0)+' g', `<span class="d">${nf(cov,0)} covers from the POS</span>`);
+  $('biKpis').innerHTML = h;
+}
+function biHighlights(rows, prev, allRows){
+  const L = []; const add = (cls, tag, txt)=>L.push(`<li><span class="ic ${cls}">${tag}</span><span>${txt}</span></li>`);
+  const w = sumOf(rows,'waste'), pw = sumOf(prev,'waste'), rc = sumOf(rows,'recyc');
+  if (pw > 0 && w > 0){ const p = (w-pw)/pw*100; if (Math.abs(p) >= 5) add(p>0?'up':'down', p>0?'UP':'DOWN', `Kitchen waste is ${nf(Math.abs(p),0)}% ${p>0?'higher':'lower'} than the previous period.`); }
+  const best = MATS.map(m=>[m[1], sumOf(rows,m[0])]).sort((a,b)=>b[1]-a[1])[0]; if (best && best[1] > 0) add('info','MIX', `${best[0]} is your biggest recycled material at ${nf(best[1])} kg.`);
+  const wk = [0,0,0,0,0,0,0], cnt = [0,0,0,0,0,0,0]; allRows.forEach(r=>{ const i = (parseISO(r.date).getDay()+6)%7; wk[i]+=r.waste; if (r.waste>0) cnt[i]++; });
+  const avg = wk.map((v,i)=>cnt[i] ? v/cnt[i] : 0), mi = avg.indexOf(Math.max(...avg)); if (avg[mi] > 0 && cnt.filter(x=>x>0).length >= 3) add('info','DAY', `${WD[mi]} is the heaviest waste day, at ${nf(avg[mi])} kg on average.`);
+  const est = rows.filter(r=>r.est).length; if (est) add('info','EST', `${est} day${est===1?'':'s'} include an estimate because a meter went quiet. See Device health.`);
+  const late = (feedState.devices||[]).filter(d=>d.enabled && (d.health==='quiet'||d.health==='stale')); if (late.length) add('up','LATE', `${late.map(d=>esc(d.name)).join(', ')} ${late.length===1?'is':'are'} not reporting on time.`);
+  const unk = rows.filter(r=>r.waste===0 && r.recyc===0 && r.oil===0 && r.gas===0 && r.kwh===0 && r.water===0).length; if (unk) add('info','GAP', `${unk} logged day${unk===1?' has':'s have'} no figures.`);
+  $('biHighlights').innerHTML = L.length ? L.join('') : '<li><span>Not enough data yet. Highlights appear once there is a period to compare.</span></li>';
+}
+function biTrend(rows, from, to){
+  const { mode, list } = bucketize(rows, from, to);
+  const series = [{name:'Kitchen waste',color:'--c-waste'},{name:'Recycled',color:'--c-recyc'}];
+  const groups = list.map(b=>{ const w = sumOf(b.rows,'waste'), r = sumOf(b.rows,'recyc'); return { a:b.a, b:b.b, label:bucketLabel(b,mode), vals:[w,r], tip:`<b>${b.a}${b.b!==b.a?' to '+b.b:''}</b><br>Waste ${nf(w)} kg<br>Recycled ${nf(r)} kg` }; });
+  $('biTrendSub').textContent = `Kg per ${mode}. Click a bar to filter the page to it.`;
+  $('biTrend').innerHTML = barChart(groups, series, { label:'Waste and recycling over time' }); $('biTrendLegend').innerHTML = legend(series);
+}
+function biDonutC(rows){
+  $('biDonut').innerHTML = donut([{name:'Kitchen waste',v:sumOf(rows,'waste'),color:'--c-waste'}, ...MATS.map(m=>({name:m[1],v:sumOf(rows,m[0]),color:m[2]})), {name:'Other recycling',v:sumOf(rows,'mixed'),color:'--c-recyc'}, {name:'Used oil',v:sumOf(rows,'oil'),color:'--c-oil'}]);
+}
+function biWeekday(allRows){
+  const tot = [0,0,0,0,0,0,0], n = [0,0,0,0,0,0,0]; allRows.forEach(r=>{ const i = (parseISO(r.date).getDay()+6)%7; tot[i]+=r.waste; if (r.waste>0) n[i]++; });
+  const mx = Math.max(...tot, 0.0001);
+  $('biHeat').innerHTML = tot.some(v=>v>0) ? `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">${tot.map((v,i)=>{ const f = v/mx; const sel = biF.weekday === i;
+    return `<button onclick="biSetWeekday(${i})" data-tip="<b>${WD[i]}</b><br>${nf(v)} kg over ${n[i]} day${n[i]===1?'':'s'}" style="border:1.5px solid ${sel?'var(--ink)':'var(--line)'};border-radius:var(--radius-s);padding:10px 4px;text-align:center;min-height:84px;background:color-mix(in srgb,var(--heat1) ${Math.round(f*100)}%,var(--heat0));color:${f>.55?'var(--heat-ink)':'var(--ink)'};${biF.weekday!=null&&!sel?'opacity:.4':''}"><div style="font-size:11.5px;font-weight:700">${WD[i]}</div><div style="font-family:var(--font-display);font-weight:var(--dw);font-size:20px">${nf(v,0)}</div><div style="font-size:11px">kg</div></button>`; }).join('')}</div>` : '<div class="bi-empty">No waste logged in this period.</div>';
+}
+function biRecycC(rows, from, to){
+  const { mode, list } = bucketize(rows, from, to);
+  const series = [...MATS.map(m=>({name:m[1],color:m[2]})), {name:'Other recycling',color:'--c-recyc'}];
+  const groups = list.map(b=>{ const vals = [...MATS.map(m=>sumOf(b.rows,m[0])), sumOf(b.rows,'mixed')]; return { a:b.a, b:b.b, label:bucketLabel(b,mode), vals, tip:`<b>${b.a}${b.b!==b.a?' to '+b.b:''}</b>`+series.map((s,i)=>vals[i]>0?`<br>${esc(s.name)} ${nf(vals[i])} kg`:'').join('') }; });
+  $('biRecyc').innerHTML = barChart(groups, series, { stacked:true, h:200, label:'Recycling by material' });
+  $('biRecycLegend').innerHTML = legend(series.filter((s,i)=> i<4 || sumOf(rows,'mixed')>0));
+}
+function biUtilC(rows){
+  const t = feedState.settings||{}, cov = sumOf(rows,'covers');
+  const tile = (name,color,key,unit,div,dp,rate)=>{ const tot = sumOf(rows,key)/div; const cost = tot*(rate||0);
+    return `<div><div class="t"><span class="sw" style="background:var(${color});width:10px;height:10px;border-radius:2px;display:inline-block"></span>${name}</div><div class="n">${nf(tot,dp)} ${unit}</div>${spark(rows.map(r=>r[key]),color)}<div class="costline">${rate?'Cost '+fmtMoney(cost)+(cov>0?' · '+fmtMoney(cost/cov)+' per cover':''):'Set a tariff under Devices to see cost.'}</div></div>`; };
+  $('biUtil').innerHTML = tile('Gas','--c-gas','gas','kg',1,1,t.tariff_gas_kg) + tile('Electricity','--c-elec','kwh','kWh',1,0,t.tariff_kwh) + tile('Water','--c-water','water','kL',1000,1,t.tariff_water_kl);
+}
+function biHourly(rows, from, to){
+  const set = new Set(rows.map(r=>r.date)), hrs = (feedState.hourly||[]).filter(h=>set.has(h.date));
+  const draw = (id, metric, color, unit, div)=>{
+    const sums = Array(24).fill(0), days = new Set(); hrs.filter(h=>h.metric===metric).forEach(h=>{ sums[h.hour] += h.value; days.add(h.date); });
+    const nd = Math.max(days.size,1), avg = sums.map(v=>v/nd/div);
+    const title = `<div class="t" style="font-size:13px;color:var(--mute);margin-bottom:4px">${({gas:'Gas',electricity:'Electricity',water:'Water'})[metric]} · average per hour (${unit})</div>`;
+    if (!days.size){ $(id).innerHTML = title + '<div class="bi-empty">No hourly readings in this period.</div>'; return; }
+    const groups = avg.map((v,h)=>({ a:String(h), b:String(h), label:String(h).padStart(2,'0'), vals:[v], tip:`<b>${String(h).padStart(2,'0')}:00</b><br>${nf(v,2)} ${unit} on average` }));
+    const saved = biF.bucket; biF.bucket = null;
+    $(id).innerHTML = title + barChart(groups, [{name:metric,color}], { h:140 }).replace(/onclick="biSetBucket\([^"]*\)"/g,'');
+    biF.bucket = saved;
+  };
+  draw('biHourElec','electricity','--c-elec','kWh',1); draw('biHourWater','water','--c-water','L',1); draw('biHourGas','gas','--c-gas','kg',1);
+}
+function biCosts(rows){
+  const w = sumOf(rows,'waste'), months = Math.max(1, Math.ceil(rows.length/30));
+  const muni = (disposalRates.muniBase||0)*months + w*(disposalRates.muniRate||0), priv = (disposalRates.privBase||0)*months + w*(disposalRates.privRate||0);
+  const using = disposalRates.provider === 'priv' ? 'private company' : 'municipal';
+  const uc = biUtilCost(rows), rec = rows.reduce((s,r)=>s+MATS.reduce((a,m)=>a+r[m[0]]*(rates[m[0]]||0),0)+r.oil*(oilSettings.usedRatePerKg||0),0);
+  const line = (l,v,c)=>`<div class="bi-dev"><span>${l}</span><b class="mono" style="margin-left:auto;${c?'color:'+c:''}">${v}</b></div>`;
+  $('biBridge').innerHTML = line('Waste collection ('+using+')', fmtMoney(disposalRates.provider === 'priv' ? priv : muni)) + line('Utilities', uc>0?fmtMoney(uc):'—') + line('Earned from recyclables and oil', rec>0?fmtMoney(rec):'—','var(--good)');
+}
+function biOilC(rows){
+  const oil = sumOf(rows,'oil'), val = oil*(oilSettings.usedRatePerKg||0);
+  $('biOil').innerHTML = `<div class="bi-spark"><div><div class="n" style="font-family:var(--font-display);font-weight:var(--dw);font-size:32px">${nf(oil)} kg</div><div class="costline">${val>0?'Recovery value '+fmtMoney(val):'Set a price per kg under Settings to see value.'}</div></div><div>${spark(rows.map(r=>r.oil),'--c-oil')}</div></div>`;
+}
+function biHealthC(rows){
+  const devs = feedState.devices||[];
+  const est = rows.filter(r=>r.est).length;
+  $('biHealthSub').textContent = feedState.ok ? `A meter that misses its reporting window shows as late. ${est ? est+' day'+(est===1?'':'s')+' in this period contain an estimate.' : 'No estimated days in this period.'}` : 'The device service is not reachable.';
+  $('biHealth').innerHTML = devs.length ? devs.map(d=>`<div class="bi-dev"><span class="st ${esc(d.health)}">${esc(healthLabel(d.health))}</span><b>${esc(d.name)}</b><span class="mono" style="color:var(--mute)">${esc(targetLabel(d.target))}${d.intervalMin?' · every '+(d.intervalMin>=60?(d.intervalMin/60)+' h':d.intervalMin+' min'):''} · last ${esc(agoText(d.lastSeen))}</span></div>`).join('') : '<div class="bi-empty">No devices connected yet. Add them under Devices. Hand-keyed figures still show here.</div>';
+}
+let biSort = { k:'date', dir:-1 }, biShowAll = false;
+const TCOLS = [['date','Date'],['waste','Waste kg'],['recyc','Recycled kg'],['oil','Oil kg'],['gas','Gas kg'],['kwh','kWh'],['water','Water L']];
+function biTableC(rows){
+  $('biTHead').innerHTML = '<tr>'+TCOLS.map(c=>`<th data-sort="${c[0]}" class="${c[0]==='date'?'':'num'}" onclick="biSortBy('${c[0]}')">${c[1]}${biSort.k===c[0]?(biSort.dir>0?' ▲':' ▼'):''}</th>`).join('')+'<th></th></tr>';
+  const sorted = rows.slice().sort((a,b)=> (a[biSort.k]<b[biSort.k]?-1:a[biSort.k]>b[biSort.k]?1:0)*biSort.dir);
+  const shown = biShowAll ? sorted : sorted.slice(0,25);
+  $('biTBody').innerHTML = shown.length ? shown.map(r=>`<tr onclick="biDrill('${r.date}')" style="cursor:pointer"><td>${r.date}</td>${TCOLS.slice(1).map(c=>`<td class="num">${r[c[0]]>0?nf(r[c[0]],c[0]==='kwh'||c[0]==='water'?0:1):'—'}</td>`).join('')}<td>${r.est?'<span class="src est">Est</span>':''}</td></tr><tr class="drill" id="dr_${r.date}" hidden><td colspan="8">${drillText(r)}</td></tr>`).join('') : '<tr><td colspan="8" class="bi-empty">No days in this selection.</td></tr>';
+  $('biMore').innerHTML = sorted.length > 25 ? `<button class="btn ghost small" onclick="biShowAll=!biShowAll;renderBoard()">${biShowAll?'Show fewer':'Show all '+sorted.length+' days'}</button>` : '';
+}
+function drillText(r){ const nm = {kitchenWaste:'Kitchen waste','recycling.plastic':'Plastic','recycling.paper':'Paper','recycling.glass':'Glass','recycling.cans':'Cans',usedOil:'Used oil','util.gasKg':'Gas','util.kwh':'Electricity','util.waterL':'Water'}; return FIELD_PATHS.filter(p=>r.src[p]).map(p=>`${nm[p]}: <b>${r.src[p]}</b>`).join(' · ') || 'No figures for this day.'; }
+function biDrill(d){ const el = $('dr_'+d); if (el) el.hidden = !el.hidden; }
+function biSortBy(k){ biSort = { k, dir: biSort.k===k ? -biSort.dir : -1 }; renderBoard(); }
+function biExportCsv(){
+  const rg = biResolveRange(), rows = biRows(rg.from, rg.to, true);
+  const head = ['Date','Kitchen waste kg','Plastic kg','Paper and cardboard kg','Glass kg','Cans kg','Other recycling kg','Used oil kg','Gas kg','Electricity kWh','Water L','Estimated'];
+  const body = rows.map(r=>[r.date,r.waste,r.plastic,r.paper,r.glass,r.cans,r.mixed,r.oil,r.gas,r.kwh,r.water,r.est?'yes':'']);
+  triggerDownload(`waste-smart-${rg.from}-to-${rg.to}.csv`, toCSV(head, body), 'text/csv;charset=utf-8;');
+}
+function historyList(){
+  const saved = entries.filter(e=>!e.feedOnly).sort((a,b)=>a.date<b.date?1:-1).slice(0,60);
+  $('historyBody').innerHTML = saved.length ? saved.map(e=>`<tr><td>${esc(e.date)}</td><td class="num">${nf(eWaste(e))}</td><td class="num">${nf(eRecyc(e))}</td><td class="num">${nf(eOil(e))}</td><td><button class="btn danger small" onclick="deleteEntry('${esc(e.id)}')">Delete</button></td></tr>`).join('') : '<tr><td colspan="5" class="bi-empty">Nothing saved yet.</td></tr>';
+}
+function biInit(){
+  pfInit();
+  $('biPeriod').addEventListener('click', ev=>{ const b = ev.target.closest('.bi-chip'); if (!b) return; biF.rangeKey = b.dataset.r.replace('period:','period:'); biF.bucket = null; renderBoard(); });
+  $('biSource').addEventListener('click', ev=>{ const b = ev.target.closest('.bi-chip'); if (!b) return; biF.source = b.dataset.v; renderBoard(); });
+}
+function biOpenPowerBi(){ showView('integrations'); setTimeout(()=>{ const el = $('biUrl'); if (el) el.scrollIntoView({behavior:'smooth', block:'center'}); }, 60); toast('Create a token, then download the .pbids file.'); }
+
+function fmtMoneyDp(n,dp){ return (setup && setup.currency ? setup.currency : 'R') + (Number(n)||0).toLocaleString('en-ZA',{minimumFractionDigits:dp,maximumFractionDigits:dp}); }
+/* ===================== PROFIT: what each tracked thing costs and earns ===================== */
+const pfF = { key:'period:month' };
+const MON = 30.4; // days per month used to spread a monthly base fee
+function pfRange(){ return biResolveRange(pfF.key); }
+
+function profitModel(from, to){
+  const keepSrc = biF.source; biF.source = 'all'; const rows = biRows(from, to, false); biF.source = keepSrc;
+  const days = dayDiff(from, to) + 1, t = feedState.settings || {};
+  const prov = disposalRates.provider === 'priv' ? 'priv' : 'muni', rate = +disposalRates[prov+'Rate'] || 0, baseFee = (+disposalRates[prov+'Base'] || 0) * days / MON;
+  const waste = sumOf(rows,'waste'), foodRate = +rates.foodCostPerKg || 0, sales = sumOf(rows,'sales');
+  const traded = rows.some(r=>r.waste>0 || r.kwh>0 || r.recyc>0);
+  const costs = [
+    { k:'collect', name:'Waste collection', v:(waste*rate) + (traded ? baseFee : 0), color:'--c-waste', note: waste>0 ? `${nf(waste)} kg at ${fmtMoney(rate)} per kg${baseFee>0?' plus the base fee':''}` : 'No waste weighed in this period', need: rate>0||baseFee>0 ? null : 'collection rate' },
+    { k:'food', name:'Food thrown away', v:waste*foodRate, color:'--c-waste', note: foodRate>0 ? `${nf(waste)} kg at ${fmtMoney(foodRate)} per kg (your average)` : 'Add your average food cost per kg', need: foodRate>0 ? null : 'food cost' },
+    { k:'elec', name:'Electricity', v:sumOf(rows,'kwh')*(t.tariff_kwh||0), color:'--c-elec', note:`${nf(sumOf(rows,'kwh'),0)} kWh`, need: t.tariff_kwh>0 ? null : 'electricity tariff' },
+    { k:'gas', name:'Gas', v:sumOf(rows,'gas')*(t.tariff_gas_kg||0), color:'--c-gas', note:`${nf(sumOf(rows,'gas'))} kg`, need: t.tariff_gas_kg>0 ? null : 'gas tariff' },
+    { k:'water', name:'Water', v:sumOf(rows,'water')/1000*(t.tariff_water_kl||0), color:'--c-water', note:`${nf(sumOf(rows,'water')/1000,1)} kL`, need: t.tariff_water_kl>0 ? null : 'water tariff' }
+  ];
+  const mat = MATS.map(m=>({ k:m[0], name:m[1], kg:sumOf(rows,m[0]), v:sumOf(rows,m[0])*(rates[m[0]]||0), color:m[2] }));
+  const recV = mat.reduce((s,m)=>s+m.v,0), oilKg = sumOf(rows,'oil'), oilV = oilKg*(oilSettings.usedRatePerKg||0);
+  const income = [ { k:'recyc', name:'Recycling', v:recV, color:'--c-recyc', note: mat.filter(m=>m.kg>0).map(m=>`${m.name.toLowerCase()} ${nf(m.kg)} kg`).join(', ') || 'Nothing recycled in this period', need: Object.values(rates).some(x=>x>0) ? null : 'recycling prices' },
+                   { k:'oil', name:'Used cooking oil', v:oilV, color:'--c-oil', note:`${nf(oilKg)} kg`, need: oilSettings.usedRatePerKg>0 ? null : 'oil price' } ];
+  const totalCost = costs.reduce((s,c)=>s+c.v,0), totalIncome = income.reduce((s,c)=>s+c.v,0);
+  return { rows, days, sales, costs, income, totalCost, totalIncome, left: sales - totalCost + totalIncome, waste, covers:sumOf(rows,'covers'), orders:sumOf(rows,'orders') };
+}
+function pctOf(v, sales){ return sales > 0 ? nf(v/sales*100, 1) + '%' : '—'; }
+
+function renderProfit(){
+  if (!$('pfHero')) return;
+  document.querySelectorAll('#pfPeriod .bi-chip').forEach(b=>b.classList.toggle('on', b.dataset.r === pfF.key));
+  const rg = pfRange(), span = dayDiff(rg.from, rg.to) + 1, pFrom = addDays(rg.from, -span), pTo = addDays(rg.from, -1);
+  const m = profitModel(rg.from, rg.to), pm = profitModel(pFrom, pTo);
+  pfSetup(m); pfHero(m, pm); pfLinesC(m, pm); pfRatiosC(m, pm); pfAfterC(rg); pfVoidsC(rg); pfLaborC(rg); pfNormC(rg); pfHourC(rg); pfActionsC(m, pm, rg);
+}
+function pfSetup(m){
+  const need = [...m.costs, ...m.income].filter(x=>x.need && (x.k!=='oil' && x.k!=='recyc' || true)).map(x=>x.need);
+  const hasSales = m.sales > 0;
+  if (!need.length && hasSales){ $('pfSetup').innerHTML = ''; return; }
+  const items = []; if (!hasSales) items.push('<b>Sales</b>: connect your POS under Devices, or key a day\'s total under Settings.');
+  if (need.includes('food cost')) items.push(`<b>Food cost</b>: your average cost per kg of food thrown away <span class="addrow" style="display:inline-flex;margin-left:6px"><input type="number" min="0" step="0.01" id="pfFood" placeholder="R per kg" aria-label="Average food cost per kg"><button class="btn primary small" onclick="pfSaveFood()">Save</button></span>`);
+  if (need.includes('collection rate')) items.push('<b>Waste collection</b>: enter your rate on the <a href="#impact" onclick="showView(\'impact\');return false">Impact</a> page.');
+  const tar = need.filter(n=>/tariff/.test(n)); if (tar.length) items.push(`<b>Tariffs</b>: set ${tar.join(', ')} under <a href="#integrations" onclick="showView('integrations');return false">Devices</a>.`);
+  const pr = need.filter(n=>/price/.test(n)); if (pr.length) items.push(`<b>Recovery prices</b>: set ${pr.join(' and ')} under <a href="#settings" onclick="showView('settings');return false">Settings</a> if you are paid for them.`);
+  $('pfSetup').innerHTML = `<div class="warnbox" style="margin-bottom:14px"><b>To finish the picture</b><ul style="margin:6px 0 0 18px;display:grid;gap:6px">${items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+}
+async function pfSaveFood(){
+  const v = parseFloat($('pfFood').value); if (!(v > 0)){ toast('Enter a cost per kg.'); return; }
+  rates = Object.assign({}, rates, { foodCostPerKg:v });
+  if (await sSet(K.RECYCLING, JSON.stringify(rates))){ toast('Saved.'); renderProfit(); }
+}
+function pfHero(m, pm){
+  const tile = (n,l,sub)=>`<div><div class="n">${n}</div><div class="l">${l}</div>${sub?`<div class="l" style="opacity:.8;margin-top:2px">${sub}</div>`:''}</div>`;
+  const cmp = (cur, prev, lowerGood)=> prev>0 ? `${cur>=prev?'▲':'▼'} ${nf(Math.abs(cur-prev)/prev*100,0)}% vs previous` : '';
+  $('pfHero').innerHTML = tile(m.sales>0?fmtMoney(m.sales):'—','Sales', m.sales>0?cmp(m.sales,pm.sales):'No sales yet')
+    + tile(fmtMoney(m.totalCost),'Costs you track', m.sales>0 ? pctOf(m.totalCost,m.sales)+' of sales' : cmp(m.totalCost,pm.totalCost))
+    + tile(fmtMoney(m.totalIncome),'Earned back', 'recycling and oil')
+    + tile(m.sales>0?fmtMoney(m.left):'—','Left after these costs', m.sales>0 ? pctOf(m.left,m.sales)+' of sales' : 'Needs sales');
+}
+function pfLinesC(m, pm){
+  const costs = m.costs.slice().sort((a,b)=>b.v-a.v), mx = Math.max(...costs.map(c=>c.v), ...m.income.map(c=>c.v), 1);
+  const prevOf = k => (pm.costs.concat(pm.income).find(x=>x.k===k)||{}).v || 0;
+  $('pfLinesSub').textContent = `${m.totalCost>0 ? 'Together these cost ' + fmtMoney(m.totalCost) + (m.sales>0 ? ', which is ' + pctOf(m.totalCost,m.sales) + ' of sales.' : '.') : 'Add tariffs and rates to see what each line costs.'} Food thrown away is an estimate from your own cost per kg.`;
+  const row = (c, kind)=>{ const p = prevOf(c.k), d = p>0 ? (c.v-p)/p*100 : null; const bad = kind==='cost' ? d>0 : d<0;
+    return `<div class="costrow" style="--pc:var(${c.color})" data-tip="<b>${esc(c.name)}</b><br>${esc(c.note)}"><div class="nm"><span class="sw"></span>${esc(c.name)}</div>
+      <div class="bar"><i style="width:${Math.max(c.v>0?2:0, c.v/mx*100)}%"></i></div>
+      <div class="am">${c.need && c.v===0 ? '<span class="costline">needs '+esc(c.need)+'</span>' : fmtMoney(c.v)}</div>
+      <div class="pc">${kind==='cost' ? pctOf(c.v,m.sales)+' of sales' : (m.totalCost>0?nf(c.v/m.totalCost*100,0)+'% of costs offset':'')}</div>
+      <div class="dl ${d==null||Math.abs(d)<3?'':(bad?'bad':'good')}">${d==null||Math.abs(d)<3?'':(d>0?'▲ ':'▼ ')+nf(Math.abs(d),0)+'%'}</div></div>`; };
+  $('pfLines').innerHTML = `<div class="costgrp">What it costs you</div>` + costs.map(c=>row(c,'cost')).join('') + `<div class="costgrp">What you earn back</div>` + m.income.map(c=>row(c,'income')).join('');
+}
+function pfRatioRow(label, cur, prev, dp, unit, lowerGood){
+  const d = prev>0 && cur>0 ? (cur-prev)/prev*100 : null, good = d!=null && (lowerGood ? d<0 : d>0);
+  return `<div class="bi-dev"><span>${label}</span><b class="mono" style="margin-left:auto">${cur>0?(unit==='R'?fmtMoneyDp(cur,2):nf(cur,dp)+' '+unit):'—'}</b>${d!=null&&Math.abs(d)>=3?`<span class="mono ${good?'':''}" style="color:var(${good?'--good':'--bad'});min-width:64px;text-align:right">${d>0?'▲':'▼'} ${nf(Math.abs(d),0)}%</span>`:'<span style="min-width:64px"></span>'}</div>`;
+}
+function pfRatiosC(m, pm){
+  const unit = m.covers > 0 ? m.covers : m.orders, uname = m.covers > 0 ? 'cover' : 'order', pu = m.covers > 0 ? pm.covers : pm.orders;
+  if (!(unit > 0)){ $('pfRatios').innerHTML = '<div class="bi-empty">No covers or orders yet. Once your POS reports them, this shows what each one costs in power, water, gas and waste.</div>'; return; }
+  const elec = m.costs.find(c=>c.k==='elec'), per = (x, u)=> u>0 ? x/u : 0;
+  let h = pfRatioRow('Tracked costs per '+uname, per(m.totalCost,unit), per(pm.totalCost,pu), 2, 'R', true);
+  h += pfRatioRow('Electricity per '+uname, per(sumOf(m.rows,'kwh')*1000,unit), per(sumOf(pm.rows,'kwh')*1000,pu), 0, 'Wh', true);
+  h += pfRatioRow('Gas per '+uname, per(sumOf(m.rows,'gas')*1000,unit), per(sumOf(pm.rows,'gas')*1000,pu), 0, 'g', true);
+  h += pfRatioRow('Water per '+uname, per(sumOf(m.rows,'water'),unit), per(sumOf(pm.rows,'water'),pu), 1, 'L', true);
+  h += pfRatioRow('Kitchen waste per '+uname, per(m.waste*1000,unit), per(pm.waste*1000,pu), 0, 'g', true);
+  if (m.sales > 0) h += pfRatioRow('Water per R1,000 of sales', sumOf(m.rows,'water')/m.sales*1000, pm.sales>0 ? sumOf(pm.rows,'water')/pm.sales*1000 : 0, 0, 'L', true);
+  $('pfRatios').innerHTML = h + `<div class="costline" style="margin-top:8px">Based on ${nf(unit,0)} ${uname}s from the POS. Arrows compare with the previous period.</div>`;
+}
+
+/* closed hours: hours of the day with almost no sales across the period */
+function pfClosed(rg){
+  const pos = (feedState.pos && feedState.pos.posHourly) || [], S = Array(24).fill(0), tradeDays = new Set();
+  pos.filter(h=>h.date>=rg.from && h.date<=rg.to).forEach(h=>{ S[h.hour] += h.sales; if (h.sales>0) tradeDays.add(h.date); });
+  const mx = Math.max(...S); if (!(mx > 0)) return null;
+  const closed = S.map(v=>v < mx*0.03);
+  return { S, closed, tradeDays, mx };
+}
+function hourRanges(flags){
+  const out = []; let s = null;
+  for (let h=0; h<=24; h++){ const on = h<24 && flags[h]; if (on && s==null) s = h; if (!on && s!=null){ out.push(String(s).padStart(2,'0')+':00 to '+String(h%24).padStart(2,'0')+':00'); s = null; } }
+  return out.join(', ');
+}
+function pfAfterModel(rg){
+  const c = pfClosed(rg); if (!c) return null;
+  const hrs = (feedState.hourly||[]).filter(h=>h.date>=rg.from && h.date<=rg.to && c.tradeDays.has(h.date));
+  const acc = k => { let closed = 0, total = 0; hrs.filter(h=>h.metric===k).forEach(h=>{ total += h.value; if (c.closed[h.hour]) closed += h.value; }); return { closed, total, n: new Set(hrs.filter(h=>h.metric===k).map(h=>h.date)).size }; };
+  return { c, e:acc('electricity'), w:acc('water'), g:acc('gas') };
+}
+function pfAfterC(rg){
+  const a = pfAfterModel(rg), t = feedState.settings || {};
+  if (!a){ $('pfAfter').innerHTML = '<div class="bi-empty">Needs hourly sales from a connected POS and hourly readings from your meters.</div>'; return; }
+  if (!(a.e.n > 0 || a.w.n > 0)){ $('pfAfter').innerHTML = '<div class="bi-empty">No hourly meter readings in this period yet.</div>'; return; }
+  const perDay = x => x.n > 0 ? x.closed / x.n : 0, share = x => x.total > 0 ? x.closed / x.total * 100 : 0;
+  const monthly = perDay(a.e) * MON * (t.tariff_kwh||0);
+  $('pfAfter').innerHTML = `<div class="costline" style="margin-bottom:8px">Closed hours: <b style="color:var(--ink)">${esc(hourRanges(a.c.closed) || 'none found')}</b></div>
+    <div class="bi-dev"><span>Electricity</span><b class="mono" style="margin-left:auto">${nf(perDay(a.e),1)} kWh a day</b><span class="mono" style="min-width:90px;text-align:right">${nf(share(a.e),0)}% of all</span></div>
+    <div class="bi-dev"><span>Water</span><b class="mono" style="margin-left:auto">${nf(perDay(a.w),0)} L a day</b><span class="mono" style="min-width:90px;text-align:right">${nf(share(a.w),0)}% of all</span></div>
+    <div class="bi-dev"><span>Gas</span><b class="mono" style="margin-left:auto">${nf(perDay(a.g),2)} kg a day</b><span class="mono" style="min-width:90px;text-align:right">${nf(share(a.g),0)}% of all</span></div>
+    <div class="costline" style="margin-top:8px">${monthly>0 ? 'Electricity while closed costs about <b style="color:var(--ink)">'+fmtMoney(monthly)+'</b> a month. Some of this is fridges and freezers, which should run. Anything above that is the saving.' : 'Set an electricity tariff to see the rand value.'}</div>`;
+}
+function pfVoidsC(rg){
+  const rows = ((feedState.pos||{}).voidsDailyReason||[]).filter(r=>r.date>=rg.from && r.date<=rg.to), by = {};
+  rows.forEach(r=>{ by[r.reason] = by[r.reason] || { v:0, n:0 }; by[r.reason].v += r.value; by[r.reason].n += r.count; });
+  const list = Object.entries(by).sort((a,b)=>b[1].v-a[1].v), tot = list.reduce((s,x)=>s+x[1].v,0), mx = list.length ? list[0][1].v : 1;
+  if (!list.length){ $('pfVoids').innerHTML = '<div class="bi-empty">Nothing logged. Connect the POS void or write-off feed under Devices (type: POS write-offs) to see burnt, dropped, spoiled and sent-back items here.</div>'; return; }
+  $('pfVoids').innerHTML = list.map(([k,x])=>`<div class="costrow slim" style="--pc:var(--c-waste)"><div class="nm">${esc(k)}</div><div class="bar"><i style="width:${Math.max(2,x.v/mx*100)}%"></i></div><div class="am">${fmtMoney(x.v)}</div><div class="pc">${x.n} item${x.n===1?'':'s'}</div></div>`).join('') + `<div class="costline" style="margin-top:8px">Total <b style="color:var(--ink)">${fmtMoney(tot)}</b> written off at the till. This is part of your food thrown away, shown separately by the reason staff gave.</div>`;
+}
+function pfLaborC(rg){
+  const P = feedState.pos || {}, rows = (P.laborDailyRole||[]).filter(r=>r.date>=rg.from && r.date<=rg.to), by = {};
+  rows.forEach(r=>{ by[r.role] = (by[r.role]||0) + r.hours; });
+  const list = Object.entries(by).sort((a,b)=>b[1]-a[1]), tot = list.reduce((s,x)=>s+x[1],0), mx = list.length ? list[0][1] : 1;
+  if (!list.length){ $('pfLabor').innerHTML = '<div class="bi-empty">No shifts yet. Connect clock-in data or your POS staff clock under Devices (type: staff shifts).</div>'; return; }
+  const lastSale = {}; (P.posHourly||[]).forEach(h=>{ if (h.sales>0) lastSale[h.date] = Math.max(lastSale[h.date]||0, h.hour); });
+  let after = 0, nAfter = 0;
+  (P.shifts||[]).filter(s=>s.date>=rg.from && s.date<=rg.to && s.outHour!=null && s.outDate===s.date && lastSale[s.date]!=null).forEach(s=>{ const over = s.outHour - (lastSale[s.date] + 1); if (over >= 1){ after += over; nAfter++; } });
+  $('pfLabor').innerHTML = list.map(([k,v])=>`<div class="costrow slim" style="--pc:var(--c-sales)"><div class="nm">${esc(k)}</div><div class="bar"><i style="width:${Math.max(2,v/mx*100)}%"></i></div><div class="am">${nf(v,0)} h</div><div class="pc"></div></div>`).join('')
+    + `<div class="costline" style="margin-top:8px">${nf(tot,0)} staff hours in total. ${nAfter ? `<b style="color:var(--ink)">${nf(after,0)} hours</b> across ${nAfter} shifts ran more than an hour past the last sale. That is when taps, hoods and equipment get left on.` : 'No shifts ran more than an hour past the last sale.'}</div>`;
+}
+function pfHourC(rg){
+  const c = pfClosed(rg);
+  if (!c){ $('pfHourSales').innerHTML = '<div class="bi-empty">Needs hourly sales from a connected POS.</div>'; $('pfHourPower').innerHTML = ''; return; }
+  const nd = Math.max(c.tradeDays.size, 1), keep = biF.bucket; biF.bucket = null;
+  const strip = h => h.replace(/onclick="[^"]*"/g,'');
+  const sg = c.S.map((v,h)=>({ a:String(h), b:String(h), label:String(h).padStart(2,'0'), vals:[v/nd], tip:`<b>${String(h).padStart(2,'0')}:00</b><br>${fmtMoney(v/nd)} sales on average` }));
+  $('pfHourSales').innerHTML = '<div class="costline">Sales per hour</div>' + strip(barChart(sg, [{name:'Sales',color:'--c-sales'}], { h:150 }));
+  const eh = Array(24).fill(0), days = new Set(); (feedState.hourly||[]).filter(h=>h.metric==='electricity' && h.date>=rg.from && h.date<=rg.to && c.tradeDays.has(h.date)).forEach(h=>{ eh[h.hour]+=h.value; days.add(h.date); });
+  const ed = Math.max(days.size,1);
+  const pg = eh.map((v,h)=>({ a:String(h), b:String(h), label:String(h).padStart(2,'0'), vals:[v/ed], tip:`<b>${String(h).padStart(2,'0')}:00</b><br>${nf(v/ed,2)} kWh on average` }));
+  $('pfHourPower').innerHTML = '<div class="costline">Electricity per hour (kWh)</div>' + (days.size ? strip(barChart(pg, [{name:'kWh',color:'--c-elec'}], { h:150 })) : '<div class="bi-empty">No hourly electricity readings yet.</div>');
+  biF.bucket = keep;
+}
+function pfActionsC(m, pm, rg){
+  const L = [], add = (cls, tag, txt)=>L.push(`<li><span class="ic ${cls}">${tag}</span><span>${txt}</span></li>`);
+  const big = m.costs.slice().sort((a,b)=>b.v-a.v)[0];
+  if (big && big.v > 0) add('info','BIGGEST', `${esc(big.name)} is your biggest tracked cost: ${fmtMoney(big.v)}${m.sales>0?', '+pctOf(big.v,m.sales)+' of sales':''}.`);
+  const wn = wasteNorm(), worst = Object.values(wn.days).filter(d=>d.flag && d.date>=rg.from && d.date<=rg.to).sort((a,b)=>b.excessKg-a.excessKg)[0];
+  if (worst) add('up','WASTE', `${esc(WD[worst.weekday])} ${esc(worst.date)}: waste per ${wn.unitName} was ${nf(worst.pct,0)}% above your usual (${nf(worst.actual,0)} g against ${nf(worst.base,0)} g), about ${nf(worst.excessKg)} kg extra.`);
+  m.costs.forEach(c=>{ const p = (pm.costs.find(x=>x.k===c.k)||{}).v || 0; if (p > 0 && c.v > p*1.1 && c.v - p >= 1) add('up','UP', `${esc(c.name)} is up ${nf((c.v-p)/p*100,0)}% on the previous period, ${fmtMoney(c.v-p)} more.`); });
+  const a = pfAfterModel(rg), t = feedState.settings || {};
+  if (a && a.e.n > 0 && t.tariff_kwh > 0){ const mo = a.e.closed / a.e.n * MON * t.tariff_kwh; if (mo >= 1) add('info','CLOSED', `Electricity used in your closed hours costs about ${fmtMoney(mo)} a month. Check what is left running.`); }
+  const vr = ((feedState.pos||{}).voidsDailyReason||[]).filter(r=>r.date>=rg.from && r.date<=rg.to), by = {}; vr.forEach(r=>{ by[r.reason] = (by[r.reason]||0) + r.value; });
+  const topV = Object.entries(by).sort((a,b)=>b[1]-a[1])[0]; if (topV && topV[1] > 0) add('info','TILL', `"${esc(topV[0])}" is the biggest write-off reason at ${fmtMoney(topV[1])}.`);
+  if (m.waste > 0 && !(rates.foodCostPerKg > 0)) add('info','SET', 'Add your average food cost per kg above to see what the food you throw away costs.');
+  $('pfActions').innerHTML = L.length ? L.slice(0,5).join('') : '<li><span>Nothing stands out yet. Insights appear once there is a full period of data.</span></li>';
+}
+function pfInit(){ $('pfPeriod').addEventListener('click', ev=>{ const b = ev.target.closest('.bi-chip'); if (!b) return; pfF.key = b.dataset.r; renderProfit(); }); }
+
+/* ===================== WASTE AGAINST THROUGHPUT (no recipes) ===================== */
+// For each day: waste grams per cover (per order when the POS gives no covers). The usual level is the median of the
+// previous same-weekday days (up to 8, at least 3). A day is flagged when it is more than the chosen % above usual.
+function median(a){ const s = a.slice().sort((x,y)=>x-y), n = s.length; return n ? (n%2 ? s[(n-1)/2] : (s[n/2-1]+s[n/2])/2) : 0; }
+function wasteNorm(){
+  const keep = biF.source; biF.source = 'all';
+  const all = entries.map(rowFor).sort((a,b)=>a.date<b.date?-1:1); biF.source = keep;
+  const flagPct = +rates.wasteFlagPct || 30, out = {}, hist = {}, unitName = all.some(r=>r.covers>0) ? 'cover' : 'order';
+  all.forEach(r=>{
+    const unit = unitName === 'cover' ? r.covers : r.orders;
+    if (!(r.waste > 0) || !(unit > 0)) return;
+    const wd = (parseISO(r.date).getDay()+6)%7, g = r.waste*1000/unit, prior = (hist[wd]||[]).slice(-8);
+    const o = { date:r.date, weekday:wd, actual:g, unit, kg:r.waste, base:null, pct:null, excessKg:0, flag:false };
+    if (prior.length >= 3){ o.base = median(prior); o.pct = (g - o.base)/o.base*100; o.excessKg = Math.max(0, (g - o.base)*unit/1000); o.flag = o.pct >= flagPct && o.excessKg >= 2; }
+    out[r.date] = o; (hist[wd] = hist[wd] || []).push(g);
+  });
+  return { days: out, unitName, flagPct };
+}
+function todayNormText(){
+  const n = wasteNorm(), d = n.days[curDate()];
+  if (!d) return '<span class="costline">Waste per cover appears once the POS reports covers or orders.</span>';
+  if (d.base == null) return `${nf(d.actual,0)} g per ${n.unitName} so far. A usual level needs a few more ${WD[d.weekday]}s of history.`;
+  const up = d.pct >= 0;
+  return `${nf(d.actual,0)} g per ${n.unitName}, usual for a ${WD[d.weekday]} is ${nf(d.base,0)} g. <b style="color:var(${d.flag?'--bad':(up?'--ink':'--good')})">${up?'▲':'▼'} ${nf(Math.abs(d.pct),0)}%</b>${d.flag?' — high for how busy you were':''}`;
+}
+function pfNormC(rg){
+  const n = wasteNorm(), days = Object.values(n.days).filter(d=>d.date>=rg.from && d.date<=rg.to).sort((a,b)=>a.date<b.date?-1:1);
+  const withBase = days.filter(d=>d.base != null), flagged = withBase.filter(d=>d.flag);
+  $('pfNormSub').textContent = `Grams of waste per ${n.unitName}, against the usual for that weekday (the middle of the last 8 same weekdays). A day is flagged at ${n.flagPct}% above usual and at least 2 kg more than usual. No recipes needed.`;
+  if (!days.length){ $('pfNorm').innerHTML = '<div class="bi-empty">Needs waste from the scale and covers or orders from the POS on the same days.</div>'; return; }
+  const W = 720, H = 190, L = 44, B = 24, T = 8, R = 6, iw = W-L-R, ih = H-T-B, slot = iw/days.length, bw = Math.max(3, Math.min(30, slot*.7));
+  const mx = niceMax(Math.max(...days.map(d=>Math.max(d.actual, d.base||0)), 1)), y = v => T + ih - v/mx*ih, every = Math.ceil(days.length/10);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Waste per ${n.unitName} by day against usual">`;
+  [0,.5,1].forEach(f=>{ const v = mx*f; s += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--mute)">${nf(v,0)}</text>`; });
+  let line = [];
+  days.forEach((d,i)=>{
+    const cx = L + slot*i + slot/2, col = d.flag ? 'var(--bad)' : 'var(--mute)';
+    s += `<rect x="${cx-bw/2}" y="${y(d.actual)}" width="${bw}" height="${ih+T-y(d.actual)}" rx="2" fill="${col}"${d.flag?'':' opacity=".6"'}/>`;
+    if (d.base != null) line.push(`${cx.toFixed(1)},${y(d.base).toFixed(1)}`);
+    s += `<rect class="bi-hit" x="${cx-slot/2}" y="${T}" width="${slot}" height="${ih+B}" data-tip="<b>${esc(d.date)} (${WD[d.weekday]})</b><br>${nf(d.actual,0)} g per ${n.unitName}${d.base!=null?`<br>Usual ${nf(d.base,0)} g (${d.pct>=0?'+':''}${nf(d.pct,0)}%)`:'<br>No usual yet'}<br>${nf(d.kg)} kg over ${nf(d.unit,0)} ${n.unitName}s"/>`;
+    if (i % every === 0) s += `<text x="${cx}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--mute)">${parseISO(d.date).getDate()}/${parseISO(d.date).getMonth()+1}</text>`;
+  });
+  if (line.length > 1) s += `<polyline points="${line.join(' ')}" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  s += '</svg>';
+  const fr = (+rates.foodCostPerKg||0), excess = flagged.reduce((a,d)=>a+d.excessKg,0);
+  const list = flagged.slice().sort((a,b)=>b.excessKg-a.excessKg).slice(0,5).map(d=>`<div class="bi-dev"><span class="st quiet">${esc(d.date)} ${WD[d.weekday]}</span><span>${nf(d.actual,0)} g per ${n.unitName} against ${nf(d.base,0)} usual</span><b class="mono" style="margin-left:auto;color:var(--bad)">+${nf(d.pct,0)}%</b><span class="mono" style="min-width:110px;text-align:right">${nf(d.excessKg)} kg extra${fr>0?' · '+fmtMoney(d.excessKg*fr):''}</span></div>`).join('');
+  $('pfNorm').innerHTML = s + `<div class="bi-legend"><span><span class="k" style="background:var(--mute);opacity:.6"></span>Normal day</span><span><span class="k" style="background:var(--bad)"></span>Flagged</span><span><span class="k" style="background:var(--ink)"></span>Usual for that weekday</span></div>`
+    + (withBase.length ? (flagged.length ? `<div style="margin-top:10px">${list}</div><div class="costline" style="margin-top:8px">${flagged.length} of ${withBase.length} days flagged. About <b style="color:var(--ink)">${nf(excess)} kg</b> more waste than usual for how busy you were${fr>0?', worth about <b style="color:var(--ink)">'+fmtMoney(excess*fr)+'</b>':''}.</div>` : '<div class="costline" style="margin-top:8px">No day was unusually high for how busy you were.</div>') : '<div class="costline" style="margin-top:8px">The usual level starts showing once each weekday has three earlier days of history.</div>');
+}
+
+/* ===================== TRIGGERS / CSV / EFT ===================== */
+function csvEscape(v){ const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; }
+function toCSV(headers, rows){ return [headers.map(csvEscape).join(','), ...rows.map(r=>r.map(csvEscape).join(','))].join('\r\n'); }
+function triggerDownload(filename, content, mime){
+  const blob = new Blob([content], {type:(mime||'text/csv;charset=utf-8;')}), url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+const EFT_DETAILS = { bankName:'Nedbank', accHolder:'Gilded Age Consulting', accNumber:'1197261419', branchCode:'198765', accType:'' };
+function eftReference(){ return (setup && setup.name) ? setup.name : 'Waste Smart'; }
+function renderEftDetails(){
+  const el = $('eftDetailsBlock'); if (!el) return;
+  el.innerHTML = `<div class="mono" style="font-size:13px;line-height:2"><div>Bank: ${esc(EFT_DETAILS.bankName)}</div><div>Account Holder: ${esc(EFT_DETAILS.accHolder)}</div><div>Account Number: ${esc(EFT_DETAILS.accNumber)}</div><div>Branch Code: ${esc(EFT_DETAILS.branchCode)}</div><div>Account Type: ${esc(EFT_DETAILS.accType || '—')}</div><div>Reference: ${esc(eftReference())}</div></div>`;
+}
+function copyEftDetails(){
+  const text = [`Bank: ${EFT_DETAILS.bankName}`,`Account Holder: ${EFT_DETAILS.accHolder}`,`Account Number: ${EFT_DETAILS.accNumber}`,`Branch Code: ${EFT_DETAILS.branchCode}`,`Account Type: ${EFT_DETAILS.accType || ''}`,`Reference: ${eftReference()}`].join('\n');
+  try{ navigator.clipboard.writeText(text).then(()=>toast('Banking details copied.'), ()=>toast('Could not copy automatically. Copy manually.')); }catch(e){ toast('Could not copy automatically. Copy manually.'); }
+}
+
+/* ===================== IMPACT ===================== */
+function renderImpact(){
+  const rg = biResolveRange(), saveSrc = biF.source; biF.source = 'all';
+  const rows = biRows(rg.from, rg.to, false); biF.source = saveSrc;
+  const diverted = sumOf(rows,'recyc') + sumOf(rows,'oil');
+  const tile = (n,l)=>`<div><div class="n">${n}</div><div class="l">${l}</div></div>`;
+  $('envHero').innerHTML = tile(nf(diverted)+' kg','Diverted from landfill') + tile(nf(diverted*envFactors.water,0)+' L','Water saved') + tile(nf(diverted*envFactors.trees/1000,2),'Trees saved') + tile(nf(diverted*envFactors.landfill,2)+' m³','Landfill space saved') + tile(nf(diverted*envFactors.co2,0)+' kg','CO₂ saved');
+  $('dcProvider').value = disposalRates.provider === 'priv' ? 'priv' : 'muni';
+  $('dcMuniBase').value = disposalRates.muniBase; $('dcMuniRate').value = disposalRates.muniRate; $('dcPrivBase').value = disposalRates.privBase; $('dcPrivRate').value = disposalRates.privRate; $('dcBaselineKg').value = disposalRates.baselineKg;
+  renderDisposalCalc();
+}
+async function saveDisposalRates(){
+  disposalRates = { provider:$('dcProvider').value === 'priv' ? 'priv' : 'muni', muniBase:parseFloat($('dcMuniBase').value)||0, muniRate:parseFloat($('dcMuniRate').value)||0, privBase:parseFloat($('dcPrivBase').value)||0, privRate:parseFloat($('dcPrivRate').value)||0, baselineKg:parseFloat($('dcBaselineKg').value)||0 };
+  if (await sSet(K.DISPOSAL, JSON.stringify(disposalRates))){ renderDisposalCalc(); toast('Disposal rates saved.'); }
+}
+function monthWasteKg(y, m){ return entries.filter(e=>{ const d = parseISO(e.date); return d.getFullYear()===y && d.getMonth()===m; }).reduce((s,e)=>s+eWaste(e), 0); }
+function renderDisposalCalc(){
+  const now = new Date(), cur = monthWasteKg(now.getFullYear(), now.getMonth()), r = disposalRates;
+  const bM = r.muniBase + r.muniRate*r.baselineKg, bP = r.privBase + r.privRate*r.baselineKg, cM = r.muniBase + r.muniRate*cur, cP = r.privBase + r.privRate*cur;
+  const tile = (n,l)=>`<div><div class="n">${n}</div><div class="l">${l}</div></div>`;
+  $('dcHero').innerHTML = tile(fmtKg(cur),'Waste this month') + tile(fmtMoney(bM-cM),'Saved vs baseline (municipal)') + tile(fmtMoney(bP-cP),'Saved vs baseline (private)');
+  const groups = [{label:'Municipal', vals:[bM,cM], tip:`<b>Municipal</b><br>Baseline ${fmtMoney(bM)}<br>This month ${fmtMoney(cM)}`, a:'m', b:'m'},{label:'Private', vals:[bP,cP], tip:`<b>Private</b><br>Baseline ${fmtMoney(bP)}<br>This month ${fmtMoney(cP)}`, a:'p', b:'p'}];
+  const sv = biF.bucket; biF.bucket = null;
+  $('dcCompare').innerHTML = (r.baselineKg>0 || r.muniRate>0 || r.privRate>0) ? barChart(groups, [{name:'Baseline',color:'--c-sales'},{name:'This month',color:'--c-plastic'}], { h:200 }).replace(/onclick="[^"]*"/g,'') + `<div class="bi-legend">${legend([{name:'Baseline',color:'--c-sales'},{name:'This month',color:'--c-plastic'}])}</div>` : '<div class="bi-empty">Set disposal rates above to see a comparison.</div>';
+  const months = []; for (let i=5;i>=0;i--){ const d = new Date(now.getFullYear(), now.getMonth()-i, 1); months.push({y:d.getFullYear(), m:d.getMonth(), l:d.toLocaleString('en-ZA',{month:'short'})}); }
+  const tg = months.map(mo=>{ const v = monthWasteKg(mo.y, mo.m); return { a:mo.l, b:mo.l, label:mo.l, vals:[v], tip:`<b>${mo.l}</b><br>${nf(v)} kg waste` }; });
+  $('dcTrend').innerHTML = barChart(tg, [{name:'Waste',color:'--c-waste'}], { h:200 }).replace(/onclick="[^"]*"/g,''); biF.bucket = sv;
+}
+
+/* ===================== REPORTS ===================== */
+function setReportRange(p){
+  const now = new Date(); let from, to = now;
+  if (p==='week'){ from = new Date(now); from.setDate(now.getDate() - ((now.getDay()+6)%7)); to = new Date(from); to.setDate(from.getDate()+6); }
+  else if (p==='month'){ from = new Date(now.getFullYear(), now.getMonth(), 1); to = new Date(now.getFullYear(), now.getMonth()+1, 0); }
+  else if (p==='lastmonth'){ from = new Date(now.getFullYear(), now.getMonth()-1, 1); to = new Date(now.getFullYear(), now.getMonth(), 0); }
+  else if (p==='year'){ from = new Date(now.getFullYear(), 0, 1); to = new Date(now.getFullYear(), 11, 31); }
+  else { const ds = entries.map(e=>e.date).sort(); from = ds.length ? parseISO(ds[0]) : now; to = ds.length ? parseISO(ds[ds.length-1]) : now; }
+  $('repFrom').value = isoDate(from); $('repTo').value = isoDate(to); renderReports();
+}
+const REPORTS = [
+  { id:'pillars', title:'Daily pillars', sub:'Kitchen waste, recycling, used oil and the three utilities, one row per day.',
+    head:['Date','Kitchen waste kg','Recycled kg','Used oil kg','Gas kg','Electricity kWh','Water L','Estimated'], row:r=>[r.date,r.waste,r.recyc,r.oil,r.gas,r.kwh,r.water,r.est?'yes':''] },
+  { id:'recyc', title:'Recycling by material', sub:'Plastic, paper and cardboard, glass and cans.',
+    head:['Date','Plastic kg','Paper and cardboard kg','Glass kg','Cans kg','Other recycling kg','Total kg'], row:r=>[r.date,r.plastic,r.paper,r.glass,r.cans,r.mixed,r.recyc] },
+  { id:'util', title:'Utilities and cost', sub:'Daily gas, electricity and water with cost at your tariffs.',
+    head:['Date','Gas kg','Electricity kWh','Water L','Cost','Estimated'], row:r=>{ const t = feedState.settings||{}; return [r.date,r.gas,r.kwh,r.water,Math.round((r.gas*(t.tariff_gas_kg||0)+r.kwh*(t.tariff_kwh||0)+r.water/1000*(t.tariff_water_kl||0))*100)/100,r.est?'yes':'']; } },
+  { id:'oil', title:'Used cooking oil', sub:'Oil collected per day and its recovery value.',
+    head:['Date','Used oil kg','Value'], row:r=>[r.date,r.oil,Math.round(r.oil*(oilSettings.usedRatePerKg||0)*100)/100] }
+];
+function reportRows(){
+  const f = $('repFrom').value, t = $('repTo').value; if (!f || !t) return null;
+  const s = biF.source; biF.source = 'all'; const rows = biRows(f, t, false); biF.source = s; return rows;
+}
+function renderReports(){
+  if (!$('repFrom').value){ const now = new Date(); $('repFrom').value = isoDate(new Date(now.getFullYear(), now.getMonth(), 1)); $('repTo').value = isoDate(now); }
+  $('repFrom').onchange = $('repTo').onchange = renderReports;
+  const rows = reportRows() || [];
+  $('reportCards').innerHTML = REPORTS.map(rp=>{
+    const data = rows.map(rp.row), shown = data.slice(0,6);
+    return `<div class="card"><h4>${esc(rp.title)}</h4><p class="section-sub" style="margin-bottom:8px">${esc(rp.sub)}</p>
+      <div class="report-out">${data.length ? `<table class="htable"><thead><tr>${rp.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${shown.map(r=>`<tr>${r.map(c=>`<td>${typeof c==='number'?nf(c,2):esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>${data.length>6?`<div class="costline">Showing 6 of ${data.length} rows</div>`:''}` : '<div class="bi-empty">No data in this range.</div>'}</div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn primary small" onclick="downloadReport('${rp.id}')">Download CSV</button></div></div>`;
+  }).join('');
+}
+function downloadReport(id){
+  const rp = REPORTS.find(r=>r.id===id), rows = reportRows(); if (!rp || !rows || !rows.length){ toast('No data in this range.'); return; }
+  const biz = ((setup && setup.name) || 'WasteSmart').replace(/[^a-z0-9]+/gi,'_');
+  triggerDownload(`${biz}_${rp.id}_${$('repFrom').value}_to_${$('repTo').value}.csv`, toCSV(rp.head, rows.map(rp.row)));
+}
+
+/* ===================== SETTINGS ===================== */
+function renderSettings(){
+  renderLookPicker();
+  $('setBizName').value = setup.name || ''; $('setBizCurrency').value = setup.currency || 'R';
+  $('rvPlastic').value = rates.plastic||''; $('rvPaper').value = rates.paper||''; $('rvGlass').value = rates.glass||''; $('rvCans').value = rates.cans||''; $('rvOil').value = oilSettings.usedRatePerKg||''; $('rvFood').value = rates.foodCostPerKg||''; $('rvFlag').value = rates.wasteFlagPct||30;
+  $('envWaterFactor').value = envFactors.water; $('envTreesFactor').value = envFactors.trees; $('envLandfillFactor').value = envFactors.landfill; $('envCo2Factor').value = envFactors.co2;
+  if (!$('salesReportDate').value) $('salesReportDate').value = isoDate(new Date());
+  renderSalesHistory(); renderEftDetails();
+}
+async function saveBusinessProfile(){
+  setup.name = $('setBizName').value.trim() || setup.name; setup.currency = $('setBizCurrency').value.trim() || setup.currency;
+  if (await sSet(K.SETUP, JSON.stringify(setup))){ $('bizName').textContent = setup.name; $('footBizName').textContent = setup.name; toast('Business profile saved.'); }
+}
+async function updateSitePins(){
+  const cur = $('pinChangeCurrentAdmin').value.trim(), nw = $('pinChangeNewAdmin').value.trim(); $('pinChangeErr').textContent = '';
+  if (!cur){ $('pinChangeErr').textContent = 'Enter your current admin PIN to confirm this change.'; return; }
+  if (nw.length < 4){ $('pinChangeErr').textContent = 'The new PIN needs at least 4 digits.'; return; }
+  try{ await apiCall('update_pins', { currentAdminPin:cur, newAdminPin:nw }); $('pinChangeCurrentAdmin').value = ''; $('pinChangeNewAdmin').value = ''; feedAdminPin = null; toast('Admin PIN updated.'); }
+  catch(e){ $('pinChangeErr').textContent = e.message || 'Could not update the PIN.'; }
+}
+async function saveRates(){
+  rates = { plastic:parseFloat($('rvPlastic').value)||0, paper:parseFloat($('rvPaper').value)||0, glass:parseFloat($('rvGlass').value)||0, cans:parseFloat($('rvCans').value)||0, foodCostPerKg:parseFloat($('rvFood').value)||0, wasteFlagPct:Math.max(5, parseFloat($('rvFlag').value)||30) };
+  oilSettings = Object.assign({}, oilSettings, { usedRatePerKg: parseFloat($('rvOil').value)||0 });
+  const a = await sSet(K.RECYCLING, JSON.stringify(rates)), b = await sSet(K.OILSETTINGS, JSON.stringify(oilSettings));
+  if (a && b) toast('Recovery values saved.');
+}
+async function saveEnvFactors(){
+  envFactors = { water:parseFloat($('envWaterFactor').value)||0, trees:parseFloat($('envTreesFactor').value)||0, landfill:parseFloat($('envLandfillFactor').value)||0, co2:parseFloat($('envCo2Factor').value)||0 };
+  if (await sSet(K.ENV, JSON.stringify(envFactors))) toast('Environmental factors saved.');
+}
+async function saveSalesReportTotal(){
+  const date = $('salesReportDate').value || isoDate(new Date()), total = parseFloat($('salesReportTotal').value);
+  if (!isFinite(total) || total < 0){ toast('Enter a valid sales total first.'); return; }
+  const idx = findEntryIndexForDate(date);
+  if (idx >= 0){ entries[idx].salesTotal = total; entries[idx].salesTyped = true; delete entries[idx].feedOnly; }
+  else entries.push({ id:'e'+Date.now(), date, service:'—', salesTotal:total, salesTyped:true });
+  if (!(await sSet(K.ENTRIES, JSON.stringify(entries)))) return;
+  toast('Sales total for '+date+' saved.'); $('salesReportTotal').value = ''; renderSalesHistory();
+}
+function renderSalesHistory(){
+  const el = $('salesReportHistory'); if (!el) return;
+  const list = entries.filter(e=>e.salesTyped).sort((a,b)=>a.date<b.date?1:-1).slice(0,10);
+  el.innerHTML = list.length ? `<table class="htable"><thead><tr><th>Date</th><th>Total sales</th></tr></thead><tbody>${list.map(e=>`<tr><td class="mono">${esc(e.date)}</td><td class="mono">${fmtMoney(e.salesTotal)}</td></tr>`).join('')}</tbody></table>` : '<p class="section-sub">No hand-keyed sales yet.</p>';
+}
+
+/* ===================== START ===================== */
+window.addEventListener('DOMContentLoaded', ()=>{
+  wireAuthScreen(); biInit();
+  $('pinInput').addEventListener('keydown', e=>{ if (e.key==='Enter') tryUnlock(); });
+  const site = getAuthSite();
+  if (getAuthToken() && site){ $('lockBrand').textContent = site.name || 'Waste Smart'; $('lockScreen').hidden = false; $('pinInput').focus(); }
+  else { $('authScreen').hidden = false; showAuthPanel('login'); }
+});
+
+</script>
+</body></html>

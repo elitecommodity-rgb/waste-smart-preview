@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gilded Age Master Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>window.MASTER_DEMO=true;</script>
+<style>
+:root{--ink:#0f1218;--ink2:#1a1f29;--ink3:#2a313e;--paper:#f6f2e9;--card:#fffdf8;--line:#e3dccb;--mute:#6f6a5c;--text:#1b1d22;
+--gold:#b8892b;--gold2:#e2b64d;--goldbg:#f7ecce;--good:#2f7d4f;--goodbg:#e2f1e7;--warn:#a96a00;--warnbg:#fbeccd;--bad:#b3392f;--badbg:#f8dedb;--blue:#2d5f8b;--bluebg:#dfeaf4;
+--r:12px;--sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;--serif:'Fraunces',Georgia,serif}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--paper);color:var(--text);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);letter-spacing:-.01em;margin:0;font-weight:700}
+h1{font-size:28px}h2{font-size:20px}h3{font-size:16px}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--blue)}
+.hide{display:none!important}
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(1200px 600px at 20% -10%,#2a313e 0,var(--ink) 60%)}
+.lcard{background:var(--card);border-radius:18px;padding:34px;width:100%;max-width:400px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.mark{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:700;font-size:20px}
+.mark i{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--gold2),var(--gold));display:grid;place-items:center;color:var(--ink);font-style:normal;font-size:16px}
+.lcard h1{margin:22px 0 4px;font-size:26px}.lcard p{color:var(--mute);margin:0 0 20px}
+label{display:block;font-size:12px;font-weight:600;color:var(--mute);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.06em}
+input[type=text],input[type=email],input[type=password],input[type=number],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--goldbg)}
+.btn{border:0;border-radius:9px;padding:10px 16px;font-weight:600;cursor:pointer;background:var(--ink);color:#fff;white-space:nowrap}
+.btn:hover{background:var(--ink3)}.btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:var(--ink)}
+.btn.gold:hover{filter:brightness(1.05)}.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}.btn.ghost:hover{background:#fff}
+.btn.small{padding:6px 11px;font-size:13px}.btn.danger{background:var(--bad)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.err{color:var(--bad);font-size:13px;min-height:18px;margin-top:8px}
+.link{background:none;border:0;color:var(--blue);cursor:pointer;padding:0;text-decoration:underline}
+/* shell */
+#app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+nav.side{background:var(--ink);color:#d8d3c4;padding:20px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+nav.side .mark{color:#fff;margin:0 8px 22px}
+nav.side button{display:flex;gap:10px;align-items:center;text-align:left;background:none;border:0;color:inherit;padding:10px 12px;border-radius:9px;cursor:pointer;font-weight:500}
+nav.side button:hover{background:var(--ink2)}nav.side button.on{background:var(--ink3);color:#fff;box-shadow:inset 3px 0 0 var(--gold2)}
+nav.side .sp{flex:1}nav.side .who{font-size:12px;color:#9a9484;padding:8px 12px}
+main{padding:28px clamp(16px,3vw,40px) 60px;min-width:0;max-width:1280px;width:100%}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.top p{margin:4px 0 0;color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.kpi b{display:block;font:700 30px/1.1 var(--serif)}.kpi span{color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.kpi small{display:block;color:var(--mute);margin-top:4px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 13px;font-size:13px;cursor:pointer;font-weight:500}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.bar input{max-width:260px;margin-left:auto}
+table{width:100%;border-collapse:collapse}th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);text-align:left;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}tr:last-child td{border-bottom:0}
+tr.row{cursor:pointer}tr.row:hover td{background:#fbf7ea}
+.tw{overflow-x:auto}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600}
+.p-good{background:var(--goodbg);color:var(--good)}.p-warn{background:var(--warnbg);color:var(--warn)}.p-bad{background:var(--badbg);color:var(--bad)}.p-blue{background:var(--bluebg);color:var(--blue)}.p-mute{background:#ece7d8;color:var(--mute)}
+.dots{display:flex;gap:3px;align-items:center}.dot{width:9px;height:9px;border-radius:50%}
+.d-live{background:var(--good)}.d-quiet{background:#d99a1f}.d-stale{background:var(--bad)}.d-never,.d-disabled{background:#c9c2ae}
+.sub{color:var(--mute);font-size:12px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:16px 0}
+.tabs button{background:none;border:0;padding:10px 14px;cursor:pointer;font-weight:600;color:var(--mute);border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--text);border-color:var(--gold)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+/* coverage tiles */
+.cov{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.tile{border:1px solid var(--line);background:#fff;border-radius:11px;padding:12px;display:flex;flex-direction:column;gap:6px;min-height:92px}
+.tile b{font-size:13px}.tile .st{font-size:12px;font-weight:600}
+.tile.ok{border-color:#bfdcca;background:#f4fbf6}.tile.late{border-color:#efd9a2;background:#fffaf0}.tile.none{border-style:dashed}
+.tile .go{margin-top:auto;align-self:flex-start}
+.sect{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--mute);font-weight:700;margin:18px 0 8px}
+/* wizard */
+.steps{display:flex;gap:6px;margin:6px 0 18px;flex-wrap:wrap}
+.steps span{padding:6px 13px;border-radius:999px;background:#ece7d8;color:var(--mute);font-weight:600;font-size:13px}
+.steps span.on{background:var(--ink);color:#fff}.steps span.done{background:var(--goldbg);color:#7a5a12}
+.form2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}.form2 .full{grid-column:1/-1}
+@media(max-width:700px){.form2{grid-template-columns:1fr}}
+.chk{text-transform:none;letter-spacing:0;font-size:14px;font-weight:400;color:var(--text);display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;margin:0 0 6px;cursor:pointer}
+.chk input{margin-top:3px}.chk div{flex:1}.chk small{color:var(--mute);display:block}
+.chk select{width:auto;max-width:210px;padding:5px 8px;font-size:13px}
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(15,18,24,.55);display:grid;place-items:center;padding:20px;z-index:50}
+#modal .box{background:var(--card);border-radius:16px;padding:24px;max-width:640px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.box h2{margin-bottom:10px}
+pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
+pre{background:var(--ink);color:#e9e3cf;padding:12px 14px;border-radius:10px;overflow:auto;margin:6px 0;white-space:pre-wrap;word-break:break-all}
+.cred{display:flex;gap:8px;align-items:center;margin:4px 0}.cred code{flex:1;background:#f1ecdc;padding:6px 9px;border-radius:7px;font-size:12px;word-break:break-all}
+.note{background:var(--goldbg);border:1px solid #ead9a3;color:#6b5110;padding:10px 12px;border-radius:10px;font-size:13px;margin:10px 0}
+.mail{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;font-size:13px}
+.mail .hd{color:var(--mute);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:600;z-index:99;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.demo{position:fixed;top:0;left:0;right:0;background:var(--gold);color:var(--ink);text-align:center;font-size:12px;font-weight:700;padding:4px 10px;z-index:60;letter-spacing:.02em}
+.demo a{color:var(--ink)}
+body.isdemo #app{padding-top:24px}body.isdemo nav.side{top:24px;height:calc(100vh - 24px)}body.isdemo #login{padding-top:48px}
+@media(max-width:860px){#app{grid-template-columns:1fr}nav.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;padding:10px}nav.side .mark{margin:0 8px}nav.side .sp,nav.side .who{display:none}}
+</style>
+</head>
+<body>
+<div id="demoBar" class="demo hide">DEMO &middot; invented clients and sample data, nothing is saved or sent &middot; sign in is pre-filled &middot; <a href="index.html">Open the Waste Smart app &rarr;</a></div>
+
+<section id="login">
+  <form class="lcard" onsubmit="doLogin(event)">
+    <div class="mark"><i>G</i> Gilded Age</div>
+    <h1>Master admin</h1><p>Client onboarding, integrations and access for every Waste Smart site.</p>
+    <label>Email</label><input type="email" id="lEmail" autocomplete="username" required>
+    <label>Password</label><input type="password" id="lPass" autocomplete="current-password" required>
+    <div class="err" id="lErr"></div>
+    <button class="btn gold" style="width:100%;margin-top:6px" id="lBtn">Sign in</button>
+    <p style="margin:16px 0 0;font-size:12px">Forgot your password? Ask another Gilded Age administrator to send you a reset link.</p>
+  </form>
+</section>
+
+<div id="app" class="hide">
+  <nav class="side">
+    <div class="mark"><i>G</i> Gilded Age</div>
+    <button data-v="overview" onclick="go('overview')">&#9638; Clients</button>
+    <button data-v="onboard" onclick="go('onboard')">&#10010; Onboard a client</button>
+    <button data-v="team" onclick="go('team')">&#9881; Team &amp; audit</button>
+    <div class="sp"></div>
+    <div class="who" id="who"></div>
+    <button onclick="doLogout()">Sign out</button>
+  </nav>
+  <main id="main"></main>
+</div>
+<div id="modal" class="hide" onclick="if(event.target===this)closeModal()"><div class="box" id="modalBox"></div></div>
+<div id="toast" class="hide"></div>
+
+<script>
+/* ================= config ================= */
+const MASTER_ENDPOINT = window.MASTER_ENDPOINT || 'https://gildedac.co.za/app/master.php';
+const CLIENT_APP_URL = window.CLIENT_APP_URL || 'https://gildedac.co.za/app/';
+const INGEST_URL = window.INGEST_URL || 'https://gildedac.co.za/app/ingest.php';
+const BI_URL = window.BI_URL || 'https://gildedac.co.za/app/bi.php/odata';
+const DEMO = !!window.MASTER_DEMO;
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let session = null, state = { clients: [], fleet: null, filter: 'all', q: '', client: null, tab: 'integrations', adapters: null, wiz: null };
+
+/* ================= targets & presets ================= */
+const PILLARS = [
+  { t:'kitchen_waste', n:'Kitchen waste', g:'Pillars', kind:'scale', ad:'standard', unit:'kg', hint:'Prep and plate waste, weighed' },
+  { t:'recycling_plastic', n:'Recycling: plastic', g:'Pillars', kind:'scale', ad:'standard', unit:'kg' },
+  { t:'recycling_paper', n:'Recycling: paper and cardboard', g:'Pillars', kind:'scale', ad:'standard', unit:'kg' },
+  { t:'recycling_glass', n:'Recycling: glass', g:'Pillars', kind:'scale', ad:'standard', unit:'kg' },
+  { t:'recycling_cans', n:'Recycling: cans', g:'Pillars', kind:'scale', ad:'standard', unit:'kg' },
+  { t:'used_oil', n:'Used cooking oil', g:'Pillars', kind:'scale', ad:'standard', unit:'kg' },
+  { t:'electricity', n:'Electricity', g:'Utilities', kind:'meter', ad:'shelly_gen2_em', unit:'kWh', hint:'Hourly reading' },
+  { t:'gas', n:'Gas', g:'Utilities', kind:'meter', ad:'cylinder_scale', unit:'kg', hint:'Hourly reading' },
+  { t:'water', n:'Water', g:'Utilities', kind:'meter', ad:'pulse_meter', unit:'L', hint:'Hourly reading' },
+  { t:'sales', n:'Hourly sales', g:'POS', kind:'pos', ad:'generic_pos_lines', hint:'Itemised orders' },
+  { t:'pos_voids', n:'Write-offs and voids', g:'POS', kind:'pos', ad:'generic_pos_voids', hint:'With reason codes' },
+  { t:'labor', n:'Staff shifts', g:'POS', kind:'pos', ad:'generic_labor', hint:'Clock-in and clock-out' },
+];
+const ADAPTERS = [
+  ['standard','Waste Smart standard event (bridge or any HTTP client)','api'],['serial_scale','Serial / USB kitchen scale via bridge','bridge'],['cylinder_scale','LPG cylinder load-cell scale','bridge'],
+  ['shelly_gen2_em','Shelly Pro 3EM / EM Gen2 via bridge','bridge'],['modbus_meter','Modbus energy, water or gas meter via bridge','bridge'],['pulse_meter','Pulse-output meter via bridge or LoRa node','bridge'],
+  ['mqtt_json','MQTT topic (JSON) via bridge','bridge'],['chirpstack_uplink','LoRaWAN via ChirpStack','webhook'],['ttn_uplink','LoRaWAN via The Things Stack','webhook'],
+  ['generic_pos_lines','Any POS order webhook','webhook'],['generic_pos_voids','POS write-offs / voids with reasons','webhook'],['generic_labor','Clock-in / clock-out shifts','webhook'],
+  ['yoco_webhook','Yoco (payment webhook)','webhook'],['yoco_orders_pull','Yoco (poll orders API)','pull'],['generic_json','Any JSON webhook (you define the mapping)','webhook'],['generic_csv','Any CSV export','csv'],
+];
+const POS_PRESETS = [['generic_pos_lines','Generic POS webhook'],['yoco_webhook','Yoco webhook'],['yoco_orders_pull','Yoco API poll'],['generic_csv','CSV export']];
+const TZ = ['Africa/Johannesburg','Africa/Windhoek','Africa/Gaborone','Africa/Nairobi','Africa/Lagos','Europe/London','Asia/Dubai','Australia/Sydney'];
+const CCY = [['R','South African rand (R)'],['N$','Namibian dollar (N$)'],['P','Botswana pula (P)'],['KSh','Kenyan shilling (KSh)'],['£','Pound sterling (£)'],['$','US dollar ($)'],['€','Euro (€)']];
+const pillar = t => PILLARS.find(p => p.t === t);
+
+/* ================= API (live or demo) ================= */
+async function call(action, payload){
+  if (DEMO) { await new Promise(r => setTimeout(r, 120)); return mock(action, payload || {}); }
+  const h = { 'Content-Type':'application/json' };
+  if (session) h.Authorization = 'Bearer ' + session.token;
+  let res; try { res = await fetch(MASTER_ENDPOINT, { method:'POST', headers:h, body: JSON.stringify(Object.assign({ action }, payload || {})) }); }
+  catch(e){ throw new Error('Could not reach the master service.'); }
+  let b = null; try { b = await res.json(); } catch(e){}
+  if (!res.ok) { const err = new Error((b && b.error) || ('Request failed: ' + res.status)); err.status = res.status; if (res.status === 401 && session) { sessionStorage.removeItem('gaa'); location.reload(); } throw err; }
+  return b;
+}
+/* ================= helpers ================= */
+function toast(m){ const t = $('toast'); t.textContent = m; t.classList.remove('hide'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.add('hide'), 2800); }
+function copy(s){ (navigator.clipboard ? navigator.clipboard.writeText(s) : Promise.reject()).then(() => toast('Copied'), () => { const ta = document.createElement('textarea'); ta.value = s; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); toast('Copied'); } catch(e){ toast('Select and copy manually'); } ta.remove(); }); }
+function openModal(html){ $('modalBox').innerHTML = html; $('modal').classList.remove('hide'); }
+function closeModal(){ $('modal').classList.add('hide'); }
+function ago(h){ if (h == null) return 'No data yet'; if (h < 1) return 'Just now'; if (h < 24) return Math.round(h) + ' h ago'; return Math.round(h / 24) + ' d ago'; }
+function statusPill(c){
+  if (c.status === 'suspended') return '<span class="pill p-bad">Suspended</span>';
+  if (!c.pinSet) return '<span class="pill p-blue">Awaiting first sign-in</span>';
+  if (c.health.stale || (c.devices.length && !c.health.live && !c.health.quiet)) return '<span class="pill p-bad">Needs attention</span>';
+  if (c.health.quiet) return '<span class="pill p-warn">Some devices quiet</span>';
+  if (!c.devices.length) return '<span class="pill p-mute">No devices yet</span>';
+  return '<span class="pill p-good">Healthy</span>';
+}
+function dots(h){ const o = []; ['live','quiet','stale','never'].forEach(k => { for (let i = 0; i < (h[k] || 0); i++) o.push('<span class="dot d-' + k + '" title="' + k + '"></span>'); }); return '<div class="dots">' + (o.join('') || '<span class="sub">none</span>') + '</div>'; }
+function healthOf(devs){ const h = { live:0, quiet:0, stale:0, never:0, disabled:0 }; devs.forEach(d => h[d.health] = (h[d.health] || 0) + 1); return h; }
+function attention(c){ return c.status !== 'suspended' && c.pinSet && (c.health.stale > 0 || c.health.quiet > 0 || (c.devices.length > 0 && c.health.live === 0)); }
+
+/* ================= auth ================= */
+async function doLogin(ev){
+  ev.preventDefault(); $('lErr').textContent = ''; $('lBtn').disabled = true;
+  try { const r = await call('login', { email: $('lEmail').value.trim(), password: $('lPass').value }); session = r; try { sessionStorage.setItem('gaa', JSON.stringify(r)); } catch(e){} start(); }
+  catch(e){ $('lErr').textContent = e.message; } finally { $('lBtn').disabled = false; }
+}
+async function doLogout(){ try { await call('logout'); } catch(e){} session = null; try { sessionStorage.removeItem('gaa'); } catch(e){} $('app').classList.add('hide'); $('login').classList.remove('hide'); }
+function start(){ $('login').classList.add('hide'); $('app').classList.remove('hide'); $('who').textContent = session.name + ' · ' + session.role; go('overview'); }
+
+/* ================= navigation ================= */
+function go(v, arg){
+  document.querySelectorAll('nav.side button[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === (v === 'client' ? 'overview' : v)));
+  if (v === 'overview') return viewOverview();
+  if (v === 'onboard') return viewOnboard();
+  if (v === 'client') return viewClient(arg);
+  if (v === 'team') return viewTeam();
+}
+/* ================= overview ================= */
+async function viewOverview(){
+  $('main').innerHTML = '<div class="top"><div><h1>Clients</h1><p>Every Waste Smart site, its devices and how fresh its data is.</p></div><button class="btn gold" onclick="go(\'onboard\')">+ Onboard a client</button></div><div id="ovBody" class="sub">Loading…</div>';
+  const r = await call('clients_list'); state.clients = r.clients; renderOverview();
+}
+function renderOverview(){
+  const cs = state.clients, act = cs.filter(c => c.status !== 'suspended');
+  const dev = cs.reduce((a, c) => a + c.devices.length, 0), live = cs.reduce((a, c) => a + c.health.live, 0);
+  const need = cs.filter(attention).length, wait = cs.filter(c => !c.pinSet && c.status !== 'suspended').length;
+  const f = state.filter, q = state.q.toLowerCase();
+  const rows = cs.filter(c => (f === 'all' || (f === 'attention' && attention(c)) || (f === 'invited' && !c.pinSet && c.status !== 'suspended') || (f === 'suspended' && c.status === 'suspended'))
+    && (!q || (c.name + ' ' + c.ownerEmail + ' ' + c.contact).toLowerCase().includes(q)));
+  $('ovBody').innerHTML = `
+  <div class="kpis">
+    <div class="kpi"><span>Active clients</span><b>${act.length}</b><small>${cs.length - act.length} suspended</small></div>
+    <div class="kpi"><span>Devices reporting</span><b>${dev ? Math.round(live / dev * 100) : 0}%</b><small>${live} of ${dev} live right now</small></div>
+    <div class="kpi"><span>Need attention</span><b style="color:${need ? 'var(--bad)' : 'var(--good)'}">${need}</b><small>quiet or offline devices</small></div>
+    <div class="kpi"><span>Awaiting first sign-in</span><b>${wait}</b><small>invite sent, PIN not set</small></div>
+  </div>
+  <div class="card">
+    <div class="bar">${[['all','All'],['attention','Needs attention'],['invited','Awaiting sign-in'],['suspended','Suspended']].map(x => `<button class="chip ${f === x[0] ? 'on' : ''}" onclick="state.filter='${x[0]}';renderOverview()">${x[1]}</button>`).join('')}
+      <input type="text" placeholder="Search clients…" value="${esc(state.q)}" oninput="state.q=this.value;renderOverviewKeep()"></div>
+    <div class="tw"><table><thead><tr><th>Client</th><th>Status</th><th>Devices</th><th>Last data</th><th>Admin sign-in</th></tr></thead><tbody>
+    ${rows.map(c => `<tr class="row" onclick="go('client',${c.id})"><td><b>${esc(c.name)}</b><div class="sub">${esc(c.type)} · ${esc(c.tz)}</div></td><td>${statusPill(c)}</td>
+      <td>${dots(c.health)}<div class="sub">${c.devices.length} device${c.devices.length === 1 ? '' : 's'}</div></td><td>${ago(c.lastDataHours)}</td><td>${esc(c.ownerEmail)}</td></tr>`).join('') || '<tr><td colspan="5" class="sub" style="padding:24px">No clients match.</td></tr>'}
+    </tbody></table></div>
+  </div>`;
+}
+function renderOverviewKeep(){ const v = document.activeElement; const pos = v && v.selectionStart; renderOverview(); const i = document.querySelector('.bar input'); if (i) { i.focus(); try { i.setSelectionRange(pos, pos); } catch(e){} } }
+
+/* ================= client detail ================= */
+async function viewClient(id, tab){
+  if (tab) state.tab = tab;
+  $('main').innerHTML = '<div class="sub">Loading…</div>';
+  const r = await call('client_get', { id }); state.client = r; renderClient();
+}
+function renderClient(){
+  const r = state.client, c = r.client, t = state.tab;
+  const tabs = [['integrations','Integrations'],['access','Access'],['details','Details & costs'],['activity','Activity']];
+  $('main').innerHTML = `
+  <div class="top"><div><button class="link sub" onclick="go('overview')">&larr; All clients</button><h1 style="margin-top:6px">${esc(c.name)}</h1>
+    <p>${esc(c.type)} · ${esc(c.ownerEmail)} · ${statusPill(c)}</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" onclick="openClientApp()">Open client app</button></div></div>
+  <div class="tabs">${tabs.map(x => `<button class="${t === x[0] ? 'on' : ''}" onclick="state.tab='${x[0]}';renderClient()">${x[1]}</button>`).join('')}</div>
+  <div id="tabBody"></div>`;
+  ({ integrations: tabIntegrations, access: tabAccess, details: tabDetails, activity: tabActivity })[t]();
+}
+function openClientApp(){ openModal(`<h2>Client app</h2><p>Clients sign in at:</p><div class="cred"><code>${esc(CLIENT_APP_URL)}</code><button class="btn small ghost" onclick="copy('${CLIENT_APP_URL}')">Copy</button></div><p class="sub">With their email and admin PIN. Support access to a client's data is not possible from here: the master admin manages setup, devices and access only.</p><div style="text-align:right"><button class="btn" onclick="closeModal()">Close</button></div>`); }
+
+/* ---- integrations ---- */
+function tabIntegrations(){
+  const r = state.client, devs = r.devices, cid = r.client.id;
+  const by = t => devs.filter(d => d.target === t);
+  const tile = p => {
+    const d = by(p.t); const live = d.find(x => x.health === 'live'), any = d[0];
+    let cls = 'none', st = 'Not set up', col = 'var(--mute)';
+    if (live) { cls = 'ok'; st = '● Live · ' + ago(live.hoursAgo); col = 'var(--good)'; }
+    else if (any && any.health === 'never') { cls = 'late'; st = '◌ Created, waiting for first data'; col = 'var(--warn)'; }
+    else if (any) { cls = 'late'; st = '▲ ' + (any.health === 'disabled' ? 'Disabled' : 'No data for ' + ago(any.hoursAgo).replace(' ago', '')); col = 'var(--warn)'; }
+    return `<div class="tile ${cls}"><b>${p.n}</b><span class="st" style="color:${col}">${st}</span><span class="sub">${d.length ? (d[0].name !== p.n ? esc(d[0].name) : esc((ADAPTERS.find(a => a[0] === d[0].adapter) || [0, ''])[1])) : esc(p.hint || '')}</span>
+      <button class="btn small ${d.length ? 'ghost' : 'gold'} go" onclick="addDevice('${p.t}')">${d.length ? 'Add another' : 'Set up'}</button></div>`;
+  };
+  const groups = ['Pillars','Utilities','POS'].map(g => `<div class="sect">${g === 'Pillars' ? 'Waste, recycling and oil (scales)' : g === 'Utilities' ? 'Utility meters (hourly)' : 'Point of sale'}</div><div class="cov">${PILLARS.filter(p => p.g === g).map(tile).join('')}</div>`).join('');
+  const covered = PILLARS.filter(p => by(p.t).length).length;
+  $('tabBody').innerHTML = `
+  <div class="card"><div style="display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap;align-items:center">
+    <div><h3>Integration coverage: ${covered} of ${PILLARS.length}</h3><div class="sub">Set up each source below. Each gets its own key, ready for the bridge, a webhook or a CSV drop.</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="quickSetup()">Create the standard set</button><button class="btn ghost" onclick="handover()">Handover kit</button></div></div>
+    ${groups}</div>
+  <div class="card" style="margin-top:14px"><h3 style="margin-bottom:8px">Devices (${devs.length})</h3><div class="tw"><table><thead><tr><th>Device</th><th>Sends</th><th>Connection</th><th>Health</th><th></th></tr></thead><tbody>
+  ${devs.map(d => `<tr><td><b>${esc(d.name)}</b><div class="sub mono">${esc(d.uid)} · key ${esc(d.keyPrefix)}…</div></td><td>${esc((pillar(d.target) || {}).n || d.target)}</td>
+    <td>${esc((ADAPTERS.find(a => a[0] === d.adapter) || [0, d.adapter])[1])}</td>
+    <td><span class="pill ${{live:'p-good',quiet:'p-warn',stale:'p-bad',never:'p-mute',disabled:'p-mute'}[d.health]}">${d.health}</span><div class="sub">${d.health === 'never' ? 'no data yet' : ago(d.hoursAgo)}</div></td>
+    <td style="white-space:nowrap"><button class="btn small ghost" onclick="rotateKey(${d.id})">New key</button> <button class="btn small ghost" onclick="toggleDevice(${d.id},${d.enabled ? 0 : 1})">${d.enabled ? 'Disable' : 'Enable'}</button> <button class="btn small ghost" onclick="deleteDevice(${d.id})">Remove</button></td></tr>`).join('') || '<tr><td colspan="5" class="sub" style="padding:20px">No devices yet. Use “Create the standard set” or set up a source above.</td></tr>'}
+  </tbody></table></div></div>
+  <div class="card" style="margin-top:14px"><h3>Power BI</h3><p class="sub" style="margin:4px 0 10px">Read-only feed for this client's boards. Tokens are shown once and can be revoked.</p>
+    <div class="cred"><code>${esc(BI_URL)}</code><button class="btn small ghost" onclick="copy('${BI_URL}')">Copy</button></div>
+    <div class="sub">${r.biTokens.length} token${r.biTokens.length === 1 ? '' : 's'} issued ${r.biTokens.map(t => '· ' + esc(t.label)).join(' ')}</div>
+    <div style="margin-top:8px"><button class="btn small ghost" onclick="newBiToken()">Issue a Power BI token</button></div></div>`;
+}
+function credBlock(c, name){
+  return `<div class="sect" style="margin-top:12px">${esc(name || c.deviceId)}</div>
+  <div class="cred"><span class="sub" style="width:90px">Device ID</span><code>${esc(c.deviceId)}</code><button class="btn small ghost" onclick="copy('${c.deviceId}')">Copy</button></div>
+  <div class="cred"><span class="sub" style="width:90px">API key</span><code>${esc(c.apiKey)}</code><button class="btn small ghost" onclick="copy('${c.apiKey}')">Copy</button></div>
+  <div class="cred"><span class="sub" style="width:90px">HMAC secret</span><code>${esc(c.hmacSecret)}</code><button class="btn small ghost" onclick="copy('${c.hmacSecret}')">Copy</button></div>`;
+}
+function snippet(c, adapter){
+  const bridge = (ADAPTERS.find(a => a[0] === adapter) || [0, 0, 'api'])[2] === 'bridge';
+  if (bridge) return `// bridge.json → "devices"\n"${c.deviceId}": { "key": "${c.apiKey}" }`;
+  return `curl -X POST ${INGEST_URL} \\\n  -H "Authorization: Bearer ${c.apiKey}" -H "Content-Type: application/json" \\\n  -d '{"events":[{"uid":"test-1","ts":"${new Date().toISOString()}","value":1.25,"unit":"kg"}]}'`;
+}
+function addDevice(target){
+  const p = pillar(target), isPos = p.kind === 'pos';
+  const opts = ADAPTERS.filter(a => isPos ? ['generic_pos_lines','generic_pos_voids','generic_labor','yoco_webhook','yoco_orders_pull','generic_json','generic_csv'].includes(a[0]) : !['generic_pos_lines','generic_pos_voids','generic_labor','yoco_webhook','yoco_orders_pull'].includes(a[0]));
+  openModal(`<h2>Set up: ${esc(p.n)}</h2>
+  <label>Name</label><input type="text" id="adName" value="${esc(p.n)}">
+  <label>Connection type</label><select id="adAd">${opts.map(a => `<option value="${a[0]}" ${a[0] === p.ad ? 'selected' : ''}>${esc(a[1])}</option>`).join('')}</select>
+  <div class="err" id="adErr"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn gold" onclick="saveDevice('${target}')">Create and show key</button></div>`);
+}
+async function saveDevice(target){
+  const p = pillar(target), ad = $('adAd').value;
+  try {
+    const r = await call('device_save', { clientId: state.client.client.id, name: $('adName').value.trim() || p.n, adapter: ad, target, kind: p.kind, unitIn: p.unit || '' });
+    openModal(`<h2>Device created</h2><div class="note">These credentials are shown once. Put them straight into the bridge, webhook or POS settings.</div>${credBlock(r.credentials, r.device.name)}<div class="sect">Quick test</div><pre>${esc(snippet(r.credentials, ad))}</pre><div style="text-align:right;margin-top:12px"><button class="btn" onclick="closeModal();viewClient(${state.client.client.id})">Done</button></div>`);
+  } catch(e){ $('adErr').textContent = e.message; }
+}
+async function quickSetup(){
+  const have = new Set(state.client.devices.map(d => d.target)), todo = PILLARS.filter(p => !have.has(p.t));
+  if (!todo.length) return toast('Every source already has a device.');
+  openModal(`<h2>Create the standard set</h2><p>This creates ${todo.length} device${todo.length === 1 ? '' : 's'} that ${todo.length === 1 ? 'is' : 'are'} not set up yet, each with its own key:</p><ul style="columns:2;padding-left:18px">${todo.map(p => `<li>${esc(p.n)}</li>`).join('')}</ul><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn gold" onclick="doQuick()">Create ${todo.length}</button></div>`);
+}
+async function doQuick(){
+  const r = await call('quick_setup', { clientId: state.client.client.id });
+  showCreds(r.created, 'Standard set created');
+}
+function showCreds(created, title){
+  window._created = created;
+  openModal(`<h2>${esc(title)}</h2><div class="note">Keys are shown once. Download the handover kit now: it holds every key and a ready-made bridge file.</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><button class="btn small gold" onclick="downloadKit()">Download handover sheet</button><button class="btn small ghost" onclick="downloadBridge()">Download bridge.json</button></div>
+  <div style="max-height:44vh;overflow:auto">${created.map(x => credBlock(x.credentials, x.device.name)).join('')}</div>
+  <div style="text-align:right;margin-top:12px"><button class="btn" onclick="closeModal();viewClient(${state.client.client.id})">Done</button></div>`);
+}
+function saveFile(name, text, type){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: type || 'text/plain' })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+function downloadKit(){
+  const c = state.client ? state.client.client : (window._site || {});
+  const L = ['GILDED AGE · WASTE SMART INTEGRATION HANDOVER', c.name || '', new Date().toISOString().slice(0, 10), '', 'Ingest URL : ' + INGEST_URL, 'Power BI   : ' + BI_URL, 'Client app : ' + CLIENT_APP_URL, '', 'Keep this sheet private. Each key is shown once and can be replaced from the master admin.', ''];
+  (window._created || []).forEach(x => { L.push('— ' + x.device.name + ' (' + ((pillar(x.device.target) || {}).n || x.device.target) + ')', '  Device ID  : ' + x.credentials.deviceId, '  API key    : ' + x.credentials.apiKey, '  HMAC secret: ' + x.credentials.hmacSecret, ''); });
+  L.push('Questions: www.gildedac.co.za');
+  saveFile('handover-' + String(c.name || 'client').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.txt', L.join('\n'));
+}
+function bridgeFor(created){
+  const devices = {}, sources = [];
+  created.forEach(x => { const slug = (x.device.name || x.device.uid).toLowerCase().replace(/[^a-z0-9]+/g, '-'); devices[slug] = { key: x.credentials.apiKey };
+    const t = x.device.target, k = (pillar(t) || {}).kind;
+    if (k === 'scale') sources.push({ type:'serial_scale', device: slug, port:'COM4', baud:9600, unit:'kg', min:0.05, rearm:0.05, _note:'Set the scale COM port' });
+    else if (k === 'meter') sources.push({ type:'http_poll', device: slug, url:'http://192.168.1.50/rpc/EMData.GetStatus?id=0', path:'total_act', unit: (pillar(t) || {}).unit || '', every:60, _note:'Set the meter address; use modbus_tcp or mqtt where that fits' });
+    else if (x.device.adapter === 'generic_csv') sources.push({ type:'folder', device: slug, path:'C:/POS/exports', pattern:'*.csv', every:120 }); });
+  return { server: INGEST_URL.replace(/ingest\.php.*$/, ''), buffer:'bridge_buffer.sqlite', flush_every:10, devices, sources };
+}
+function downloadBridge(){ saveFile('bridge.json', JSON.stringify(bridgeFor(window._created || []), null, 2), 'application/json'); }
+async function handover(){
+  openModal(`<h2>Handover kit</h2><p>Keys are stored hashed, so existing keys cannot be shown again. The kit replaces the key on the devices you tick with a new one and puts all of them in one sheet plus a ready-made bridge file.</p>
+  ${state.client.devices.map(d => `<label class="chk"><input type="checkbox" class="kitSel" value="${d.id}" ${d.health === 'never' ? 'checked' : ''}><div><b>${esc(d.name)}</b><small>${d.health === 'never' ? 'Not connected yet' : 'Connected: a new key will stop the current one working'}</small></div></label>`).join('') || '<p class="sub">No devices yet.</p>'}
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn gold" onclick="doKit()">Create kit</button></div>`);
+}
+async function doKit(){
+  const ids = [...document.querySelectorAll('.kitSel:checked')].map(x => +x.value);
+  if (!ids.length) return toast('Tick at least one device.');
+  const r = await call('kit', { clientId: state.client.client.id, deviceIds: ids }); showCreds(r.created, 'Handover kit ready');
+}
+async function rotateKey(id){ const r = await call('device_rotate', { clientId: state.client.client.id, id }); const d = state.client.devices.find(x => x.id === id);
+  openModal(`<h2>New key</h2><div class="note">The old key has stopped working. Shown once.</div>${credBlock(r.credentials, d.name)}<div style="text-align:right;margin-top:12px"><button class="btn" onclick="closeModal()">Done</button></div>`); }
+async function toggleDevice(id, en){ await call('device_toggle', { clientId: state.client.client.id, id, enabled: en }); toast(en ? 'Enabled' : 'Disabled'); viewClient(state.client.client.id); }
+async function deleteDevice(id){ const d = state.client.devices.find(x => x.id === id);
+  openModal(`<h2>Remove ${esc(d.name)}?</h2><p>Keep the history and just disable it, or remove the device and the readings it sent.</p><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn ghost" onclick="doDel(${id},1)">Disable, keep data</button><button class="btn danger" onclick="doDel(${id},0)">Remove and delete data</button></div>`); }
+async function doDel(id, keep){ await call('device_delete', { clientId: state.client.client.id, id, keepData: keep }); closeModal(); toast('Done'); viewClient(state.client.client.id); }
+async function newBiToken(){ const r = await call('bi_token_create', { clientId: state.client.client.id, label:'Power BI' });
+  openModal(`<h2>Power BI token</h2><div class="note">Shown once. Use any username and this token as the password when Power BI asks for Basic credentials.</div><div class="cred"><code>${esc(r.token)}</code><button class="btn small ghost" onclick="copy('${r.token}')">Copy</button></div><div style="text-align:right;margin-top:12px"><button class="btn" onclick="closeModal();viewClient(${state.client.client.id})">Done</button></div>`); }
+
+/* ---- access ---- */
+function tabAccess(){
+  const c = state.client.client;
+  $('tabBody').innerHTML = `<div class="grid2">
+  <div class="card"><h3>Admin sign-in</h3><p class="sub">The client signs in with <b>${esc(c.ownerEmail)}</b> and an admin PIN. Only Gilded Age creates sites, so there is no public sign-up.</p>
+    <p>${c.pinSet ? '<span class="pill p-good">PIN set</span> ' + esc(c.pinSetAt || '') : '<span class="pill p-blue">Waiting for the client to choose a PIN</span>'}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${c.pinSet ? '' : '<button class="btn gold" onclick="resendInvite()">Resend invite email</button>'}<button class="btn ghost" onclick="sendReset()">Send PIN reset email</button></div>
+    <p class="sub" style="margin-top:12px">Links work once and expire after ${c.pinSet ? '60 minutes' : '7 days'}. Setting a new PIN signs the client out everywhere.</p></div>
+  <div class="card"><h3>Site status</h3><p class="sub">${c.status === 'suspended' ? 'This site is suspended. The client cannot sign in and devices cannot send data.' : 'Active. Suspending blocks sign-in and incoming device data; nothing is deleted.'}</p>
+    <div style="margin-top:10px">${c.status === 'suspended' ? '<button class="btn gold" onclick="setStatus(\'active\')">Reactivate</button>' : '<button class="btn danger" onclick="setStatus(\'suspended\')">Suspend site</button>'}</div>
+    <div class="sect">Backup</div><button class="btn ghost small" onclick="exportBackup()">Export this client's data</button></div></div>`;
+}
+function mailPreview(kind, c, link){
+  const first = kind === 'invite';
+  return `<div class="mail"><div class="hd"><b>From:</b> Gilded Age Consulting &lt;no-reply@gildedac.co.za&gt;<br><b>To:</b> ${esc(c.ownerEmail)}<br><b>Subject:</b> ${first ? 'Welcome to Waste Smart: choose your admin PIN' : 'Reset your Waste Smart admin PIN'}</div>
+  <p>Hello${c.contact ? ' ' + esc(c.contact.split(' ')[0]) : ''},</p>
+  <p>${first ? `Gilded Age has set up <b>${esc(c.name)}</b> on Waste Smart. Choose your admin PIN to open the app for the first time.` : `We received a request to reset the admin PIN for <b>${esc(c.name)}</b>.`}</p>
+  <p><a href="#" onclick="return false">${esc(link)}</a></p>
+  <p>This link works once and expires in ${first ? '7 days' : '60 minutes'}. ${first ? '' : 'If you did not ask for this, you can ignore this email: your PIN has not changed.'}</p>
+  <p>Gilded Age Consulting<br>www.gildedac.co.za</p></div>`;
+}
+async function resendInvite(){ const r = await call('invite_resend', { id: state.client.client.id }); emailResult(r, 'invite'); }
+async function sendReset(){ const r = await call('reset_send', { id: state.client.client.id }); emailResult(r, 'reset'); }
+function emailResult(r, kind){
+  openModal(`<h2>${r.email.sent ? 'Email sent' : 'Email not sent'}</h2>${r.email.sent ? `<p>Sent to <b>${esc(state.client.client.ownerEmail)}</b>.</p>` : `<div class="note">${esc(r.email.error || 'Email delivery is not set up on the server yet.')} Copy the link below and send it to the client yourself.</div>`}
+  <div class="cred"><code>${esc(r.link)}</code><button class="btn small ghost" onclick="copy('${r.link}')">Copy link</button></div><div class="sect">What the client receives</div>${mailPreview(kind, state.client.client, r.link)}
+  <div style="text-align:right;margin-top:12px"><button class="btn" onclick="closeModal()">Close</button></div>`);
+}
+async function setStatus(s){ await call('client_status', { id: state.client.client.id, status: s }); toast(s === 'active' ? 'Reactivated' : 'Suspended'); viewClient(state.client.client.id); }
+async function exportBackup(){ const r = await call('client_backup', { id: state.client.client.id }); saveFile('backup-' + state.client.client.id + '.json', JSON.stringify(r, null, 2), 'application/json'); toast('Backup downloaded'); }
+
+/* ---- details ---- */
+function tabDetails(){
+  const c = state.client.client, s = c.settings;
+  $('tabBody').innerHTML = `<div class="card"><div class="form2">
+  <div><label>Business name</label><input type="text" id="dName" value="${esc(c.name)}"></div><div><label>Business type</label><input type="text" id="dType" value="${esc(c.type)}"></div>
+  <div><label>Contact name</label><input type="text" id="dContact" value="${esc(c.contact)}"></div><div><label>Admin email</label><input type="email" id="dEmail" value="${esc(c.ownerEmail)}"></div>
+  <div><label>Time zone</label><select id="dTz">${TZ.map(z => `<option ${z === c.tz ? 'selected' : ''}>${z}</option>`).join('')}</select></div><div><label>Currency</label><select id="dCcy">${CCY.map(x => `<option value="${x[0]}" ${x[0] === c.currency ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div>
+  <div><label>Electricity (per kWh)</label><input type="number" step="0.01" id="dKwh" value="${s.tariff_kwh}"></div><div><label>Gas (per kg)</label><input type="number" step="0.01" id="dGas" value="${s.tariff_gas_kg}"></div>
+  <div><label>Water (per kilolitre)</label><input type="number" step="0.01" id="dWater" value="${s.tariff_water_kl}"></div><div class="full"><label>Internal notes</label><textarea id="dNotes" rows="3">${esc(c.notes || '')}</textarea></div></div>
+  <div style="margin-top:14px"><button class="btn gold" onclick="saveDetails()">Save changes</button></div>
+  <p class="sub">Changing the admin email affects where invites and reset links go. The client can still adjust tariffs and rates inside their own app.</p></div>`;
+}
+async function saveDetails(){
+  try { await call('client_update', { id: state.client.client.id, name: $('dName').value, type: $('dType').value, contact: $('dContact').value, ownerEmail: $('dEmail').value, tz: $('dTz').value, currency: $('dCcy').value,
+    settings: { tariff_kwh: +$('dKwh').value, tariff_gas_kg: +$('dGas').value, tariff_water_kl: +$('dWater').value }, notes: $('dNotes').value }); toast('Saved'); viewClient(state.client.client.id); }
+  catch(e){ toast(e.message); }
+}
+function tabActivity(){
+  $('tabBody').innerHTML = `<div class="card"><h3 style="margin-bottom:8px">Master admin activity for this client</h3><div class="tw"><table><thead><tr><th>When</th><th>Who</th><th>What</th></tr></thead><tbody>
+  ${state.client.audit.map(a => `<tr><td class="sub" style="white-space:nowrap">${esc(a.ts)}</td><td>${esc(a.who)}</td><td>${esc(a.what)}</td></tr>`).join('') || '<tr><td colspan="3" class="sub">Nothing yet.</td></tr>'}</tbody></table></div></div>`;
+}
+
+/* ================= onboarding wizard ================= */
+function viewOnboard(){
+  state.wiz = { step:1, d:{ name:'', type:'Independent Restaurant', contact:'', email:'', tz:'Africa/Johannesburg', currency:'R', kwh:0, gas:0, water:0, send:true, pick:{} } };
+  PILLARS.forEach(p => state.wiz.d.pick[p.t] = { on:true, ad:p.ad });
+  renderWiz();
+}
+function renderWiz(){
+  const w = state.wiz, d = w.d, labels = ['Business','Costs','Equipment','Review & invite'];
+  let body = '';
+  if (w.step === 1) body = `<div class="form2"><div class="full"><label>Business name</label><input type="text" id="wName" value="${esc(d.name)}" placeholder="e.g. Karoo Table"></div>
+    <div><label>Business type</label><input type="text" id="wType" value="${esc(d.type)}"></div><div><label>Contact name</label><input type="text" id="wContact" value="${esc(d.contact)}"></div>
+    <div class="full"><label>Admin email (the client signs in with this)</label><input type="email" id="wEmail" value="${esc(d.email)}" placeholder="owner@example.com"></div>
+    <div><label>Time zone</label><select id="wTz">${TZ.map(z => `<option ${z === d.tz ? 'selected' : ''}>${z}</option>`).join('')}</select></div>
+    <div><label>Currency</label><select id="wCcy">${CCY.map(x => `<option value="${x[0]}" ${x[0] === d.currency ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div></div>`;
+  if (w.step === 2) body = `<p class="sub">Used to cost each kilowatt-hour, kilogram of gas and kilolitre of water from the hourly meters. Leave at zero to fill in later.</p><div class="form2">
+    <div><label>Electricity (${esc(d.currency)} per kWh)</label><input type="number" step="0.01" id="wKwh" value="${d.kwh}"></div><div><label>Gas (${esc(d.currency)} per kg)</label><input type="number" step="0.01" id="wGas" value="${d.gas}"></div>
+    <div><label>Water (${esc(d.currency)} per kilolitre)</label><input type="number" step="0.01" id="wWater" value="${d.water}"></div></div>`;
+  if (w.step === 3) {
+    const grp = (g, title) => `<div class="sect">${title}</div>` + PILLARS.filter(p => p.g === g).map(p => {
+      const pk = d.pick[p.t];
+      const sel = g === 'POS' && p.t === 'sales' ? `<select onclick="event.stopPropagation()" onchange="state.wiz.d.pick['${p.t}'].ad=this.value">${POS_PRESETS.map(x => `<option value="${x[0]}" ${x[0] === pk.ad ? 'selected' : ''}>${x[1]}</option>`).join('')}</select>` : '';
+      return `<label class="chk"><input type="checkbox" ${pk.on ? 'checked' : ''} onchange="state.wiz.d.pick['${p.t}'].on=this.checked"><div><b>${p.n}</b><small>${esc(p.hint || (p.kind === 'scale' ? 'Electronic scale, manual entry as backup' : ''))}</small></div>${sel}</label>`; }).join('');
+    body = `<p class="sub">Tick what this kitchen will connect. Each ticked item gets its own key now; hardware can be connected whenever it is installed. Anything unticked can be added later.</p>
+      <div class="bar"><button class="chip" onclick="wizAll(true)">Tick all</button><button class="chip" onclick="wizAll(false)">Clear all</button></div>${grp('Pillars','Waste, recycling and oil (scales)')}${grp('Utilities','Utility meters')}${grp('POS','Point of sale')}`;
+  }
+  if (w.step === 4) { const n = PILLARS.filter(p => d.pick[p.t].on).length;
+    body = `<div class="card" style="background:#fff"><h3>${esc(d.name)}</h3><p class="sub">${esc(d.type)} · ${esc(d.tz)} · ${esc(d.currency)}</p>
+      <p><b>Admin:</b> ${esc(d.contact || '—')} · ${esc(d.email)}</p><p><b>Tariffs:</b> ${esc(d.currency)}${d.kwh}/kWh · ${esc(d.currency)}${d.gas}/kg gas · ${esc(d.currency)}${d.water}/kl water</p>
+      <p><b>Devices to create:</b> ${n} of ${PILLARS.length}</p></div>
+      <label class="chk" style="margin-top:12px"><input type="checkbox" id="wSend" ${d.send ? 'checked' : ''}><div><b>Email the invite now</b><small>The client gets a one-time link to choose their admin PIN. If email is not set up on the server, you get the link to send yourself.</small></div></label>`; }
+  $('main').innerHTML = `<div class="top"><div><h1>Onboard a client</h1><p>Gilded Age creates every site. The client only chooses a PIN.</p></div></div>
+  <div class="steps">${labels.map((l, i) => `<span class="${w.step === i + 1 ? 'on' : (w.step > i + 1 ? 'done' : '')}">${i + 1}. ${l}</span>`).join('')}</div>
+  <div class="card" style="max-width:760px">${body}<div class="err" id="wErr"></div>
+  <div style="display:flex;justify-content:space-between;margin-top:16px"><button class="btn ghost" ${w.step === 1 ? 'disabled' : ''} onclick="wizBack()">Back</button><button class="btn gold" onclick="wizNext()">${w.step === 4 ? 'Create client' : 'Continue'}</button></div></div>`;
+}
+function wizAll(on){ Object.values(state.wiz.d.pick).forEach(p => p.on = on); renderWiz(); }
+function wizBack(){ wizRead(); state.wiz.step--; renderWiz(); }
+function wizRead(){
+  const w = state.wiz, d = w.d, v = id => $(id) ? $(id).value : null;
+  if (w.step === 1) { d.name = v('wName').trim(); d.type = v('wType').trim(); d.contact = v('wContact').trim(); d.email = v('wEmail').trim(); d.tz = v('wTz'); d.currency = v('wCcy'); }
+  if (w.step === 2) { d.kwh = +v('wKwh') || 0; d.gas = +v('wGas') || 0; d.water = +v('wWater') || 0; }
+  if (w.step === 4) d.send = $('wSend').checked;
+}
+async function wizNext(){
+  const w = state.wiz, d = w.d; wizRead(); $('wErr').textContent = '';
+  if (w.step === 1) { if (!d.name) return $('wErr').textContent = 'Enter the business name.'; if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) return $('wErr').textContent = 'Enter a valid admin email.'; }
+  if (w.step < 4) { w.step++; return renderWiz(); }
+  try {
+    const r = await call('client_create', { name:d.name, type:d.type, contact:d.contact, ownerEmail:d.email, tz:d.tz, currency:d.currency, settings:{ tariff_kwh:d.kwh, tariff_gas_kg:d.gas, tariff_water_kl:d.water },
+      devices: PILLARS.filter(p => d.pick[p.t].on).map(p => ({ target:p.t, kind:p.kind, adapter:d.pick[p.t].ad, name:p.n, unitIn:p.unit || '' })), sendInvite: d.send });
+    wizDone(r);
+  } catch(e){ $('wErr').textContent = e.message; }
+}
+function wizDone(r){
+  window._created = r.created; window._site = r.client;
+  $('main').innerHTML = `<div class="top"><div><h1>${esc(r.client.name)} is ready</h1><p>Site created with ${r.created.length} device${r.created.length === 1 ? '' : 's'}.</p></div></div>
+  <div class="grid2"><div class="card"><h3>1. Invite</h3>${r.email.sent ? `<p><span class="pill p-good">Email sent</span> to ${esc(r.client.ownerEmail)}</p>` : `<div class="note">${esc(r.email.error || 'Invite email was not requested or email is not set up yet.')} Send this link to the client.</div>`}
+    <div class="cred"><code>${esc(r.inviteLink)}</code><button class="btn small ghost" onclick="copy('${r.inviteLink}')">Copy</button></div>
+    <button class="btn small ghost" onclick="openModal(mailPreview('invite',window._site,'${r.inviteLink}')+'<div style=&quot;text-align:right;margin-top:12px&quot;><button class=&quot;btn&quot; onclick=&quot;closeModal()&quot;>Close</button></div>')">Preview the email</button></div>
+  <div class="card"><h3>2. Hand over the equipment keys</h3><p class="sub">Keys are shown once. Download the sheet and bridge file now.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold small" onclick="downloadKit()">Handover sheet</button><button class="btn ghost small" onclick="downloadBridge()">bridge.json</button><button class="btn ghost small" onclick="showCreds(window._created,'Equipment keys')">Show keys</button></div></div></div>
+  <div style="margin-top:16px;display:flex;gap:8px"><button class="btn" onclick="go('client',${r.client.id})">Open ${esc(r.client.name)}</button><button class="btn ghost" onclick="go('overview')">Back to clients</button></div>`;
+}
+
+/* ================= team & audit ================= */
+async function viewTeam(){
+  $('main').innerHTML = '<div class="top"><div><h1>Team &amp; audit</h1><p>Who can use the master admin, and what has been done.</p></div></div><div id="tmBody" class="sub">Loading…</div>';
+  const [a, l] = await Promise.all([call('admins_list'), call('audit_list')]);
+  $('tmBody').innerHTML = `<div class="grid2"><div class="card"><h3 style="margin-bottom:8px">Administrators</h3><div class="tw"><table><tbody>${a.admins.map(x => `<tr><td><b>${esc(x.name)}</b><div class="sub">${esc(x.email)}</div></td><td><span class="pill p-mute">${esc(x.role)}</span></td><td class="sub">${esc(x.lastLogin || 'never')}</td></tr>`).join('')}</tbody></table></div>
+    ${session.role === 'owner' ? '<div style="margin-top:10px"><button class="btn small ghost" onclick="addAdmin()">Add an administrator</button></div>' : ''}</div>
+    <div class="card"><h3 style="margin-bottom:8px">Recent activity</h3><div style="max-height:420px;overflow:auto"><table><tbody>${l.audit.map(x => `<tr><td class="sub" style="white-space:nowrap">${esc(x.ts)}</td><td><b>${esc(x.who)}</b> ${esc(x.what)}${x.client ? ' <span class="sub">· ' + esc(x.client) + '</span>' : ''}</td></tr>`).join('')}</tbody></table></div></div></div>`;
+}
+function addAdmin(){ openModal(`<h2>Add an administrator</h2><label>Name</label><input type="text" id="naName"><label>Email</label><input type="email" id="naEmail"><div class="err" id="naErr"></div><p class="sub">They get an email with a one-time link to choose their password.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn gold" onclick="doAddAdmin()">Add and send invite</button></div>`); }
+async function doAddAdmin(){ try { await call('admin_create', { name: $('naName').value, email: $('naEmail').value }); closeModal(); toast('Administrator added'); viewTeam(); } catch(e){ $('naErr').textContent = e.message; } }
+
+/* ================= demo backend (same contract as master.php) ================= */
+let M = null;
+function mockInit(){
+  const mk = (id, name, type, email, contact, tz, ccy, pin, status, specs, lastH) => ({ id, name, type, ownerEmail:email, contact, tz, currency:ccy, pinSet:pin, pinSetAt: pin ? '2026-09-' + (10 + id) : null, status, notes:'', created:'2026-09-0' + id,
+    settings:{ tariff_kwh:2.4, tariff_gas_kg:38, tariff_water_kl:28 }, _lastH:lastH, _specs:specs });
+  const all = PILLARS.map(p => p.t);
+  M = { nid: 100, did: 1000,
+    clients:[ mk(1,'Harbour Street Kitchen','Independent Restaurant','owner@harbourstreet.example','Thandi Mokoena','Africa/Johannesburg','R',true,'active',{ all:'live' },0.4),
+              mk(2,'Karoo Table','Guest Lodge Restaurant','hello@karootable.example','Pieter van Wyk','Africa/Johannesburg','R',true,'active',{ all:'live', gas:'stale', water:'quiet' },30),
+              mk(3,'Bluff Bakehouse','Bakery & Café','admin@bluffbake.example','Aisha Patel','Africa/Johannesburg','R',true,'active',{ all:'live', labor:'never', pos_voids:'never' },0.7),
+              mk(4,'The Copper Pot','Hotel Kitchen','chef@copperpot.example','Marco Ferreira','Africa/Windhoek','N$',false,'active',{ some:['kitchen_waste','electricity','gas','water','sales'], st:'never' },null),
+              mk(5,'Ridge Road Catering','Contract Caterer','ops@ridgeroad.example','Lerato Dlamini','Africa/Johannesburg','R',true,'suspended',{ all:'stale' },400),
+              mk(6,'Marina Grill','Waterfront Restaurant','manager@marinagrill.example','Sipho Ndlovu','Africa/Johannesburg','R',true,'active',{ all:'live', recycling_glass:'quiet', electricity:'quiet' },1.2) ],
+    devices:[], audit:[], bi:{ 1:[{ label:'Power BI desktop' }] },
+    admins:[{ name:'Gilded Age Owner', email:'admin@gildedac.co.za', role:'owner', lastLogin:'today' },{ name:'Support Desk', email:'support@gildedac.co.za', role:'staff', lastLogin:'3 days ago' }] };
+  M.clients.forEach(c => { const s = c._specs; const list = s.some || all;
+    list.forEach(t => { const p = pillar(t); let h = s[t] || s.all || s.st || 'live';
+      M.devices.push(mkDev(c.id, p, h, h === 'live' ? 0.3 + (M.did % 5) * 0.25 : h === 'quiet' ? 3.4 : h === 'stale' ? c._lastH || 40 : null)); }); });
+  [['2026-10-22 08:52','Support Desk','sent a PIN reset email',2],['2026-10-21 15:10','Gilded Age Owner','created the standard device set',6],['2026-10-20 11:03','Gilded Age Owner','onboarded this client',4],['2026-10-19 09:30','Support Desk','issued a Power BI token',1],['2026-10-12 14:44','Gilded Age Owner','suspended the site',5]].forEach(a => M.audit.push({ ts:a[0], who:a[1], what:a[2], clientId:a[3] }));
+}
+function mkDev(cid, p, health, hoursAgo, name){ const id = M.did++; return { id, clientId:cid, uid:'d_' + (Math.random().toString(16).slice(2, 12)), name: name || p.n, kind:p.kind, adapter:p.ad, target:p.t, enabled:true, health, hoursAgo, keyPrefix:'wsd_' + Math.random().toString(16).slice(2, 6) }; }
+function mCred(){ const r = () => Math.random().toString(16).slice(2, 12); return { deviceId:'d_' + r(), apiKey:'wsd_' + r() + r() + r() + r(), hmacSecret:r() + r() + r() }; }
+function mPub(c){ const devs = M.devices.filter(d => d.clientId === c.id); const lastH = devs.filter(d => d.hoursAgo != null).map(d => d.hoursAgo);
+  return Object.assign({}, c, { devices:devs, health:healthOf(devs), lastDataHours: lastH.length ? Math.min.apply(null, lastH) : null }); }
+function mAudit(who, what, cid){ M.audit.unshift({ ts:new Date().toISOString().slice(0, 16).replace('T', ' '), who, what, clientId:cid || null }); }
+function mock(a, p){
+  if (!M) mockInit();
+  const cl = id => { const c = M.clients.find(x => x.id === +id); if (!c) throw new Error('Client not found.'); return c; };
+  const who = session ? session.name : 'Gilded Age Owner';
+  switch (a) {
+    case 'login': return { token:'demo', name:'Gilded Age Owner', email:p.email, role:'owner' };
+    case 'logout': return { ok:true };
+    case 'clients_list': return { clients: M.clients.map(mPub) };
+    case 'client_get': { const c = cl(p.id); return { client:mPub(c), devices:M.devices.filter(d => d.clientId === c.id), biTokens:M.bi[c.id] || [], audit:M.audit.filter(x => x.clientId === c.id).map(x => ({ ts:x.ts, who:x.who, what:x.what })) }; }
+    case 'client_create': {
+      if (M.clients.some(c => c.ownerEmail.toLowerCase() === p.ownerEmail.toLowerCase())) throw new Error('A client with that admin email already exists.');
+      const c = { id:M.nid++, name:p.name, type:p.type, ownerEmail:p.ownerEmail, contact:p.contact, tz:p.tz, currency:p.currency, pinSet:false, pinSetAt:null, status:'active', notes:'', created:new Date().toISOString().slice(0, 10), settings:p.settings };
+      M.clients.push(c); const created = (p.devices || []).map(x => { const d = mkDev(c.id, pillar(x.target), 'never', null, x.name); d.adapter = x.adapter; M.devices.push(d); return { device:d, credentials:mCred() }; });
+      mAudit(who, 'onboarded this client', c.id);
+      return { client:mPub(c), created, inviteLink:CLIENT_APP_URL + '?setpin=' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2), email:{ sent:!!p.sendInvite } }; }
+    case 'client_update': { const c = cl(p.id); ['name','type','contact','ownerEmail','tz','currency','notes','settings'].forEach(k => { if (p[k] !== undefined) c[k] = p[k]; }); mAudit(who, 'updated the details', c.id); return { ok:true }; }
+    case 'client_status': { const c = cl(p.id); c.status = p.status; mAudit(who, p.status === 'suspended' ? 'suspended the site' : 'reactivated the site', c.id); return { ok:true }; }
+    case 'invite_resend': { const c = cl(p.id); mAudit(who, 'resent the invite email', c.id); return { email:{ sent:true }, link:CLIENT_APP_URL + '?setpin=' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) }; }
+    case 'reset_send': { const c = cl(p.id); mAudit(who, 'sent a PIN reset email', c.id); return { email:{ sent:true }, link:CLIENT_APP_URL + '?reset=' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) }; }
+    case 'client_backup': { const c = cl(p.id); return { exportedAt:new Date().toISOString(), client:mPub(c), note:'Demo backup: the live service exports every saved record for this site.' }; }
+    case 'device_save': { const c = cl(p.clientId); const d = mkDev(c.id, pillar(p.target), 'never', null, p.name); d.adapter = p.adapter; M.devices.push(d); mAudit(who, 'created device “' + d.name + '”', c.id); return { device:d, credentials:mCred() }; }
+    case 'quick_setup': { const c = cl(p.clientId); const have = new Set(M.devices.filter(d => d.clientId === c.id).map(d => d.target)); const created = PILLARS.filter(x => !have.has(x.t)).map(x => { const d = mkDev(c.id, x, 'never', null); M.devices.push(d); return { device:d, credentials:mCred() }; }); mAudit(who, 'created the standard device set', c.id); return { created }; }
+    case 'kit': { const created = (p.deviceIds || []).map(id => ({ device:M.devices.find(d => d.id === id), credentials:mCred() })); mAudit(who, 'issued a handover kit', +p.clientId); return { created }; }
+    case 'device_rotate': mAudit(who, 'replaced a device key', +p.clientId); return { credentials:mCred() };
+    case 'device_toggle': { const d = M.devices.find(x => x.id === p.id); d.enabled = !!p.enabled; d.health = d.enabled ? (d.hoursAgo == null ? 'never' : 'live') : 'disabled'; return { ok:true }; }
+    case 'device_delete': { const i = M.devices.findIndex(x => x.id === p.id); if (p.keepData) { M.devices[i].enabled = false; M.devices[i].health = 'disabled'; } else M.devices.splice(i, 1); return { ok:true }; }
+    case 'bi_token_create': (M.bi[p.clientId] = M.bi[p.clientId] || []).push({ label:p.label }); mAudit(who, 'issued a Power BI token', +p.clientId); return { token:'wsbi_' + Math.random().toString(16).slice(2, 12) + Math.random().toString(16).slice(2, 12) };
+    case 'admins_list': return { admins:M.admins };
+    case 'admin_create': if (!/@/.test(p.email || '')) throw new Error('Enter a valid email.'); M.admins.push({ name:p.name || p.email, email:p.email, role:'staff', lastLogin:null }); mAudit(who, 'added administrator ' + p.email); return { ok:true };
+    case 'audit_list': return { audit: M.audit.slice(0, 60).map(x => ({ ts:x.ts, who:x.who, what:x.what, client:(M.clients.find(c => c.id === x.clientId) || {}).name })) };
+  }
+  throw new Error('Unknown action.');
+}
+
+/* ================= boot ================= */
+(function(){
+  if (DEMO) { document.body.classList.add('isdemo'); $('demoBar').classList.remove('hide'); $('lEmail').value = 'admin@gildedac.co.za'; $('lPass').value = 'demo-password'; }
+  try { const s = JSON.parse(sessionStorage.getItem('gaa') || 'null'); if (s && !DEMO) { session = s; start(); } } catch(e){}
+})();
+</script>
+</body>
+</html>
