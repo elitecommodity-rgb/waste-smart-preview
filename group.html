@@ -23,7 +23,7 @@ h1,h2,h3{letter-spacing:-.02em;line-height:1.1}
 .tab{background:none;border:0;border-bottom:3px solid transparent;padding:0 16px;min-height:44px;font-weight:600;font-size:14px;color:var(--mute);white-space:nowrap;cursor:pointer}
 .tab[aria-current=page]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
 .nr{display:flex;gap:10px;align-items:center}
-.grp{font-size:13px;color:var(--mute);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grp{display:none;font-size:13px;color:var(--mute);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 a{color:var(--good)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:8px;border:1px solid var(--line);background:transparent;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--ink)}
 .btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
@@ -93,11 +93,29 @@ label{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-tra
  .card{padding:16px}.frm{grid-template-columns:minmax(0,1fr)}.seg{width:100%}.seg button{flex:1 0 auto;padding:0 10px}
  .head{padding-top:18px}.dr{width:100%;border-left:0}.mini .n{font-size:18px}
 }
+.scope{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end;margin:6px 0 14px}
+.scope label{margin-bottom:4px}
+.kpis.auto{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}.kpis.auto .n{font-size:clamp(20px,2vw,26px);white-space:normal}
+.stk{display:flex;height:22px;border-radius:6px;overflow:hidden;gap:2px;margin:10px 0}.stk i{display:block;min-width:2px}
+.lg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--mute)}.lg span{display:inline-flex;align-items:center;gap:6px}.lg b{width:10px;height:10px;border-radius:2px;display:inline-block}
+.heat{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.heat div{border:1px solid var(--line);border-radius:8px;padding:10px 4px;text-align:center;min-height:74px}.heat b{display:block;font-size:12px;letter-spacing:.06em}.heat span{font-size:13px;font-weight:800;display:block;margin-top:6px}
+.rep{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:10px 0 16px}
+.rep button{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;cursor:pointer;min-height:44px}.rep button.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}.rep b{display:block;font-size:14px}.rep small{display:block;color:var(--mute);font-size:12.5px;margin-top:3px;line-height:1.35}
+.sc{overflow-x:auto;-webkit-overflow-scrolling:touch}.sc table{border-collapse:collapse;width:100%;font-size:13px;min-width:520px}.sc th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);text-align:left;padding:8px;border-bottom:1px solid var(--line)}.sc td{padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.fr{display:grid;grid-template-columns:minmax(0,1fr) 110px 130px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}.fr:last-child{border-bottom:0}.fr small{color:var(--mute);font-size:12px}.fr .fd{text-align:right;color:var(--mute);font-size:13px;font-variant-numeric:tabular-nums}
+.tok{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;word-break:break-all;margin:8px 0}
+.okb{background:color-mix(in srgb,var(--good) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--good) 35%,var(--line));border-radius:8px;padding:10px 14px;font-size:13.5px;margin-bottom:12px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.tiles>div{background:var(--surface2);border-radius:8px;padding:12px 14px}.tiles .l{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}.tiles .n{font-size:20px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}
+.c3{grid-template-columns:minmax(0,1.6fr) repeat(4,minmax(0,1fr))}
+.three{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}
+svg.ch{display:block;width:100%;height:auto;overflow:visible}svg.ch text{font-family:'Manrope',sans-serif;fill:var(--mute);font-size:11px}
+@media (max-width:1100px){.three{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:760px){.scope{grid-template-columns:repeat(2,minmax(0,1fr))}.scope>div:nth-child(3),.scope>div:nth-child(4){grid-column:1/-1}.c3{grid-template-columns:minmax(0,1fr) auto auto}.c3 .hm{display:none}.fr{grid-template-columns:minmax(0,1fr) 96px}.fr .fd{display:none}.heat div{padding:8px 2px;min-height:64px}}
 </style></head><body>
 <div class="demo">DEMO · generated sample portfolio · changes reset on reload · <a href="index.html">Site app</a> · <a href="master.html">Gilded Age master admin</a></div>
 <header class="top"><div class="wrap">
   <div class="brand"><i>W</i>Waste Smart</div>
-  <nav class="tabs" id="tabs"><button class="tab" data-t="portfolio">Portfolio</button><button class="tab" data-t="sites">Sites</button><button class="tab" data-t="structure">Structure</button><button class="tab" data-t="access">Access</button></nav>
+  <nav class="tabs" id="tabs"><button class="tab" data-t="portfolio">Overview</button><button class="tab" data-t="daily">Daily log</button><button class="tab" data-t="analysis">Analysis</button><button class="tab" data-t="sustain">Sustainability</button><button class="tab" data-t="reports">Reporting</button><button class="tab" data-t="integr">Integrations</button><button class="tab" data-t="sites">Sites</button><button class="tab" data-t="structure">Structure</button><button class="tab" data-t="access">Access</button><button class="tab" data-t="admin">Administration</button></nav>
   <div class="nr"><span class="grp" id="grpName"></span><select id="dsSel" aria-label="Demo portfolio size" style="width:auto;min-height:38px;padding:4px 10px;font-size:13px"><option value="s">3 sites</option><option value="m">48 sites</option><option value="e" selected>3,000 sites</option></select></div>
 </div></header>
 <main class="wrap" id="main"></main>
@@ -160,7 +178,7 @@ function build(kind){
 
 /* ============ model ============ */
 const PER={mtd:{k:'Month to date',f:.71},prior:{k:'Prior month',f:1},d90:{k:'90 days',f:3},ytd:{k:'Year to date',f:9.7}};
-const S={D:null,tab:'portfolio',per:'mtd',reg:null,area:null,sort:{k:'leak',dir:-1},sq:'',fr:'',fa:'',ft:'',fs:'',page:0,ssort:{k:'name',dir:1},M:null};
+const S={D:null,tab:'portfolio',site:null,ap:30,per:'mtd',reg:null,area:null,sort:{k:'leak',dir:-1},sq:'',fr:'',fa:'',ft:'',fs:'',page:0,ssort:{k:'name',dir:1},M:null};
 function metrics(s,f){
   if(s.status!=='Live')return{rev:0,cost:0,recov:0,leak:0,prev:0,live:0,dOn:s.status==='Onboarding'?0:0,dTot:5};
   const rev=s.rev*f,cost=rev*(s.fw+s.el+s.gs+s.wt+s.col);
@@ -179,7 +197,7 @@ const dlt=d=>d==null?'<span class="mu">—</span>':Math.abs(d)<1?'<span class="m
 function render(){
   document.querySelectorAll('#tabs .tab').forEach(b=>b.toggleAttribute('aria-current',false)||(b.dataset.t===S.tab&&b.setAttribute('aria-current','page')));
   $('#grpName').textContent=S.D.name;
-  $('#main').innerHTML=({portfolio:vPortfolio,sites:vSites,structure:vStructure,access:vAccess})[S.tab]();
+  $('#main').innerHTML=({portfolio:vPortfolio,daily:vDaily,analysis:vAnalysis,sustain:vSustain,reports:vReports,integr:vIntegr,sites:vSites,structure:vStructure,access:vAccess,admin:vAdmin})[S.tab]();
   if(S.tab==='sites')bindSites();
 }
 function periodSeg(){return `<div class="seg" role="group" aria-label="Period">${Object.entries(PER).map(([k,v])=>`<button class="${S.per===k?'on':''}" onclick="setPer('${k}')">${v.k}</button>`).join('')}</div>`}
@@ -226,7 +244,7 @@ function vPortfolio(){
    <div><span>Group total sites</span><b>${nf(G.n)}</b></div></div></div></div></div>
   <p class="note">Net contribution is revenue less tracked cost of operations plus recycling and oil recovery. Controllable leakage is waste above the expected level for that weekday, till write-offs and utilities used in closed hours, estimated per site. Demo figures are generated, not client data.</p>`;
 }
-function drill(r=null,a=null){S.reg=r;S.area=a;S.sort={k:'leak',dir:-1};render();window.scrollTo(0,0)}
+function drill(r=null,a=null){S.reg=r;S.area=a;S.site=null;S.sort={k:'leak',dir:-1};render();window.scrollTo(0,0)}
 function sortBy(k){S.sort=S.sort.k===k?{k,dir:-S.sort.dir}:{k,dir:k==='name'?1:-1};render()}
 
 function siteSorted(list,so){
@@ -328,8 +346,160 @@ function userForm(){
 function addUser(){const n=$('#u_n').value.trim(),e=$('#u_e').value.trim();if(!n||!/.+@.+\..+/.test(e)){toast('Enter a name and a valid email');return}
   S.D.users.push({id:'u'+Date.now(),name:n,email:e,role:$('#u_r').value,scope:$('#u_s').value||null,last:'invited'});closeLayer();render();toast('Invite sent to '+e)}
 
+/* ============ group-level versions of the app's features ============ */
+const CFG={foodCost:28,plastic:1.2,paper:1.8,glass:.4,cans:8,oil:9,flagPct:30,provider:'muni',muniBase:0,muniRate:1.5,privBase:0,privRate:2.2,baseline:900,wLpk:17,trees:.017,kwh:2.4,gas:32,water:38,tz:'Africa/Johannesburg',cur:'R',freq:'1 hour',biz:'',sales:''};
+const MAN={},TOK=[],REQ=new Set(),OVR={};
+const TODAY=new Date();
+function hh(a,b){let t=(a*374761393+b*668265263)|0;t=(t^t>>>13)*1274126177|0;return((t^t>>>16)>>>0)/4294967296}
+const WDF={'Restaurant':[1.25,.8,.85,.9,1,1.25,1.4],'Quick service':[1.1,.9,.92,.95,1,1.15,1.2],'Canteen':[.15,1.2,1.2,1.2,1.2,1.1,.1],'Production kitchen':[.3,1.2,1.2,1.2,1.2,1.1,.5],'Hotel kitchen':[1.1,.9,.9,.95,1,1.1,1.2],'Store':[1,.95,.95,.95,1,1.1,1.1]};
+const WDN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const wdOf=di=>((TODAY.getDay()-di)%7+7)%7;
+function snum(s){if(!s._n)s._n=(parseInt(String(s.id).replace(/\D/g,''))||1)%90000+1;return s._n}
+function dayData(s,di){
+  if(s.status!=='Live')return null;
+  const n=snum(s),f=WDF[s.type][wdOf(di)]*(.85+hh(n,di*13+1)*.3),sp=hh(n,di*13+2)<.03?2.4:1,sales=s.rev/30*f;
+  const w=s.rev*s.fw/28/30*f*sp*(.9+hh(n,di*13+3)*.2)*(1+di*.0012),nz=k=>.85+hh(n,di*13+k)*.3,pr=(.55+hh(n,70)*1.0)*(1.12-di*.0016);
+  return {sales,covers:sales/165,waste:w,plastic:w*.12*nz(4)*pr,paper:w*.32*nz(5)*pr,glass:w*.18*nz(6)*pr,cans:w*.05*nz(7)*pr,oil:s.rev/30*.0006*f*nz(8),kwh:s.rev*s.el/2.4/30*nz(9),gas:s.rev*s.gs/32/30*nz(10),water:s.rev*s.wt/38*1000/30*nz(11)};
+}
+const FK=['sales','covers','waste','plastic','paper','glass','cans','oil','kwh','gas','water'];
+function sumDays(sites,days,off){const o={};FK.forEach(k=>o[k]=0);for(let d=off;d<off+days;d++)sites.forEach(s=>{const x=dayData(s,d);if(x)FK.forEach(k=>o[k]+=x[k])});o.rec=o.plastic+o.paper+o.glass+o.cans;return o}
+function daily(sites,days){const out=[];for(let d=days-1;d>=0;d--){const o={di:d,wd:wdOf(d)};FK.forEach(k=>o[k]=0);sites.forEach(s=>{const x=dayData(s,d);if(x)FK.forEach(k=>o[k]+=x[k])});o.rec=o.plastic+o.paper+o.glass+o.cans;out.push(o)}return out}
+const dateOf=di=>{const d=new Date(TODAY);d.setDate(d.getDate()-di);return d.toISOString().slice(0,10)};
+const kg=v=>Math.abs(v)>=1e5?nf(v/1000,0)+' t':nf(v,0)+' kg';
+const dl=(a,b,low)=>b>0?((a-b)/b*100):null;
+function dd(a,b,lowGood=true){const d=dl(a,b);if(d==null)return '';const bad=lowGood?d>0:d<0;return `<span style="color:var(--${Math.abs(d)<1?'mute':bad?'bad':'good'})">${d>=0?'▲':'▼'} ${nf(Math.abs(d),0)}% vs previous</span>`}
+function scopeSites(){return S.site?S.D.sites.filter(s=>s.id===S.site):scoped()}
+function scopeName(){return S.site?(S.D.sites.find(s=>s.id===S.site)||{}).name:S.area?area(S.area).name:S.reg?reg(S.reg).name:S.D.name}
+function scopeBar(needSite){
+  const ars=S.D.areas.filter(a=>!S.reg||a.rid===S.reg),sl=S.area?S.D.sites.filter(s=>s.aid===S.area):[];
+  const o=(arr,v,all)=>`<option value="">${all}</option>`+arr.map(x=>`<option value="${esc(x[0])}"${x[0]===v?' selected':''}>${esc(x[1])}</option>`).join('');
+  return `<div class="scope"><div><label for="sc_r">Region</label><select id="sc_r" onchange="setScope('r',this.value)">${o(S.D.regions.map(r=>[r.id,r.name]),S.reg,'All regions')}</select></div>
+  <div><label for="sc_a">Area</label><select id="sc_a" onchange="setScope('a',this.value)">${o(ars.map(a=>[a.id,a.name]),S.area,'All areas')}</select></div>
+  <div><label for="sc_s">Site</label><select id="sc_s" onchange="setScope('s',this.value)" ${S.area?'':'disabled'}>${o(sl.map(s=>[s.id,s.name]),S.site,S.area?(needSite?'First live site':'All sites in area'):'Select an area first')}</select></div>
+  <div class="sub" style="margin:0 0 10px">${nf(scopeSites().length)} site${scopeSites().length===1?'':'s'}</div></div>`}
+function setScope(l,v){if(l==='r'){S.reg=v||null;S.area=null;S.site=null}else if(l==='a'){S.area=v||null;if(v){const a=area(v);S.reg=a.rid}S.site=null}else S.site=v||null;render()}
+function pseg(){return `<div class="seg" role="group" aria-label="Period">${[7,30,90].map(d=>`<button class="${S.ap===d?'on':''}" onclick="S.ap=${d};render()">${d} days</button>`).join('')}</div>`}
+function chartSvg(vals,rec,color){
+  const W=Math.max(300,Math.min(1000,innerWidth-70)),H=190,L=44,B=24,T=8,iw=W-L-6,ih=H-T-B,n=vals.length,slot=iw/n,bw=Math.max(2,Math.min(26,slot*.7));
+  const mx=Math.max(1,...vals,...(rec||[0]))*1.1,nice=Math.pow(10,Math.floor(Math.log10(mx))),top=Math.ceil(mx/nice)*nice,y=v=>T+ih-v/top*ih;
+  let s=`<svg class="ch" viewBox="0 0 ${W} ${H}" role="img" aria-label="Daily trend">`;
+  [0,.5,1].forEach(f=>{s+=`<line x1="${L}" x2="${W-6}" y1="${y(top*f)}" y2="${y(top*f)}" stroke="var(--line)"/><text x="${L-6}" y="${y(top*f)+4}" text-anchor="end">${nf(top*f,0)}</text>`});
+  vals.forEach((v,i)=>{const cx=L+slot*i+slot/2;s+=`<rect x="${cx-bw/2}" y="${y(v)}" width="${bw}" height="${T+ih-y(v)}" rx="2" fill="${color}"/>`;if(i%Math.ceil(n/6)===0)s+=`<text x="${cx}" y="${H-6}" text-anchor="middle">${dateOf(n-1-i).slice(5).replace('-','/')}</text>`});
+  if(rec)s+=`<polyline fill="none" stroke="var(--good)" stroke-width="2" points="${rec.map((v,i)=>`${(L+slot*i+slot/2).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}"/>`;
+  return s+'</svg>'}
+
+/* ---- Daily log ---- */
+function vDaily(){
+  const sites=scopeSites().filter(s=>s.status==='Live'),cur=S.site?S.D.sites.find(s=>s.id===S.site):sites[0];
+  const live=scoped().filter(s=>s.status==='Live'),full=live.filter(s=>s.dev.every(Boolean)&&s.pos),none=live.filter(s=>!s.dev.some(Boolean)).length,part=live.length-full.length-none;
+  const inc=live.filter(s=>!(s.dev.every(Boolean)&&s.pos)).slice(0,30);
+  S.dd=S.dd||dateOf(0);const di=Math.max(0,Math.round((new Date(dateOf(0))-new Date(S.dd))/86400000));
+  const fields=[['waste','Kitchen waste (kg)'],['plastic','Plastic (kg)'],['paper','Paper and cardboard (kg)'],['glass','Glass (kg)'],['cans','Cans (kg)'],['oil','Used cooking oil (kg)'],['gas','Gas (kg)'],['kwh','Electricity (kWh)'],['water','Water (L)'],['sales','Sales ('+CFG.cur+')']];
+  const x=cur?dayData(cur,di):null,key=cur?cur.id+'|'+S.dd:'',m=MAN[key]||{};
+  return `<div class="head"><div><div class="eyebrow">Daily log</div><h1>Daily log across the group</h1><p class="sub">Scales and meters fill each site in on their own. Check completeness across the group, then key a figure for any site as a backup. A typed figure wins over the feed for that day.</p></div></div>
+  ${scopeBar(true)}
+  <div class="kpis auto"><div class="kpi"><div class="l">Live sites in scope</div><div class="n">${nf(live.length)}</div></div><div class="kpi net"><div class="l">Fully reporting</div><div class="n">${nf(full.length)}</div><div class="s">${pct(full.length,live.length,0)} of live sites</div></div><div class="kpi"><div class="l">Partly reporting</div><div class="n" style="color:var(--warn)">${nf(part)}</div><div class="s">a device or POS offline</div></div><div class="kpi leak"><div class="l">No device reporting</div><div class="n">${nf(none)}</div><div class="s" style="color:var(--mute)">needs manual entry</div></div></div>
+  <div class="layout"><div class="card"><div class="hd"><h3>${cur?esc(cur.name):'No live site in scope'}</h3><small>${cur?esc(reg(cur.rid).name)+' › '+esc(area(cur.aid).name):''}</small></div>${cur?`<div class="frm" style="margin-bottom:6px"><div class="fld"><label for="dd">Date</label><input type="date" id="dd" value="${S.dd}" max="${dateOf(0)}" onchange="S.dd=this.value;render()"></div><div class="fld"><label>Total waste that day</label><div style="font-size:26px;font-weight:800;color:var(--good)">${x?nf(m.waste!=null?+m.waste:x.waste,1)+' kg':'—'}</div></div></div>
+  ${fields.map(([k,l])=>`<div class="fr"><div>${l}<br><small>${m[k]!=null&&m[k]!==''?'Typed by hand':'From devices'}</small></div><input inputmode="decimal" id="mf_${k}" value="${m[k]??''}" placeholder="${x?nf(x[k],k==='water'||k==='sales'?0:1):'0'}" aria-label="${l}"><div class="fd">feed ${x?nf(x[k],k==='water'||k==='sales'?0:1):'—'}</div></div>`).join('')}
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px"><button class="btn pri" onclick="saveDay('${cur.id}')">Save day</button><button class="btn" onclick="MAN['${key}']=null;render();toast('Typed figures cleared')">Clear typed figures</button></div>`:'<div class="empty">Choose an area with a live site.</div>'}</div>
+  <div class="side"><div class="card"><div class="hd"><h3>Not fully reporting</h3><small>Top ${inc.length}</small></div>${inc.length?inc.map(s=>{const off=s.dev.map((d,i)=>d?null:['scale','electricity','gas','water'][i]).filter(Boolean).concat(s.pos?[]:['POS']);return `<div class="li" onclick="S.site='${s.id}';S.area='${s.aid}';S.reg='${s.rid}';render()"><div><b>${esc(s.name)}</b><small>${esc(area(s.aid).name)}</small></div><div class="v" style="color:var(--warn);font-size:12.5px">${esc(off.join(', '))}<small> offline</small></div></div>`}).join(''):'<div class="empty">Every live site in scope is reporting.</div>'}</div></div></div>`;
+}
+function saveDay(id){const o={};['waste','plastic','paper','glass','cans','oil','gas','kwh','water','sales'].forEach(k=>{const v=$('#mf_'+k).value.trim();if(v!=='')o[k]=v});MAN[id+'|'+S.dd]=o;render();toast('Day saved (demo)')}
+
+/* ---- Analysis ---- */
+function vAnalysis(){
+  const sites=scopeSites(),d=S.ap,cur=sumDays(sites,d,0),prev=sumDays(sites,d,d),ser=daily(sites,d);
+  const div=cur.rec/(cur.waste+cur.rec||1),pdiv=prev.rec/(prev.waste+prev.rec||1);
+  const tiles=[['Kitchen waste',kg(cur.waste),dd(cur.waste,prev.waste)],['Recycled',kg(cur.rec),dd(cur.rec,prev.rec,false)],['Diverted from landfill',nf(div*100,0)+'%',`<span style="color:var(--mute)">${div>=pdiv?'▲':'▼'} ${nf(Math.abs(div-pdiv)*100,1)} pts</span>`],['Used cooking oil',kg(cur.oil),dd(cur.oil,prev.oil,false)],['Gas',kg(cur.gas),dd(cur.gas,prev.gas)],['Electricity',(cur.kwh>=1e6?nf(cur.kwh/1e6,2)+' GWh':nf(cur.kwh,0)+' kWh'),dd(cur.kwh,prev.kwh)],['Water',nf(cur.water/1000,0)+' kL',dd(cur.water,prev.water)]];
+  const parts=[['Kitchen waste',cur.waste,'var(--warn)'],['Plastic',cur.plastic,'#5EEAD4'],['Paper and cardboard',cur.paper,'#F5C86B'],['Glass',cur.glass,'#7DB8FF'],['Cans',cur.cans,'#B9A4FF'],['Used oil',cur.oil,'#C9A27C']],tot=parts.reduce((a,p)=>a+p[1],0)||1;
+  const wd=[0,0,0,0,0,0,0],cn=[0,0,0,0,0,0,0];ser.forEach(o=>{wd[o.wd]+=o.waste;cn[o.wd]++});const wa=wd.map((v,i)=>cn[i]?v/cn[i]:0),wm=Math.max(1,...wa);
+  // benchmark rows
+  let rows,lvl;if(!S.reg){lvl='Region';rows=S.D.regions.map(r=>({n:r.name,list:S.D.sites.filter(s=>s.rid===r.id),click:`setScope('r','${r.id}')`}))}else if(!S.area){lvl='Area';rows=S.D.areas.filter(a=>a.rid===S.reg).map(a=>({n:a.name,list:S.D.sites.filter(s=>s.aid===a.id),click:`setScope('a','${a.id}')`}))}else{lvl='Site';rows=S.D.sites.filter(s=>s.aid===S.area&&s.status==='Live').map(s=>({n:s.name,list:[s],click:`openSite('${s.id}')`}))}
+  rows.forEach(r=>{r.t=sumDays(r.list,Math.min(d,30),0);r.g=r.t.covers?r.t.waste*1000/r.t.covers:0;r.dv=r.t.rec/(r.t.waste+r.t.rec||1);r.k=r.t.sales?r.t.kwh/r.t.sales*1000:0});
+  rows=rows.filter(r=>r.t.waste>0).sort((a,b)=>b.g-a.g);const avg=rows.length?rows.reduce((a,r)=>a+r.g,0)/rows.length:0;
+  return `<div class="head"><div><div class="eyebrow">Analysis</div><h1>Operational analysis · ${esc(scopeName())}</h1><p class="sub">Every figure rolled up from scales and meters across the sites in scope. The same data feeds Power BI.</p></div>${pseg()}</div>${scopeBar()}
+  <div class="kpis auto">${tiles.map(t=>`<div class="kpi"><div class="l">${t[0]}</div><div class="n">${t[1]}</div><div class="s">${t[2]}</div></div>`).join('')}</div>
+  <div class="card" style="margin-bottom:16px"><div class="hd"><h3>Waste and recycling over time</h3><small><span style="color:var(--warn)">■</span> waste kg per day · <span style="color:var(--good)">━</span> recycled</small></div>${chartSvg(ser.map(o=>o.waste),ser.map(o=>o.rec),'#F5A524')}</div>
+  <div class="three"><div class="card"><div class="hd"><h3>Where the weight goes</h3><small>Share of everything weighed</small></div><div class="stk">${parts.map(p=>`<i style="width:${p[1]/tot*100}%;background:${p[2]}"></i>`).join('')}</div><div class="lg">${parts.map(p=>`<span><b style="background:${p[2]}"></b>${p[0]} ${nf(p[1]/tot*100,0)}%</span>`).join('')}</div></div>
+  <div class="card"><div class="hd"><h3>Weekday pattern</h3><small>Average waste kg</small></div><div class="heat">${[1,2,3,4,5,6,0].map(i=>{const f=wa[i]/wm;return `<div style="background:color-mix(in srgb,var(--accent) ${Math.round(f*70)}%,var(--surface));color:${f>.6?'#06201C':'var(--ink)'}"><b>${WDN[i]}</b><span>${nf(wa[i],0)}</span></div>`}).join('')}</div></div></div>
+  <div class="card" style="margin-bottom:24px"><div class="hd"><h3>Benchmark by ${lvl.toLowerCase()}</h3><small>Last ${Math.min(d,30)} days, highest waste per cover first</small></div>
+  <div class="tbl"><div class="tr th c3"><span>${lvl}</span><span class="r">Waste kg</span><span class="r">g per cover</span><span class="r hm">Diverted</span><span class="r hm">kWh per R1,000</span></div>${rows.slice(0,60).map(r=>`<div class="tr rw c3" onclick="${r.click}"><div class="nm">${esc(r.n)}<small>${r.list.length} site${r.list.length===1?'':'s'}</small></div><span class="r">${nf(r.t.waste,0)}</span><span class="r ${avg&&r.g>avg*1.15?'bad':avg&&r.g<avg*.9?'good':''}">${nf(r.g,0)}</span><span class="r hm">${nf(r.dv*100,0)}%</span><span class="r hm">${nf(r.k,1)}</span></div>`).join('')||'<div class="empty">No data in scope.</div>'}</div></div>`;
+}
+
+/* ---- Sustainability ---- */
+function vSustain(){
+  const sites=scopeSites(),d=S.ap,cur=sumDays(sites,d,0),live=sites.filter(s=>s.status==='Live').length;
+  const rate=CFG.provider==='priv'?CFG.privRate:CFG.muniRate,base=CFG.provider==='priv'?CFG.privBase:CFG.muniBase;
+  const baseKg=live*CFG.baseline*d/30,nowCost=cur.waste*rate+live*base*d/30,baseCost=baseKg*rate+live*base*d/30,save=baseCost-nowCost;
+  const cur30=sumDays(sites,30,0).waste,tr=[1.22,1.16,1.1,1.05,1.01,1],bars=tr.map(f=>cur30*f);
+  const W=Math.max(300,Math.min(1000,innerWidth-70)),mx=Math.max(1,...bars);
+  const rr=S.reg?S.D.areas.filter(a=>a.rid===S.reg).map(a=>[a.name,S.D.sites.filter(s=>s.aid===a.id)]):S.D.regions.map(r=>[r.name,S.D.sites.filter(s=>s.rid===r.id)]);
+  const tb=rr.map(([n,l])=>{const t=sumDays(l,d,0),lv=l.filter(s=>s.status==='Live').length,sv=(lv*CFG.baseline*d/30-t.waste)*rate;return {n,t,dv:t.rec/(t.waste+t.rec||1),sv,l:l.length}}).filter(r=>r.t.waste>0).sort((a,b)=>b.dv-a.dv);
+  return `<div class="head"><div><div class="eyebrow">Sustainability</div><h1>Sustainability and disposal costs · ${esc(scopeName())}</h1><p class="sub">What recycling saves and what disposal costs, against the waste per month before Waste Smart (set under Administration).</p></div>${pseg()}</div>${scopeBar()}
+  <div class="kpis auto"><div class="kpi net"><div class="l">Diverted from landfill</div><div class="n">${nf(cur.rec/1000,1)} t</div><div class="s">${nf(cur.rec/(cur.waste+cur.rec||1)*100,0)}% of all weighed</div></div><div class="kpi"><div class="l">Water saved</div><div class="n">${nf(cur.rec*CFG.wLpk/1000,0)} kL</div></div><div class="kpi"><div class="l">Trees equivalent</div><div class="n">${nf(cur.rec*CFG.trees,0)}</div></div><div class="kpi"><div class="l">Disposal cost now</div><div class="n">${R(nowCost)}</div></div><div class="kpi ${save>=0?'net':'leak'}"><div class="l">${save>=0?'Saved vs baseline':'Above baseline'}</div><div class="n">${R(Math.abs(save))}</div></div></div>
+  <div class="three"><div class="card"><div class="hd"><h3>Baseline against now</h3><small>Disposal cost, ${d} days</small></div>${[['Before Waste Smart',baseCost,'var(--mute)'],['Now',nowCost,'var(--good)']].map(([l,v,c])=>`<div class="dv"><span style="width:130px">${l}</span><span class="bar" style="flex:1"><span class="tk"><i style="width:${v/Math.max(baseCost,nowCost,1)*100}%;background:${c}"></i></span></span><b style="width:90px;text-align:right">${R(v)}</b></div>`).join('')}</div>
+  <div class="card"><div class="hd"><h3>Waste, last six months</h3><small>Tonnes per month</small></div><div style="display:flex;align-items:flex-end;gap:10px;height:120px;border-bottom:1px solid var(--line)">${bars.map(v=>`<div style="flex:1;text-align:center;min-width:0"><div style="height:${v/mx*100}px;background:var(--warn);border-radius:3px 3px 0 0"></div></div>`).join('')}</div><div style="display:flex;gap:10px;margin-top:4px">${bars.map(v=>`<div style="flex:1;text-align:center;font-size:12px;color:var(--mute)">${nf(v/1000,1)}</div>`).join('')}</div></div></div>
+  <div class="card" style="margin-bottom:24px"><div class="hd"><h3>Diversion by ${S.reg?'area':'region'}</h3></div><div class="tbl"><div class="tr th c3"><span>${S.reg?'Area':'Region'}</span><span class="r">Diverted</span><span class="r">Recycled kg</span><span class="r hm">Waste kg</span><span class="r hm">Saved</span></div>${tb.map(r=>`<div class="tr c3"><div class="nm">${esc(r.n)}<small>${r.l} sites</small></div><span class="r good">${nf(r.dv*100,0)}%</span><span class="r">${nf(r.t.rec,0)}</span><span class="r hm">${nf(r.t.waste,0)}</span><span class="r hm ${r.sv>=0?'good':'bad'}">${R(r.sv)}</span></div>`).join('')}</div></div>`;
+}
+
+/* ---- Reporting ---- */
+const REPS=[['summary','Group summary','One row per region or area with revenue, cost and leakage.'],['league','Site league','Every site in scope with cost, leakage and device status.'],['waste','Waste and recycling by day','Daily kilograms by material for the scope.'],['util','Utilities by day','Gas, electricity, water and sales per day.'],['devices','Device status','Every device in scope and whether it is online.']];
+function repData(){
+  const sites=scopeSites(),d=S.rd,f=d/30,id=S.rep;
+  if(id==='summary'){const g=!S.reg?S.D.regions.map(r=>[r.name,S.D.sites.filter(s=>s.rid===r.id)]):S.D.areas.filter(a=>a.rid===S.reg).map(a=>[a.name,S.D.sites.filter(s=>s.aid===a.id)]);
+    return {h:['Name','Sites','Live','Revenue','Cost of operations','Cost % revenue','Controllable leakage','Net contribution'],r:g.map(([n,l])=>{const m=l.reduce((a,s)=>{const x=metrics(s,f);a.rev+=x.rev;a.cost+=x.cost;a.leak+=x.leak;a.rec+=x.recov;a.live+=x.live;return a},{rev:0,cost:0,leak:0,rec:0,live:0});return [n,l.length,m.live,Math.round(m.rev),Math.round(m.cost),m.rev?+(m.cost/m.rev*100).toFixed(1):0,Math.round(m.leak),Math.round(m.rev-m.cost+m.rec)]})}}
+  if(id==='league')return {h:['Code','Site','Type','Region','Area','Status','Revenue','Cost of operations','Leakage','Devices online'],r:sites.map(s=>{const m=metrics(s,f);return [s.code,s.name,s.type,reg(s.rid).name,area(s.aid).name,s.status,Math.round(m.rev),Math.round(m.cost),Math.round(m.leak),s.status==='Live'?m.dOn+'/5':'—']})};
+  if(id==='waste')return {h:['Date','Waste kg','Plastic kg','Paper kg','Glass kg','Cans kg','Oil kg'],r:daily(sites,d).map(o=>[dateOf(o.di),+o.waste.toFixed(1),+o.plastic.toFixed(1),+o.paper.toFixed(1),+o.glass.toFixed(1),+o.cans.toFixed(1),+o.oil.toFixed(1)])};
+  if(id==='util')return {h:['Date','Electricity kWh','Gas kg','Water L','Sales','Covers'],r:daily(sites,d).map(o=>[dateOf(o.di),Math.round(o.kwh),+o.gas.toFixed(1),Math.round(o.water),Math.round(o.sales),Math.round(o.covers)])};
+  const rows=[];sites.forEach(s=>['Kitchen scale','Electricity meter','Gas meter','Water meter','POS'].forEach((n,i)=>rows.push([s.code,s.name,n,s.status!=='Live'?'Not connected':(i===4?s.pos:s.dev[i])?'Online':'Offline'])));return {h:['Code','Site','Device','Status'],r:rows};
+}
+function vReports(){
+  S.rep=S.rep||'summary';S.rd=S.rd||30;const D=repData();
+  return `<div class="head"><div><div class="eyebrow">Reporting</div><h1>Management reporting · ${esc(scopeName())}</h1><p class="sub">Choose a report and period, preview it and download it as CSV. Reports cover the sites in the chosen scope.</p></div></div>${scopeBar()}
+  <div class="rep">${REPS.map(r=>`<button class="${S.rep===r[0]?'on':''}" onclick="S.rep='${r[0]}';render()"><b>${r[1]}</b><small>${r[2]}</small></button>`).join('')}</div>
+  <div class="card" style="margin-bottom:24px"><div class="hd"><h3>${REPS.find(r=>r[0]===S.rep)[1]}</h3><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><div class="seg">${[[7,'7 days'],[30,'30 days'],[90,'90 days']].map(([v,l])=>`<button class="${S.rd===v?'on':''}" onclick="S.rd=${v};render()">${l}</button>`).join('')}</div><button class="btn pri sm" onclick="dlRep()">Download CSV</button></div></div>
+  <div class="sc"><table><thead><tr>${D.h.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${D.r.slice(0,12).map(r=>`<tr>${r.map(v=>`<td>${typeof v==='number'?nf(v,Number.isInteger(v)?0:1):esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div><div class="pg"><span>${nf(D.r.length)} row${D.r.length===1?'':'s'} · showing first ${Math.min(12,D.r.length)}</span></div></div>`;
+}
+function dlRep(){const D=repData(),csv=[D.h,...D.r].map(r=>r.map(v=>/[",\n]/.test(v)?'"'+String(v).replace(/"/g,'""')+'"':v).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=S.rep+'_'+dateOf(0)+'.csv';a.click();toast('Downloaded '+nf(D.r.length)+' rows')}
+
+/* ---- Integrations ---- */
+function vIntegr(){
+  const live=scopeSites().filter(s=>s.status==='Live'),names=['Kitchen scale','Electricity meter','Gas meter','Water meter','POS'];
+  const cnt=names.map((n,i)=>{let on=0,off=0;live.forEach(s=>{(i===4?s.pos:s.dev[i])?on++:off++});return {n,on,off}});
+  const offl=[];live.forEach(s=>names.forEach((n,i)=>{if(!(i===4?s.pos:s.dev[i]))offl.push({s,n,h:Math.round(3+hh(snum(s),i+50)*90)})}));offl.sort((a,b)=>b.h-a.h);
+  const onb=scopeSites().filter(s=>s.status==='Onboarding').slice(0,30),url=location.origin+'/feeds.php/odata/group';
+  return `<div class="head"><div><div class="eyebrow">Integrations</div><h1>Connected devices · ${esc(scopeName())}</h1><p class="sub">Every scale, meter and POS across the sites in scope. Devices are provisioned per site by Gilded Age and read from the same feeds as the site app.</p></div></div>${scopeBar()}
+  <div class="kpis auto">${cnt.map(c=>`<div class="kpi"><div class="l">${c.n}s</div><div class="n ${c.off?'':'good'}">${nf(c.on)}<span style="font-size:.55em;color:var(--mute);font-weight:600"> online</span></div><div class="s" style="color:${c.off?'var(--warn)':'var(--mute)'}">${nf(c.off)} offline · ${pct(c.on,c.on+c.off,0)}</div></div>`).join('')}</div>
+  <div class="layout"><div class="card"><div class="hd"><h3>Offline devices</h3><small>Longest offline first, top 40</small></div><div class="tbl">${offl.slice(0,40).map(o=>`<div class="li" onclick="openSite('${o.s.id}')"><div><b>${esc(o.s.name)}</b><small>${esc(o.n)} · ${esc(area(o.s.aid).name)}</small></div><div class="v" style="color:var(--warn);font-size:13px">${o.h} h<small> since last reading</small></div></div>`).join('')||'<div class="empty">All devices online.</div>'}</div></div>
+  <div class="side"><div class="card"><div class="hd"><h3>Power BI and Excel</h3></div><p class="sub" style="margin-top:0">Group-level read-only feed. In Power BI choose Get data, OData feed. Username: anything. Password: the token. The feed includes region, area and site columns.</p><div class="tok">${esc(url)}</div>
+   <div class="fld"><label for="tk_l">Label</label><input id="tk_l" placeholder="Head office finance"></div><div class="fld"><label for="tk_s">Scope</label><select id="tk_s"><option value="">Whole group</option>${S.D.regions.map(r=>`<option value="Region: ${esc(r.name)}">Region: ${esc(r.name)}</option>`).join('')}</select></div><button class="btn pri" onclick="mkTok()">Create token</button><div id="tkNew"></div>${TOK.map(t=>`<div class="dv"><span>${esc(t.l)}<br><small style="color:var(--mute)">${esc(t.s||'Whole group')}</small></span><button class="btn sm" onclick="TOK.splice(${TOK.indexOf(t)},1);render()">Revoke</button></div>`).join('')}</div>
+  <div class="card"><div class="hd"><h3>Meter reporting</h3></div><div class="fld"><label for="fq2">Every</label><select id="fq2" onchange="CFG.freq=this.value;toast('Saved')"><option ${CFG.freq==='1 hour'?'selected':''}>1 hour</option><option ${CFG.freq==='2 hours'?'selected':''}>2 hours</option></select></div><p class="sub" style="margin:0">Readings are spread over the hours they cover so hourly profiles stay accurate.</p></div></div></div>
+  <div class="card" style="margin-bottom:24px"><div class="hd"><h3>Onboarding queue</h3><small>${onb.length} in scope</small></div>${onb.length?onb.map(s=>`<div class="dv"><span><b>${esc(s.name)}</b><br><small style="color:var(--mute)">${esc(area(s.aid).name)} · ${esc(s.type)}</small></span><button class="btn sm" ${REQ.has(s.id)?'disabled':''} onclick="REQ.add('${s.id}');render();toast('Device set requested from Gilded Age')">${REQ.has(s.id)?'Requested':'Request device set'}</button></div>`).join(''):'<div class="empty">No sites onboarding in scope.</div>'}</div>`;
+}
+function mkTok(){const l=$('#tk_l').value.trim()||'Untitled',v='wsg_'+[...Array(24)].map(()=>Math.floor(Math.random()*16).toString(16)).join('');TOK.push({l,s:$('#tk_s').value});render();$('#tkNew').innerHTML=`<div class="okb">Copy this token now. It is shown once.<div class="tok">${v}</div></div>`}
+
+/* ---- Administration ---- */
+function vAdmin(){
+  const f=(id,l,v,ty='number',st='0.01')=>`<div class="fld"><label for="${id}">${l}</label><input id="${id}" type="${ty}" ${ty==='number'?`step="${st}" inputmode="decimal"`:''} value="${esc(v)}"></div>`;
+  return `<div class="head"><div><div class="eyebrow">Administration</div><h1>Group administration</h1><p class="sub">Defaults for the whole group. Regions and sites can override tariffs below. Changes apply to new calculations.</p></div></div>
+  <div class="three"><div class="card"><div class="hd"><h3>Group profile</h3></div><div class="frm">${f('c_biz','Group name',S.D.name,'text')}${f('c_cur','Currency symbol',CFG.cur,'text')}${f('c_tz','Time zone',CFG.tz,'text')}</div><button class="btn pri" onclick="saveCfg('profile')">Save profile</button></div>
+  <div class="card"><div class="hd"><h3>Change admin PIN</h3></div><div class="frm">${f('p_c','Current PIN','','password')}${f('p_n','New PIN (4 to 6 digits)','','password')}</div><button class="btn pri" onclick="toast('PIN change needs the live platform')">Change PIN</button></div></div>
+  <div class="card" style="margin-bottom:16px"><div class="hd"><h3>Recovery values</h3><small>What you earn per kg, and the average cost of food thrown away</small></div><div class="frm" style="grid-template-columns:repeat(3,minmax(0,1fr))">${f('v_pl','Plastic (per kg)',CFG.plastic)}${f('v_pa','Paper and cardboard (per kg)',CFG.paper)}${f('v_gl','Glass (per kg)',CFG.glass)}${f('v_ca','Cans (per kg)',CFG.cans)}${f('v_oi','Used cooking oil (per kg)',CFG.oil)}${f('v_fc','Average food cost (per kg)',CFG.foodCost)}${f('v_fp','Flag waste at % above usual',CFG.flagPct,'number','1')}</div><button class="btn pri" onclick="saveCfg('values')">Save values</button></div>
+  <div class="three"><div class="card"><div class="hd"><h3>Disposal rates</h3></div><div class="fld"><label for="d_p">Who collects waste?</label><select id="d_p"><option value="muni" ${CFG.provider==='muni'?'selected':''}>Municipality</option><option value="priv" ${CFG.provider==='priv'?'selected':''}>Private company</option></select></div><div class="frm">${f('d_mb','Municipal base fee (per site per month)',CFG.muniBase)}${f('d_mr','Municipal rate (per kg)',CFG.muniRate)}${f('d_pb','Private base fee',CFG.privBase)}${f('d_pr','Private rate (per kg)',CFG.privRate)}${f('d_bl','Waste per site per month before Waste Smart (kg)',CFG.baseline,'number','1')}</div><button class="btn pri" onclick="saveCfg('disposal')">Save rates</button></div>
+  <div class="card"><div class="hd"><h3>Environmental factors</h3></div><div class="frm">${f('e_w','Litres of water saved per kg',CFG.wLpk,'number','any')}${f('e_t','Trees saved per kg',CFG.trees,'number','any')}</div><button class="btn pri" onclick="saveCfg('env')">Save factors</button><div class="hd" style="margin-top:20px"><h3>Look</h3></div><p class="sub" style="margin:0">Executive Dark is active. The site app also offers Control Room, Fresh, Stainless, Boardroom, Midnight and Terracotta under its own Administration page.</p></div></div>
+  <div class="card" style="margin-bottom:24px"><div class="hd"><h3>Tariffs by region</h3><small>Group default, with a regional override where a municipality differs</small></div><div class="frm" style="grid-template-columns:repeat(3,minmax(0,1fr))">${f('t_e','Group electricity per kWh',CFG.kwh)}${f('t_g','Group gas per kg',CFG.gas)}${f('t_w','Group water per kL',CFG.water)}</div>
+  <div class="sc"><table><thead><tr><th>Region</th><th>Electricity / kWh</th><th>Gas / kg</th><th>Water / kL</th></tr></thead><tbody>${S.D.regions.map(r=>{const o=OVR[r.id]||{};return `<tr><td>${esc(r.name)}</td>${['e','g','w'].map(k=>`<td><input style="min-height:36px;padding:4px 8px;font-size:14px" inputmode="decimal" placeholder="group" value="${o[k]??''}" onchange="(OVR['${r.id}']=OVR['${r.id}']||{}).${k}=this.value" aria-label="${esc(r.name)} ${k}"></td>`).join('')}</tr>`}).join('')}</tbody></table></div><button class="btn pri" style="margin-top:12px" onclick="saveCfg('tariffs')">Save tariffs</button></div>`;
+}
+function saveCfg(w){const g=id=>parseFloat($('#'+id)?.value);
+  if(w==='profile'){S.D.name=$('#c_biz').value||S.D.name;CFG.cur=$('#c_cur').value||'R';CFG.tz=$('#c_tz').value||CFG.tz}
+  if(w==='values'){CFG.plastic=g('v_pl');CFG.paper=g('v_pa');CFG.glass=g('v_gl');CFG.cans=g('v_ca');CFG.oil=g('v_oi');CFG.foodCost=g('v_fc');CFG.flagPct=g('v_fp')}
+  if(w==='disposal'){CFG.provider=$('#d_p').value;CFG.muniBase=g('d_mb');CFG.muniRate=g('d_mr');CFG.privBase=g('d_pb');CFG.privRate=g('d_pr');CFG.baseline=g('d_bl')}
+  if(w==='env'){CFG.wLpk=g('e_w');CFG.trees=g('e_t')}
+  if(w==='tariffs'){CFG.kwh=g('t_e');CFG.gas=g('t_g');CFG.water=g('t_w')}
+  render();toast('Saved (demo)')}
+
 /* ============ boot ============ */
-function load(k){S.D=build(k);S.reg=S.area=null;S.fr=S.fa=S.ft=S.fs=S.sq='';S.page=0;compute();render()}
+function load(k){S.D=build(k);S.reg=S.area=S.site=null;S.fr=S.fa=S.ft=S.fs=S.sq='';S.page=0;compute();render()}
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(b){S.tab=b.dataset.t;render();window.scrollTo(0,0)}});
 $('#dsSel').addEventListener('change',e=>load(e.target.value));
 load('e');
