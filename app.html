@@ -453,17 +453,35 @@ html,body{max-width:100%;overflow-x:hidden}
   <div class="lock-card">
     <div class="eyebrow">Waste Smart</div>
     <h1 id="authHeading">Welcome <span class="hl">back</span></h1>
-    <p class="lock-sub" id="authSub">Sign in with your business email and admin PIN. New sites are set up for you by Gilded Age.</p>
-    <div class="auth-tabs">
+    <p class="lock-sub" id="authSub">Log in with your business email and password.</p>
+    <div class="auth-tabs" id="authTabs">
       <button type="button" class="auth-tab active" id="authTabLogin" onclick="showAuthPanel('login')">Log in</button>
+      <button type="button" class="auth-tab" id="authTabSignup" onclick="showAuthPanel('signup')">Create account</button>
     </div>
     <div id="authLoginPanel">
       <div class="field"><label class="field-label" for="loginEmail">Business email</label><input type="email" id="loginEmail" placeholder="you@yourbusiness.co.za" autocomplete="username"></div>
-      <div class="field"><label class="field-label" for="loginPin">Admin PIN</label><input type="password" inputmode="numeric" id="loginPin" placeholder="4–6 digits" maxlength="6" autocomplete="current-password"></div>
+      <div class="field"><label class="field-label" for="loginPin">Password</label><input type="password" id="loginPin" placeholder="Your password" autocomplete="current-password"></div>
       <div id="authLoginErr" class="lock-err"></div>
       <button class="btn primary block" id="authLoginBtn" onclick="submitLogin()">Log in</button>
-      <p class="auth-alt"><a href="#" onclick="showAuthPanel('forgot');return false">Forgot your PIN?</a></p>
+      <p class="auth-alt"><a href="#" onclick="showAuthPanel('forgot');return false">Forgot your password?</a> &middot; <a href="#" onclick="showAuthPanel('code');return false">I have a verification code</a></p>
       <p class="auth-alt">Single user site sign-in. Part of a group? <a href="group.html">Multi user / corporate sign-in</a></p>
+    </div>
+    <div id="authSignupPanel" hidden>
+      <div class="field"><label class="field-label" for="suName">Business name</label><input type="text" id="suName" placeholder="e.g. Harbour Street Kitchen" autocomplete="organization"></div>
+      <div class="field"><label class="field-label" for="suContact">Contact person (optional)</label><input type="text" id="suContact" autocomplete="name"></div>
+      <div class="field"><label class="field-label" for="suEmail">Business email</label><input type="email" id="suEmail" placeholder="you@yourbusiness.co.za" autocomplete="username"></div>
+      <div class="field"><label class="field-label" for="suPw1">Choose a password</label><input type="password" id="suPw1" placeholder="At least 6 characters, with a number" autocomplete="new-password"></div>
+      <div class="field"><label class="field-label" for="suPw2">Repeat password</label><input type="password" id="suPw2" autocomplete="new-password"></div>
+      <div id="authSignupErr" class="lock-err"></div>
+      <button class="btn primary block" id="authSignupBtn" onclick="submitSignup()">Create account</button>
+      <p class="auth-alt">After you sign up we email the payment details (from R600 per site per month). Once Gilded Age confirms your payment we email a verification code that activates your account.</p>
+    </div>
+    <div id="authCodePanel" hidden>
+      <div class="field"><label class="field-label" for="codeEmail">Business email</label><input type="email" id="codeEmail" placeholder="you@yourbusiness.co.za" autocomplete="username"></div>
+      <div class="field"><label class="field-label" for="codeVal">Verification code</label><input type="text" id="codeVal" inputmode="numeric" maxlength="6" placeholder="6 digits" autocomplete="one-time-code" style="letter-spacing:6px;font-size:20px"></div>
+      <div id="authCodeErr" class="lock-err"></div>
+      <button class="btn primary block" id="authCodeBtn" onclick="submitCode()">Activate my account</button>
+      <p class="auth-alt"><a href="#" onclick="showAuthPanel('login');return false">Back to log in</a></p>
     </div>
     <div id="authForgotPanel" hidden>
       <div class="field"><label class="field-label" for="forgotEmail">Business email</label><input type="email" id="forgotEmail" placeholder="you@yourbusiness.co.za" autocomplete="username"></div>
@@ -472,10 +490,10 @@ html,body{max-width:100%;overflow-x:hidden}
       <p class="auth-alt"><a href="#" onclick="showAuthPanel('login');return false">Back to log in</a></p>
     </div>
     <div id="authSetPanel" hidden>
-      <div class="field"><label class="field-label" for="setPin1">New admin PIN</label><input type="password" inputmode="numeric" id="setPin1" placeholder="4–6 digits" maxlength="6" autocomplete="new-password"></div>
-      <div class="field"><label class="field-label" for="setPin2">Repeat PIN</label><input type="password" inputmode="numeric" id="setPin2" maxlength="6" autocomplete="new-password"></div>
+      <div class="field"><label class="field-label" for="setPin1">New password</label><input type="password" id="setPin1" placeholder="At least 6 characters, with a number" autocomplete="new-password"></div>
+      <div class="field"><label class="field-label" for="setPin2">Repeat password</label><input type="password" id="setPin2" autocomplete="new-password"></div>
       <div id="authSetErr" class="lock-err"></div>
-      <button class="btn primary block" id="authSetBtn" onclick="submitSetPin()">Save PIN</button>
+      <button class="btn primary block" id="authSetBtn" onclick="submitSetPin()">Save password</button>
     </div>
   </div>
 </div>
@@ -484,8 +502,8 @@ html,body{max-width:100%;overflow-x:hidden}
   <div class="lock-card">
     <div class="eyebrow" id="lockBrand">Waste Smart</div>
     <h1>Admin <span class="hl">access</span></h1>
-    <p class="lock-sub">Enter the admin PIN to open the board.</p>
-    <div class="lock-row"><input class="pin-input" type="password" inputmode="numeric" id="pinInput" placeholder="PIN" maxlength="6" aria-label="Admin PIN"><button class="btn primary" id="pinUnlockBtn" onclick="tryUnlock()">Unlock</button></div>
+    <p class="lock-sub">Enter your password to open the board.</p>
+    <div class="lock-row"><input class="pin-input" type="password" id="pinInput" placeholder="Password" aria-label="Password" autocomplete="current-password"><button class="btn primary" id="pinUnlockBtn" onclick="tryUnlock()">Unlock</button></div>
     <div id="lockErr" class="lock-err"></div>
     <p class="lock-sub" style="font-size:13px"><a href="#" onclick="logoutSite();return false;">Not your site? Log out this device</a></p>
   </div>
@@ -650,7 +668,7 @@ html,body{max-width:100%;overflow-x:hidden}
     <div class="editor-card" style="margin-bottom:16px"><h4>Look and feel</h4><p class="section-sub">Pick how Waste Smart looks on this device.</p><div class="looks" id="lookPicker"></div></div>
     <div class="grid-2" style="margin-bottom:16px">
       <div class="editor-card"><h4>Business profile</h4><div class="form-grid"><div class="field"><label class="field-label" for="setBizName">Business name</label><input type="text" id="setBizName"></div><div class="field"><label class="field-label" for="setBizCurrency">Currency symbol</label><input type="text" id="setBizCurrency" maxlength="3"></div></div><button class="btn primary small" onclick="saveBusinessProfile()">Save profile</button></div>
-      <div class="editor-card"><h4>Change admin PIN</h4><div class="form-grid"><div class="field"><label class="field-label" for="pinChangeCurrentAdmin">Current admin PIN</label><input type="password" id="pinChangeCurrentAdmin" inputmode="numeric" maxlength="6"></div><div class="field"><label class="field-label" for="pinChangeNewAdmin">New admin PIN</label><input type="password" id="pinChangeNewAdmin" inputmode="numeric" maxlength="6"></div></div><p class="lock-err" id="pinChangeErr"></p><button class="btn primary small" onclick="updateSitePins()">Update PIN</button></div>
+      <div class="editor-card"><h4>Change password</h4><div class="form-grid"><div class="field"><label class="field-label" for="pinChangeCurrentAdmin">Current password</label><input type="password" id="pinChangeCurrentAdmin" autocomplete="current-password"></div><div class="field"><label class="field-label" for="pinChangeNewAdmin">New password</label><input type="password" id="pinChangeNewAdmin" placeholder="At least 6 characters, with a number" autocomplete="new-password"></div></div><p class="lock-err" id="pinChangeErr"></p><button class="btn primary small" onclick="updateSitePins()">Update password</button></div>
     </div>
     <div class="editor-card" style="margin-bottom:16px"><h4>Recovery values</h4><p class="section-sub">What you earn per kg for recyclables and used oil (leave at 0 if you are not paid), and what the food you throw away costs you per kg on average. The food figure turns kilograms of waste into rand.</p>
       <div class="form-grid"><div class="field"><label class="field-label" for="rvPlastic">Plastic (per kg)</label><input type="number" step="0.01" id="rvPlastic"></div><div class="field"><label class="field-label" for="rvPaper">Paper and cardboard (per kg)</label><input type="number" step="0.01" id="rvPaper"></div><div class="field"><label class="field-label" for="rvGlass">Glass (per kg)</label><input type="number" step="0.01" id="rvGlass"></div><div class="field"><label class="field-label" for="rvCans">Cans (per kg)</label><input type="number" step="0.01" id="rvCans"></div><div class="field"><label class="field-label" for="rvOil">Used cooking oil (per kg)</label><input type="number" step="0.01" id="rvOil"></div><div class="field"><label class="field-label" for="rvFlag">Flag a day when waste per cover is this % above usual</label><input type="number" step="1" min="5" id="rvFlag" placeholder="30"></div><div class="field"><label class="field-label" for="rvFood">Average cost of food thrown away (per kg)</label><input type="number" step="0.01" id="rvFood"></div></div>
@@ -972,7 +990,7 @@ const WSR = (function(){
 // One admin login. Scales, meters and the POS feed in on their own (see ingest.php); anything can be typed by hand
 // as a backup, and a typed figure always wins for that day.
 const API_ENDPOINT = 'https://gildedac.co.za/app/api.php'; // set to match your live deployment
-const BUILD_VERSION = 'v6.6.3';
+const BUILD_VERSION = 'v6.7.0';
 const BUILD_DATE = '2026-10-23';
 const AUTH_TOKEN_KEY = 'ws_auth_token', AUTH_SITE_KEY = 'ws_auth_site', LOOK_KEY = 'ws_look_v2';
 
@@ -1075,21 +1093,57 @@ let setToken = null;
 async function masterCall(action, body){
   const r = await fetch(MASTER_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(Object.assign({ action }, body||{})) });
   let d = {}; try { d = await r.json(); } catch(e){}
-  if (!r.ok) throw new Error(d.error || 'Something went wrong. Please try again.');
+  if (!r.ok){ const e = new Error(d.error || 'Something went wrong. Please try again.'); e.state = d.state; e.status = r.status; throw e; }
   return d;
 }
+/* One password rule everywhere: at least 6 characters, including a number. The server enforces the same rule. */
+function pwProblem(pw, email){
+  if (pw.length < 6) return 'Use a password of at least 6 characters.';
+  if (!/\d/.test(pw)) return 'Include at least one number in your password.';
+  if (email && pw.toLowerCase() === email.toLowerCase()) return 'Do not use your email address as your password.';
+  return '';
+}
 function wireAuthScreen(){
+  $('suPw2').addEventListener('keydown', e => { if (e.key==='Enter') submitSignup(); });
+  $('codeVal').addEventListener('keydown', e => { if (e.key==='Enter') submitCode(); });
   $('loginPin').addEventListener('keydown', e => { if (e.key==='Enter') submitLogin(); });
   $('forgotEmail').addEventListener('keydown', e => { if (e.key==='Enter') submitForgot(); });
   $('setPin2').addEventListener('keydown', e => { if (e.key==='Enter') submitSetPin(); });
 }
 function showAuthPanel(which){
-  $('authTabLogin').classList.toggle('active', which === 'login');
-  $('authLoginPanel').hidden = which !== 'login'; $('authForgotPanel').hidden = which !== 'forgot'; $('authSetPanel').hidden = which !== 'set';
-  const h = { login:'Welcome <span class="hl">back</span>', forgot:'Reset your <span class="hl">PIN</span>', set:'Choose your <span class="hl">PIN</span>' };
-  const s = { login:'Log in with your business email and admin PIN.', forgot:'Enter your business email and we will send a single-use link that lasts one hour.', set:'Choose a 4 to 6 digit admin PIN. You will use it each time you log in.' };
+  const P = { login:'authLoginPanel', signup:'authSignupPanel', code:'authCodePanel', forgot:'authForgotPanel', set:'authSetPanel' };
+  Object.keys(P).forEach(k => { $(P[k]).hidden = which !== k; });
+  $('authTabLogin').classList.toggle('active', which === 'login'); $('authTabSignup').classList.toggle('active', which === 'signup');
+  $('authTabs').hidden = which === 'set';
+  const h = { login:'Welcome <span class="hl">back</span>', signup:'Create your <span class="hl">account</span>', code:'Activate your <span class="hl">account</span>', forgot:'Reset your <span class="hl">password</span>', set:'Choose your <span class="hl">password</span>' };
+  const s = { login:'Log in with your business email and password.', signup:'Your email and a password of at least 6 characters, including a number.', code:'Enter the 6 digit code Gilded Age emailed you after your payment was confirmed.', forgot:'Enter your business email and we will send a single-use link that lasts one hour.', set:'Choose a password of at least 6 characters, including a number.' };
   $('authHeading').innerHTML = h[which]; $('authSub').textContent = s[which];
-  $('authTabLogin').hidden = which === 'set';
+  ['authLoginErr','authSignupErr','authCodeErr','authForgotErr','authSetErr'].forEach(i => { $(i).textContent = ''; $(i).style.color = ''; });
+}
+async function submitSignup(){
+  const name = $('suName').value.trim(), email = $('suEmail').value.trim(), p1 = $('suPw1').value, p2 = $('suPw2').value, err = $('authSignupErr'); err.textContent = ''; err.style.color = '';
+  if (!name){ err.textContent = 'Enter your business name.'; return; }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent = 'Enter a valid email address.'; return; }
+  const pr = pwProblem(p1, email); if (pr){ err.textContent = pr; return; }
+  if (p1 !== p2){ err.textContent = 'The two passwords do not match.'; return; }
+  $('authSignupBtn').disabled = true;
+  try{
+    const r = await masterCall('signup', { name, contact:$('suContact').value.trim(), email, password:p1, password2:p2 });
+    $('suPw1').value = ''; $('suPw2').value = ''; $('loginEmail').value = email; $('codeEmail').value = email;
+    showAuthPanel('login'); $('authLoginErr').style.color = 'var(--good,#5EEAD4)'; $('authLoginErr').textContent = r.message;
+  }catch(e){ err.textContent = e.message || 'Could not create the account.'; }
+  finally{ $('authSignupBtn').disabled = false; }
+}
+async function submitCode(){
+  const email = $('codeEmail').value.trim(), code = $('codeVal').value.replace(/\D/g,''), err = $('authCodeErr'); err.textContent = ''; err.style.color = '';
+  if (!email){ err.textContent = 'Enter your business email.'; return; }
+  if (code.length !== 6){ err.textContent = 'Enter the 6 digit code.'; return; }
+  $('authCodeBtn').disabled = true;
+  try{
+    const r = await masterCall('verify_code', { email, code });
+    $('codeVal').value = ''; $('loginEmail').value = email; showAuthPanel('login'); $('authLoginErr').style.color = 'var(--good,#5EEAD4)'; $('authLoginErr').textContent = r.message; $('loginPin').focus();
+  }catch(e){ err.textContent = e.message || 'That code did not work.'; }
+  finally{ $('authCodeBtn').disabled = false; }
 }
 async function submitForgot(){
   const email = $('forgotEmail').value.trim(); $('authForgotErr').textContent = ''; $('authForgotErr').style.color = '';
@@ -1103,49 +1157,52 @@ async function openSetPinLink(tok){
   setToken = tok; $('authScreen').hidden = false;
   try{
     const r = await masterCall('pin_token_check', { token: tok });
-    showAuthPanel('set'); $('authSub').textContent = (r.business ? r.business + ': ' : '') + 'choose a 4 to 6 digit admin PIN. You will use it each time you log in.';
+    showAuthPanel('set'); $('authSub').textContent = (r.business ? r.business + ': ' : '') + 'choose a password of at least 6 characters, including a number.';
     $('loginEmail').value = r.email || '';
   }catch(e){ showAuthPanel('forgot'); $('authForgotErr').textContent = e.message; }
 }
 async function submitSetPin(){
-  const a = $('setPin1').value.trim(), b = $('setPin2').value.trim(); $('authSetErr').textContent = '';
-  if (!/^\d{4,6}$/.test(a)){ $('authSetErr').textContent = 'The PIN must be 4 to 6 digits.'; return; }
-  if (a !== b){ $('authSetErr').textContent = 'The two PINs do not match.'; return; }
+  const a = $('setPin1').value, b = $('setPin2').value; $('authSetErr').textContent = '';
+  const pr = pwProblem(a, $('loginEmail').value.trim()); if (pr){ $('authSetErr').textContent = pr; return; }
+  if (a !== b){ $('authSetErr').textContent = 'The two passwords do not match.'; return; }
   $('authSetBtn').disabled = true;
   try{
-    await masterCall('pin_set', { token: setToken, pin: a }); setToken = null;
+    await masterCall('pin_set', { token: setToken, password: a }); setToken = null;
     try{ history.replaceState(null, '', location.pathname); }catch(e){}
     $('setPin1').value = ''; $('setPin2').value = ''; showAuthPanel('login');
-    $('authLoginErr').style.color = 'var(--good,#5EEAD4)'; $('authLoginErr').textContent = 'PIN saved. Log in with it now.'; $('loginPin').focus();
+    $('authLoginErr').style.color = 'var(--good,#5EEAD4)'; $('authLoginErr').textContent = 'Password saved. Log in with it now.'; $('loginPin').focus();
   }catch(e){ $('authSetErr').textContent = e.message; }
   finally{ $('authSetBtn').disabled = false; }
 }
 async function submitLogin(){
-  const email = $('loginEmail').value.trim(), pin = $('loginPin').value.trim();
-  $('authLoginErr').textContent = '';
-  if (!email || !pin){ $('authLoginErr').textContent = 'Enter your email and admin PIN.'; return; }
+  const email = $('loginEmail').value.trim(), pin = $('loginPin').value;
+  $('authLoginErr').textContent = ''; $('authLoginErr').style.color = '';
+  if (!email || !pin){ $('authLoginErr').textContent = 'Enter your email and password.'; return; }
   $('authLoginBtn').disabled = true;
   try{
-    const r = await apiCall('login', { email, pin }, { noAuth:true });
-    if (r.role !== 'admin'){ throw new Error('This app is for admins only. Use the admin PIN.'); }
-    setAuthSession(r.token, r.site); role = 'admin'; feedAdminPin = pin;
+    const r = await masterCall('site_login', { email, password: pin });
+    if (r.role !== 'admin'){ throw new Error('This app is for admins only.'); }
+    setAuthSession(r.token, r.site); role = 'admin'; feedAdminPin = pin; $('loginPin').value = '';
     setup = { id:r.site.id, name:r.site.name, type:r.site.type, currency:r.site.currency };
     await enterApp();
-  }catch(e){ $('authLoginErr').textContent = e.message || 'Could not log in.'; }
+  }catch(e){
+    if (e.state === 'needs_code'){ $('codeEmail').value = email; showAuthPanel('code'); $('authCodeErr').style.color = 'var(--good,#5EEAD4)'; $('authCodeErr').textContent = e.message; }
+    else $('authLoginErr').textContent = e.message || 'Could not log in.';
+  }
   finally{ $('authLoginBtn').disabled = false; }
 }
 async function tryUnlock(){
-  const v = $('pinInput').value.trim(); if (!v) return;
+  const v = $('pinInput').value; if (!v) return;
   $('pinUnlockBtn').disabled = true; $('lockErr').textContent = '';
   try{
     const r = await apiCall('verify_pin', { pin: v });
-    if (r.role !== 'admin') throw new Error('This app is for admins only. Use the admin PIN.');
+    if (r.role !== 'admin') throw new Error('This app is for admins only.');
     role = 'admin'; feedAdminPin = v; $('pinInput').value = '';
     await enterApp();
   }catch(e){
     if (e.status === 401 && e.body && /device is not paired|paired with a site/.test(e.body.error||'')){
       clearAuthSession(); $('lockScreen').hidden = true; $('authScreen').hidden = false; showAuthPanel('login'); $('authLoginErr').textContent = e.message;
-    } else { $('lockErr').textContent = e.message || 'Incorrect PIN. Try again.'; $('pinInput').value = ''; }
+    } else { $('lockErr').textContent = e.message || 'Incorrect password. Try again.'; $('pinInput').value = ''; }
   }finally{ $('pinUnlockBtn').disabled = false; }
 }
 function lockApp(){
@@ -1496,10 +1553,10 @@ function biCopy(text){
 function ensureAdminPin(){
   if (feedAdminPin) return Promise.resolve(feedAdminPin);
   return new Promise((resolve, reject)=>{
-    fmOpen(`<h3>Admin PIN</h3><p class="section-sub" style="margin-top:0;">Changing integrations needs the admin PIN.</p>
-      <div class="field"><input type="password" inputmode="numeric" id="fmPin" maxlength="6" placeholder="Admin PIN" autocomplete="off"></div>
+    fmOpen(`<h3>Confirm your password</h3><p class="section-sub" style="margin-top:0;">Changing integrations needs your password.</p>
+      <div class="field"><input type="password" id="fmPin" placeholder="Password" autocomplete="off"></div>
       <div class="btnrow"><button class="btn primary small" id="fmPinOk">Continue</button><button class="btn ghost small" id="fmPinNo">Cancel</button></div>`);
-    const done = ok => { const v = $('fmPin').value.trim(); fmClose(); ok && v ? (feedAdminPin = v, resolve(v)) : reject(new Error('cancelled')); };
+    const done = ok => { const v = $('fmPin').value; fmClose(); ok && v ? (feedAdminPin = v, resolve(v)) : reject(new Error('cancelled')); };
     $('fmPinOk').onclick = ()=>done(true); $('fmPinNo').onclick = ()=>done(false);
     $('fmPin').onkeydown = ev => { if (ev.key === 'Enter') done(true); };
   });
@@ -2368,11 +2425,14 @@ async function saveBusinessProfile(){
   if (await sSet(K.SETUP, JSON.stringify(setup))){ $('bizName').textContent = setup.name; $('footBizName').textContent = setup.name; toast('Business profile saved.'); }
 }
 async function updateSitePins(){
-  const cur = $('pinChangeCurrentAdmin').value.trim(), nw = $('pinChangeNewAdmin').value.trim(); $('pinChangeErr').textContent = '';
-  if (!cur){ $('pinChangeErr').textContent = 'Enter your current admin PIN to confirm this change.'; return; }
-  if (nw.length < 4){ $('pinChangeErr').textContent = 'The new PIN needs at least 4 digits.'; return; }
-  try{ await apiCall('update_pins', { currentAdminPin:cur, newAdminPin:nw }); $('pinChangeCurrentAdmin').value = ''; $('pinChangeNewAdmin').value = ''; feedAdminPin = null; toast('Admin PIN updated.'); }
-  catch(e){ $('pinChangeErr').textContent = e.message || 'Could not update the PIN.'; }
+  const cur = $('pinChangeCurrentAdmin').value, nw = $('pinChangeNewAdmin').value; $('pinChangeErr').textContent = '';
+  if (!cur){ $('pinChangeErr').textContent = 'Enter your current password to confirm this change.'; return; }
+  const pr = pwProblem(nw, (getAuthSite() && getAuthSite().email) || ''); if (pr){ $('pinChangeErr').textContent = pr; return; }
+  try{
+    const res = await fetch(MASTER_URL, { method:'POST', headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + getAuthToken() }, body: JSON.stringify({ action:'site_password_change', currentPassword:cur, newPassword:nw }) });
+    const d = await res.json().catch(()=>({})); if (!res.ok) throw new Error(d.error || 'Could not update the password.');
+    $('pinChangeCurrentAdmin').value = ''; $('pinChangeNewAdmin').value = ''; feedAdminPin = null; toast('Password updated.');
+  }catch(e){ $('pinChangeErr').textContent = e.message || 'Could not update the password.'; }
 }
 async function saveRates(){
   rates = { plastic:parseFloat($('rvPlastic').value)||0, paper:parseFloat($('rvPaper').value)||0, glass:parseFloat($('rvGlass').value)||0, cans:parseFloat($('rvCans').value)||0, foodCostPerKg:parseFloat($('rvFood').value)||0, wasteFlagPct:Math.max(5, parseFloat($('rvFlag').value)||30) };

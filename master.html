@@ -409,7 +409,7 @@ pre{background:var(--pre);color:var(--pretx);padding:12px 14px;border-radius:10p
 .demo{position:fixed;top:0;left:0;right:0;background:var(--accsolid);color:var(--acctx);text-align:center;font-size:12px;font-weight:700;padding:4px 10px;z-index:60;letter-spacing:.02em}
 .demo a{color:var(--acctx)}
 body.isdemo #app{padding-top:24px}body.isdemo nav.side{top:24px;height:calc(100vh - 24px)}body.isdemo #login{padding-top:48px}
-@media(max-width:860px){#app{grid-template-columns:1fr}nav.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;padding:10px}nav.side .mark{margin:0 8px}nav.side .sp,nav.side .who{display:none}}
+@media(max-width:860px){#app{grid-template-columns:1fr}nav.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;padding:10px}nav.side .mark{margin:0 8px}nav.side .sp,nav.side .who{display:none}body.isdemo nav.side{height:auto;top:0}nav.side .navlbl{display:none}nav.side button{padding:8px 10px;font-size:13px}nav.side{align-items:center}}
 .navlbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.55;padding:12px 14px 2px}
 .tcards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}.tcard{border:1.5px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;background:transparent;text-align:left;display:block;width:100%}
 .tcard b{display:block;font-size:15px;margin-bottom:4px}.tcard small{display:block;opacity:.75;line-height:1.45}.tcard.on{border-color:var(--gold);background:var(--goldbg)}
@@ -454,6 +454,7 @@ tr.gh td{background:var(--field);font-weight:700;padding-top:12px;padding-bottom
     <button data-v="single" onclick="go('single')">&#9679; Single user sites</button>
     <button data-v="corporate" onclick="go('corporate')">&#9672; Multi user / corporate</button>
     <button data-v="onboard" onclick="go('onboard')">&#10010; Onboard a client</button>
+    <button data-v="backups" onclick="go('backups')">&#9112; Backups</button>
     <button data-v="team" onclick="go('team')">&#9881; Team &amp; audit</button>
     <div class="sp"></div>
     <div class="who" id="who"></div>
@@ -521,6 +522,7 @@ function openModal(html){ $('modalBox').innerHTML = html; $('modal').classList.r
 function closeModal(){ $('modal').classList.add('hide'); }
 function ago(h){ if (h == null) return 'No data yet'; if (h < 1) return 'Just now'; if (h < 24) return Math.round(h) + ' h ago'; return Math.round(h / 24) + ' d ago'; }
 function statusPill(c){
+  if (c.status === 'pending') return c.codeSent ? '<span class="pill p-blue">Code sent, awaiting activation</span>' : '<span class="pill p-warn">Awaiting payment</span>';
   if (c.status === 'suspended') return '<span class="pill p-bad">Suspended</span>';
   if (!c.pinSet) return '<span class="pill p-blue">Awaiting first sign-in</span>';
   if (c.health.stale || (c.devices.length && !c.health.live && !c.health.quiet)) return '<span class="pill p-bad">Needs attention</span>';
@@ -530,7 +532,7 @@ function statusPill(c){
 }
 function dots(h){ const o = []; ['live','quiet','stale','never'].forEach(k => { for (let i = 0; i < (h[k] || 0); i++) o.push('<span class="dot d-' + k + '" title="' + k + '"></span>'); }); return '<div class="dots">' + (o.join('') || '<span class="sub">none</span>') + '</div>'; }
 function healthOf(devs){ const h = { live:0, quiet:0, stale:0, never:0, disabled:0 }; devs.forEach(d => h[d.health] = (h[d.health] || 0) + 1); return h; }
-function attention(c){ return c.status !== 'suspended' && c.pinSet && (c.health.stale > 0 || c.health.quiet > 0 || (c.devices.length > 0 && c.health.live === 0)); }
+function attention(c){ return c.status === 'active' && c.pinSet && (c.health.stale > 0 || c.health.quiet > 0 || (c.devices.length > 0 && c.health.live === 0)); }
 
 /* ================= auth ================= */
 async function doLogin(ev){
@@ -567,6 +569,7 @@ function go(v, arg){
   if (v === 'single' || v === 'corporate') return viewSection(v);
   if (v === 'onboard') return viewOnboard(arg);
   if (v === 'client') return viewClient(arg);
+  if (v === 'backups') return viewBackups();
   if (v === 'team') return viewTeam();
 }
 const KIND = { single:['Single user site','One kitchen with one admin PIN. The owner opens their own app and sees nothing else.'], corporate:['Multi user / corporate','Several sites under one group. Every site keeps its own admin PIN, and the group admin sees all of them together.'] };
@@ -577,17 +580,23 @@ async function viewOverview(){
   $('main').innerHTML = '<div class="top"><div><h1>Overview</h1><p>Waste Smart has two kinds of client. Each has its own section.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" onclick="registerOpen()">Client register</button><button class="btn ghost" onclick="registerFile(\'pdf\')">PDF</button><button class="btn ghost" onclick="registerFile(\'docx\')">Word</button><button class="btn ghost" onclick="registerCsv()">CSV</button><button class="btn gold" onclick="go(\'onboard\')">+ Onboard a client</button></div></div><div id="ovBody" class="sub">Loading…</div>';
   await loadClients(); renderOverview();
 }
-function sectionStats(list){ return { n:list.length, ok:list.filter(c => c.status !== 'suspended' && !attention(c) && c.pinSet).length, need:list.filter(attention).length, wait:list.filter(c => !c.pinSet && c.status !== 'suspended').length, dev:list.reduce((a, c) => a + c.devices.length, 0), live:list.reduce((a, c) => a + c.health.live, 0) }; }
+function sectionStats(list){ return { n:list.length, ok:list.filter(c => c.status !== 'suspended' && !attention(c) && c.pinSet).length, need:list.filter(attention).length, wait:list.filter(c => !c.pinSet && c.status === 'active').length, pend:list.filter(c => c.status === 'pending').length, dev:list.reduce((a, c) => a + c.devices.length, 0), live:list.reduce((a, c) => a + c.health.live, 0) }; }
+function pendingPanel(cs){
+  const p = cs.filter(c => c.status === 'pending'); if (!p.length) return '';
+  return `<div class="card" style="margin-bottom:14px;border-color:var(--warn)"><h3>New sign-ups awaiting payment (${p.length})</h3><p class="sub">These clients created their own account. Once their proof of payment arrives, confirm it and they are emailed a verification code that activates the account.</p>
+  <div class="tw"><table><tbody>${p.map(c => `<tr><td><b>${esc(c.name)}</b><div class="sub">${esc(c.ownerEmail)} · signed up ${esc(c.created)}</div></td><td>${statusPill(c)}</td><td style="text-align:right;white-space:nowrap"><button class="btn small gold" onclick="authorise(${c.id})">${c.codeSent ? 'Resend code' : 'Payment received: send code'}</button> <button class="btn small ghost" onclick="go('client',${c.id})">Open</button></td></tr>`).join('')}</tbody></table></div></div>`;
+}
 function renderOverview(){
   const cs = state.clients, sg = cs.filter(c => c.kind !== 'corporate'), co = cs.filter(c => c.kind === 'corporate'), gs = new Set(co.map(c => c.group)).size, all = sectionStats(cs);
   const panel = (k, list, extra) => { const x = sectionStats(list); return `<div class="card"><h3>${KIND[k][0]}</h3><p class="sub">${KIND[k][1]}</p>
     <div class="secnums"><div><b>${x.n}</b><span>${k === 'corporate' ? 'sites in ' + gs + ' group' + (gs === 1 ? '' : 's') : 'sites'}</span></div><div><b>${x.ok}</b><span>healthy</span></div><div><b style="color:${x.need ? 'var(--bad)' : 'var(--good)'}">${x.need}</b><span>need attention</span></div><div><b>${x.wait}</b><span>awaiting first sign-in</span></div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="go('${k}')">Open ${KIND[k][0]}</button><button class="btn ghost" onclick="go('onboard',{kind:'${k}'})">+ Add</button></div></div>`; };
   $('ovBody').innerHTML = `<div class="kpis">
-    <div class="kpi"><span>Active clients</span><b>${cs.filter(c => c.status !== 'suspended').length}</b><small>${cs.filter(c => c.status === 'suspended').length} suspended</small></div>
+    <div class="kpi"><span>Active clients</span><b>${cs.filter(c => c.status === 'active').length}</b><small>${cs.filter(c => c.status === 'suspended').length} suspended</small></div>
     <div class="kpi"><span>Devices reporting</span><b>${all.dev ? Math.round(all.live / all.dev * 100) : 0}%</b><small>${all.live} of ${all.dev} live right now</small></div>
     <div class="kpi"><span>Need attention</span><b style="color:${all.need ? 'var(--bad)' : 'var(--good)'}">${all.need}</b><small>quiet or offline devices</small></div>
     <div class="kpi"><span>Awaiting first sign-in</span><b>${all.wait}</b><small>invite sent, PIN not set</small></div></div>
+  ${pendingPanel(cs)}
   <div class="secgrid">${panel('single', sg)}${panel('corporate', co)}</div>`;
 }
 async function viewSection(kind){
@@ -596,11 +605,11 @@ async function viewSection(kind){
   await loadClients(); renderSection();
 }
 function renderSection(){
-  const kind = state.section || 'single', cs = state.clients.filter(c => (c.kind === 'corporate') === (kind === 'corporate')), act = cs.filter(c => c.status !== 'suspended');
+  const kind = state.section || 'single', cs = state.clients.filter(c => (c.kind === 'corporate') === (kind === 'corporate')), act = cs.filter(c => c.status === 'active');
   const dev = cs.reduce((a, c) => a + c.devices.length, 0), live = cs.reduce((a, c) => a + c.health.live, 0);
-  const need = cs.filter(attention).length, wait = cs.filter(c => !c.pinSet && c.status !== 'suspended').length;
+  const need = cs.filter(attention).length, wait = cs.filter(c => !c.pinSet && c.status === 'active').length;
   const f = state.filter, q = state.q.toLowerCase();
-  const rows = cs.filter(c => (f === 'all' || (f === 'attention' && attention(c)) || (f === 'invited' && !c.pinSet && c.status !== 'suspended') || (f === 'suspended' && c.status === 'suspended'))
+  const rows = cs.filter(c => (f === 'all' || (f === 'attention' && attention(c)) || (f === 'invited' && !c.pinSet && c.status === 'active') || (f === 'pending' && c.status === 'pending') || (f === 'suspended' && c.status === 'suspended'))
     && (!q || (c.name + ' ' + c.ownerEmail + ' ' + c.contact + ' ' + (c.group || '') + ' ' + (c.region || '') + ' ' + (c.area || '')).toLowerCase().includes(q)));
   const row = c => `<tr class="row" onclick="go('client',${c.id})"><td><b>${esc(c.name)}</b><div class="sub">${esc(c.type)}${kind === 'corporate' ? ' · ' + esc([c.region, c.area].filter(Boolean).join(' / ') || 'No region yet') : ' · ' + esc(c.tz)}</div></td><td>${statusPill(c)}</td>
       <td>${dots(c.health)}<div class="sub">${c.devices.length} device${c.devices.length === 1 ? '' : 's'}</div></td><td>${ago(c.lastDataHours)}</td><td>${esc(c.ownerEmail)}</td></tr>`;
@@ -610,13 +619,13 @@ function renderSection(){
   else body = rows.map(row).join('');
   $('ovBody').innerHTML = `
   <div class="kpis">
-    <div class="kpi"><span>${kind === 'corporate' ? 'Sites' : 'Active sites'}</span><b>${kind === 'corporate' ? cs.length : act.length}</b><small>${kind === 'corporate' ? new Set(cs.map(c => c.group)).size + ' group(s), ' : ''}${cs.length - act.length} suspended</small></div>
+    <div class="kpi"><span>${kind === 'corporate' ? 'Sites' : 'Active sites'}</span><b>${kind === 'corporate' ? cs.length : act.length}</b><small>${kind === 'corporate' ? new Set(cs.map(c => c.group)).size + ' group(s), ' : ''}${cs.filter(c => c.status === 'suspended').length} suspended · ${cs.filter(c => c.status === 'pending').length} awaiting payment</small></div>
     <div class="kpi"><span>Devices reporting</span><b>${dev ? Math.round(live / dev * 100) : 0}%</b><small>${live} of ${dev} live right now</small></div>
     <div class="kpi"><span>Need attention</span><b style="color:${need ? 'var(--bad)' : 'var(--good)'}">${need}</b><small>quiet or offline devices</small></div>
     <div class="kpi"><span>Awaiting first sign-in</span><b>${wait}</b><small>invite sent, PIN not set</small></div>
   </div>
   <div class="card">
-    <div class="bar">${[['all','All'],['attention','Needs attention'],['invited','Awaiting sign-in'],['suspended','Suspended']].map(x => `<button class="chip ${f === x[0] ? 'on' : ''}" onclick="state.filter='${x[0]}';renderSection()">${x[1]}</button>`).join('')}
+    <div class="bar">${[['all','All'],['pending','Awaiting payment'],['attention','Needs attention'],['invited','Awaiting sign-in'],['suspended','Suspended']].map(x => `<button class="chip ${f === x[0] ? 'on' : ''}" onclick="state.filter='${x[0]}';renderSection()">${x[1]}</button>`).join('')}
       <input type="text" placeholder="Search…" value="${esc(state.q)}" oninput="state.q=this.value;renderSectionKeep()"></div>
     <div class="tw"><table><thead><tr><th>${kind === 'corporate' ? 'Site' : 'Client'}</th><th>Status</th><th>Devices</th><th>Last data</th><th>Admin sign-in</th></tr></thead><tbody>
     ${body || `<tr><td colspan="5" class="sub" style="padding:24px">${cs.length ? 'No sites match.' : (kind === 'corporate' ? 'No groups yet. Add the first site and give it a group name.' : 'No single user sites yet.')}</td></tr>`}
@@ -810,15 +819,22 @@ async function newBiToken(){ const r = await call('bi_token_create', { clientId:
 
 /* ---- access ---- */
 function tabAccess(){
-  const c = state.client.client;
+  const c = state.client.client, pend = c.status === 'pending', sus = c.status === 'suspended';
+  const signin = pend
+    ? `<p><span class="pill ${c.codeSent ? 'p-blue' : 'p-warn'}">${c.codeSent ? 'Verification code sent' : 'Awaiting payment'}</span></p><p class="sub">${c.codeSent ? 'The client has been emailed a 6-digit code (valid 7 days, single use). It activates the account when they enter it on the sign-in page.' : 'The client created this account themselves. When their proof of payment arrives, confirm it to email the verification code.'}</p>
+       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn gold" onclick="authorise(${c.id})">${c.codeSent ? 'Resend verification code' : 'Payment received: send code'}</button><button class="btn ghost" onclick="statusModal('active')">Activate without a code</button></div>`
+    : `<p class="sub">The client signs in with <b>${esc(c.ownerEmail)}</b> and the password they chose (at least 6 characters, with a number).</p>
+       <p>${c.pinSet ? '<span class="pill p-good">Password set</span> ' + esc(c.pinSetAt || '') : '<span class="pill p-blue">Waiting for the client to choose a password</span>'}</p>
+       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${c.pinSet ? '' : '<button class="btn gold" onclick="resendInvite()">Resend invite email</button>'}<button class="btn ghost" onclick="sendReset()">Send password reset email</button></div>
+       <p class="sub" style="margin-top:12px">Links work once and expire after ${c.pinSet ? '60 minutes' : '7 days'}. Setting a new password signs the client out everywhere.</p>`;
+  const stat = pend
+    ? '<p class="sub">Not active yet. The client cannot sign in and devices cannot send data until the account is activated.</p>'
+    : sus ? `<p class="sub">This site is switched off. The client cannot sign in and devices cannot send data. Nothing is deleted, and everything returns the moment you switch it back on.</p><div style="margin-top:10px"><button class="btn gold" onclick="statusModal('active')">Switch site on</button></div>`
+    : `<p class="sub">Switched on. Switching a site off (for example for non-payment) blocks sign-in and incoming device data at once. Nothing is deleted.</p><div style="margin-top:10px"><button class="btn danger" onclick="statusModal('suspended')">Switch site off</button></div>`;
   $('tabBody').innerHTML = `<div class="grid2">
-  <div class="card"><h3>Admin sign-in</h3><p class="sub">The client signs in with <b>${esc(c.ownerEmail)}</b> and an admin PIN. Only Gilded Age creates sites, so there is no public sign-up.</p>
-    <p>${c.pinSet ? '<span class="pill p-good">PIN set</span> ' + esc(c.pinSetAt || '') : '<span class="pill p-blue">Waiting for the client to choose a PIN</span>'}</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${c.pinSet ? '' : '<button class="btn gold" onclick="resendInvite()">Resend invite email</button>'}<button class="btn ghost" onclick="sendReset()">Send PIN reset email</button></div>
-    <p class="sub" style="margin-top:12px">Links work once and expire after ${c.pinSet ? '60 minutes' : '7 days'}. Setting a new PIN signs the client out everywhere.</p></div>
-  <div class="card"><h3>Site status</h3><p class="sub">${c.status === 'suspended' ? 'This site is suspended. The client cannot sign in and devices cannot send data.' : 'Active. Suspending blocks sign-in and incoming device data; nothing is deleted.'}</p>
-    <div style="margin-top:10px">${c.status === 'suspended' ? '<button class="btn gold" onclick="setStatus(\'active\')">Reactivate</button>' : '<button class="btn danger" onclick="setStatus(\'suspended\')">Suspend site</button>'}</div>
-    <div class="sect">Backup</div><button class="btn ghost small" onclick="exportBackup()">Export this client's data</button></div></div>`;
+  <div class="card"><h3>Account sign-in</h3>${signin}</div>
+  <div class="card"><h3>Site on / off</h3>${stat}
+    <div class="sect">Backup</div><p class="sub">The nightly master backup is on the Backups page.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost small" onclick="downloadBackup(${c.id})">Download latest backup</button><button class="btn ghost small" onclick="exportBackup()">Export live data now</button></div></div></div>`;
 }
 function mailPreview(kind, c, link){
   const first = kind === 'invite';
@@ -836,7 +852,22 @@ function emailResult(r, kind){
   <div class="cred"><code>${esc(r.link)}</code><button class="btn small ghost" onclick="copy('${r.link}')">Copy link</button></div><div class="sect">What the client receives</div>${mailPreview(kind, state.client.client, r.link)}
   <div style="text-align:right;margin-top:12px"><button class="btn" onclick="closeModal()">Close</button></div>`);
 }
-async function setStatus(s){ await call('client_status', { id: state.client.client.id, status: s }); toast(s === 'active' ? 'Reactivated' : 'Suspended'); viewClient(state.client.client.id); }
+function statusModal(st){
+  const off = st === 'suspended', c = state.client.client;
+  openModal(`<h2>${off ? 'Switch this site off?' : (c.status === 'pending' ? 'Activate without a code?' : 'Switch this site on?')}</h2>
+  <p>${off ? `<b>${esc(c.name)}</b> will be locked out straight away and its devices stop sending data. Nothing is deleted.` : `<b>${esc(c.name)}</b> will be able to sign in and its devices will resume.`}</p>
+  <label>Reason (kept in the audit log)</label><input type="text" id="stWhy" maxlength="120" value="${off ? 'Non-payment' : (c.status === 'pending' ? 'Payment received' : 'Payment received')}">
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn ${off ? 'danger' : 'gold'}" onclick="setStatus('${st}')">${off ? 'Switch off' : 'Switch on'}</button></div>`);
+}
+async function setStatus(s){ const why = $('stWhy') ? $('stWhy').value.trim() : ''; try { await call('client_status', { id: state.client.client.id, status: s, reason: why }); closeModal(); toast(s === 'active' ? 'Site switched on' : 'Site switched off'); viewClient(state.client.client.id); } catch(e){ toast(e.message); } }
+function afterAuth(id){ if ($('tabBody')) viewClient(id); else go('overview'); }
+async function authorise(id){
+  try { const r = await call('client_authorise', { id });
+    const c = (state.clients || []).find(x => x.id === id) || (state.client && state.client.client) || { ownerEmail:'the client' };
+    openModal(`<h2>${r.email && r.email.sent ? 'Verification code emailed' : 'Email not sent'}</h2>${r.email && r.email.sent ? `<p>The 6-digit code was sent to <b>${esc(c.ownerEmail)}</b>. They enter it on the sign-in page to activate the account.</p>` : `<div class="note">${esc((r.email && r.email.error) || 'Email delivery is not set up on the server yet.')} Give the client this code yourself:</div><div class="cred"><code style="font-size:22px;letter-spacing:4px">${esc(r.code || '')}</code><button class="btn small ghost" onclick="copy('${r.code || ''}')">Copy</button></div>`}
+    <p class="sub">The code works once and expires in 7 days.</p><div style="text-align:right"><button class="btn" onclick="closeModal();afterAuth(${id})">Close</button></div>`);
+  } catch(e){ toast(e.message); }
+}
 async function exportBackup(){ const r = await call('client_backup', { id: state.client.client.id }); saveFile('backup-' + state.client.client.id + '.json', JSON.stringify(r, null, 2), 'application/json'); toast('Backup downloaded'); }
 
 /* ---- details ---- */
@@ -932,6 +963,31 @@ function wizDone(r){
 }
 
 /* ================= team & audit ================= */
+/* ================= backups ================= */
+function fmtBytes(n){ return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+async function viewBackups(){
+  $('main').innerHTML = '<div class="top"><div><h1>Backups</h1><p>A master copy of every site\'s information, refreshed every 24 hours. Passwords and device keys are never included.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="runBackup()">Back up everything now</button></div></div><div id="bkBody" class="sub">Loading…</div>';
+  try { const r = await call('backups_list'); renderBackups(r); } catch(e){ $('bkBody').textContent = e.message; }
+}
+function renderBackups(r){
+  const s = r.summary, rows = r.backups;
+  $('bkBody').innerHTML = `<div class="kpis">
+    <div class="kpi"><span>Sites covered</span><b>${s.fresh} of ${s.sites}</b><small>backed up in the last 24 hours</small></div>
+    <div class="kpi"><span>Out of date</span><b style="color:${s.stale ? 'var(--bad)' : 'var(--good)'}">${s.stale}</b><small>${s.stale ? 'run a backup now' : 'every site is current'}</small></div>
+    <div class="kpi"><span>Last run</span><b style="font-size:18px">${esc(s.lastRun ? s.lastRun.replace('T', ' ').slice(0, 16) + ' UTC' : 'Never')}</b><small>${s.nextDue ? 'next refresh due ' + esc(s.nextDue.slice(0, 16)) + ' UTC' : 'refreshes when due'}</small></div>
+    <div class="kpi"><span>Copies kept</span><b>${s.keep}</b><small>per site, newest replaces oldest</small></div></div>
+  ${s.cron ? '<div class="note">With more than 200 sites, run <code>php bin/ga_backup.php</code> from a nightly cron job. The page no longer refreshes backups by itself.</div>' : ''}
+  <div class="card"><div class="tw"><table><thead><tr><th>Site</th><th>Status</th><th>Latest backup</th><th>Size</th><th>Copies</th><th></th></tr></thead><tbody>
+  ${rows.map(b => `<tr><td><b>${esc(b.name)}</b><div class="sub">${esc(b.ownerEmail)}</div></td><td><span class="pill ${b.status === 'active' ? 'p-good' : b.status === 'pending' ? 'p-warn' : 'p-bad'}">${b.status === 'suspended' ? 'Off' : b.status === 'pending' ? 'Awaiting payment' : 'On'}</span></td>
+    <td>${b.takenAt ? `<span class="pill ${b.fresh ? 'p-good' : 'p-warn'}">${b.fresh ? 'Current' : 'Out of date'}</span> <span class="sub">${ago(b.ageHours)}</span>` : '<span class="pill p-bad">None yet</span>'}</td>
+    <td>${b.takenAt ? fmtBytes(b.bytes) + '<div class="sub">' + b.rows + ' records</div>' : ''}</td><td>${b.copies}</td>
+    <td style="white-space:nowrap"><button class="btn small ghost" onclick="runBackup(${b.id})">Back up now</button> <button class="btn small ghost" ${b.takenAt ? '' : 'disabled'} onclick="downloadBackup(${b.id})">Download</button></td></tr>`).join('') || '<tr><td colspan="6" class="sub" style="padding:20px">No sites yet.</td></tr>'}
+  </tbody></table></div></div>
+  <p class="sub" style="margin-top:10px">Downloads are the full information for one site in a single file. Restoring a site from a backup is done by Gilded Age on request.</p>`;
+}
+async function runBackup(id){ try { const r = await call('backup_run', id ? { id } : {}); toast(id ? 'Backup taken' : 'Backed up ' + (r.sites != null ? r.sites : (r.done != null ? r.done : '')) + ' sites'); viewBackups(); } catch(e){ toast(e.message); } }
+async function downloadBackup(id){ try { const r = await call('backup_download', { id }); saveFile('waste-smart-backup-' + id + '-' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(r, null, 2), 'application/json'); toast('Backup downloaded'); } catch(e){ toast(e.message); } }
+
 async function viewTeam(){
   $('main').innerHTML = '<div class="top"><div><h1>Team &amp; audit</h1><p>Who can use the master admin, and what has been done.</p></div></div><div id="tmBody" class="sub">Loading…</div>';
   const [a, l] = await Promise.all([call('admins_list'), call('audit_list')]);
@@ -955,10 +1011,12 @@ function mockInit(){
               mk(4,'The Copper Pot','Hotel Kitchen','chef@copperpot.example','Marco Ferreira','Africa/Windhoek','N$',false,'active',{ some:['kitchen_waste','electricity','gas','water','sales'], st:'never' },null),
               mk(5,'Ridge Road Catering','Contract Caterer','ops@ridgeroad.example','Lerato Dlamini','Africa/Johannesburg','R',true,'suspended',{ all:'stale' },400),
               mk(6,'Marina Grill','Waterfront Restaurant','manager@marinagrill.example','Sipho Ndlovu','Africa/Johannesburg','R',true,'active',{ all:'live', recycling_glass:'quiet', electricity:'quiet' },1.2) ],
-    devices:[], audit:[], bi:{ 1:[{ label:'Power BI desktop' }] },
+    devices:[], audit:[], bi:{ 1:[{ label:'Power BI desktop' }] }, bk:{},
     admins:[{ name:'Gilded Age Owner', email:'admin@gildedac.co.za', role:'owner', lastLogin:'today' },{ name:'Support Desk', email:'support@gildedac.co.za', role:'admin', lastLogin:'3 days ago' }] };
   [[1,'Harbour Group','Western Cape','Cape Town CBD'],[6,'Harbour Group','Western Cape','V&A Waterfront'],[3,'Bluff Collective','KwaZulu-Natal','Durban South'],[2,'Bluff Collective','Northern Cape','Karoo']].forEach(g => { const c = M.clients.find(x => x.id === g[0]); c.group = g[1]; c.region = g[2]; c.area = g[3]; });
+  M.clients.push({ id:7, name:'Sunset Deli', type:'Café', ownerEmail:'hello@sunsetdeli.example', contact:'Naledi Khumalo', tz:'Africa/Johannesburg', currency:'R', pinSet:true, pinSetAt:'2026-10-21', status:'pending', notes:'', created:'2026-10-21', settings:{ tariff_kwh:2.4, tariff_gas_kg:38, tariff_water_kl:28 }, _specs:{ some:[] } });
   M.clients.forEach(c => { c.group = c.group || ''; c.region = c.region || ''; c.area = c.area || ''; });
+  M.clients.forEach(c => { if (c.status !== 'pending') M.bk[c.id] = { takenAt:new Date(Date.now() - (c.id === 5 ? 50 : 3 + c.id) * 3600000).toISOString().slice(0, 19).replace('T', ' '), copies:Math.min(7, 2 + c.id) }; });
   M.clients.forEach(c => { const s = c._specs; const list = s.some || all;
     list.forEach(t => { const p = pillar(t); let h = s[t] || s.all || s.st || 'live';
       M.devices.push(mkDev(c.id, p, h, h === 'live' ? 0.3 + (M.did % 5) * 0.25 : h === 'quiet' ? 3.4 : h === 'stale' ? c._lastH || 40 : null)); }); });
@@ -967,7 +1025,7 @@ function mockInit(){
 function mkDev(cid, p, health, hoursAgo, name){ const id = M.did++; return { id, clientId:cid, uid:'d_' + (Math.random().toString(16).slice(2, 12)), name: name || p.n, kind:p.kind, adapter:p.ad, target:p.t, enabled:true, health, hoursAgo, keyPrefix:'wsd_' + Math.random().toString(16).slice(2, 6) }; }
 function mCred(){ const r = () => Math.random().toString(16).slice(2, 12); return { deviceId:'d_' + r(), apiKey:'wsd_' + r() + r() + r() + r(), hmacSecret:r() + r() + r() }; }
 function mPub(c){ const devs = M.devices.filter(d => d.clientId === c.id); const lastH = devs.filter(d => d.hoursAgo != null).map(d => d.hoursAgo);
-  return Object.assign({}, c, { kind: c.group ? 'corporate' : 'single', devices:devs, health:healthOf(devs), lastDataHours: lastH.length ? Math.min.apply(null, lastH) : null }); }
+  return Object.assign({}, c, { kind: c.group ? 'corporate' : 'single', devices:devs, health:healthOf(devs), lastDataHours: lastH.length ? Math.min.apply(null, lastH) : null, codeSent: c.status === 'pending' && !!c._code }); }
 function mAudit(who, what, cid){ M.audit.unshift({ ts:new Date().toISOString().slice(0, 16).replace('T', ' '), who, what, clientId:cid || null }); }
 function mRules(kind, grp, region, area){
   if (kind && kind !== 'single' && kind !== 'corporate') throw new Error('Choose Single user site or Multi user / corporate.');
@@ -996,7 +1054,11 @@ function mock(a, p){
       mAudit(who, 'onboarded this client', c.id);
       return { client:mPub(c), created, inviteLink:CLIENT_APP_URL + '?setpin=' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2), email:{ sent:!!p.sendInvite } }; }
     case 'client_update': { const c = cl(p.id); if (['group','region','area','kind'].some(k => p[k] !== undefined)) { const o = mRules(p.kind || null, p.group !== undefined ? p.group.trim() : c.group, p.region !== undefined ? p.region.trim() : c.region, p.area !== undefined ? p.area.trim() : c.area); c.group = o[0]; c.region = o[1]; c.area = o[2]; } ['name','type','contact','ownerEmail','tz','currency','notes','settings'].forEach(k => { if (p[k] !== undefined) c[k] = p[k]; }); mAudit(who, 'updated the details', c.id); return { ok:true }; }
-    case 'client_status': { const c = cl(p.id); c.status = p.status; mAudit(who, p.status === 'suspended' ? 'suspended the site' : 'reactivated the site', c.id); return { ok:true }; }
+    case 'client_status': { const c = cl(p.id); const was = c.status; c.status = p.status === 'suspended' ? 'suspended' : 'active'; M.devices.filter(d => d.clientId === c.id).forEach(d => { d.enabled = c.status === 'active'; d.health = d.enabled ? (d.hoursAgo == null ? 'never' : (d.hoursAgo < 2 ? 'live' : d.health === 'disabled' ? 'live' : d.health)) : 'disabled'; }); mAudit(who, (c.status === 'suspended' ? 'suspended the site' : (was === 'pending' ? 'activated the site without a code' : 'reactivated the site')) + (p.reason ? ': ' + p.reason : ''), c.id); return { ok:true }; }
+    case 'client_authorise': { const c = cl(p.id); if (c.status !== 'pending') throw new Error(c.status === 'active' ? 'This site is already active.' : 'This site is suspended. Reactivate it instead.'); c._code = String(100000 + Math.floor(Math.random() * 900000)); mAudit(who, 'confirmed payment and emailed the verification code', c.id); return { ok:true, email:{ sent:true } }; }
+    case 'backups_list': { const rows = M.clients.map(c => { const b = M.bk[c.id]; const age = b ? (Date.now() - new Date(b.takenAt.replace(' ', 'T') + 'Z').getTime()) / 3600000 : null; return { id:c.id, name:c.name, ownerEmail:c.ownerEmail, status:c.status, takenAt:b ? b.takenAt : null, ageHours:age == null ? null : Math.round(age * 10) / 10, fresh:age != null && age <= 26, bytes:b ? 18000 + c.id * 9100 : 0, rows:b ? 400 + c.id * 220 : 0, copies:b ? b.copies : 0 }; }); const stale = rows.filter(r => !r.fresh).length; const last = rows.map(r => r.takenAt).filter(Boolean).sort().pop() || null; return { backups:rows, summary:{ sites:rows.length, fresh:rows.length - stale, stale, lastRun:last, nextDue:null, keep:7, cron:false } }; }
+    case 'backup_run': { const now = new Date().toISOString().slice(0, 19).replace('T', ' '); const ids = p.id ? [+p.id] : M.clients.map(c => c.id); ids.forEach(id => { const o = M.bk[id]; M.bk[id] = { takenAt:now, copies:Math.min(7, (o ? o.copies : 0) + 1) }; }); mAudit(who, p.id ? 'ran a backup of this site' : 'ran a backup of every site', p.id ? +p.id : null); return { ok:true, sites:ids.length }; }
+    case 'backup_download': { const c = cl(p.id); if (!M.bk[c.id]) throw new Error('No backup has been taken for this site yet.'); return { exportedAt:new Date().toISOString(), takenAt:M.bk[c.id].takenAt, client:mPub(c), note:'Demo backup: the live service holds every saved record for this site.' }; }
     case 'invite_resend': { const c = cl(p.id); mAudit(who, 'resent the invite email', c.id); return { email:{ sent:true }, link:CLIENT_APP_URL + '?setpin=' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) }; }
     case 'reset_send': { const c = cl(p.id); mAudit(who, 'sent a PIN reset email', c.id); return { email:{ sent:true }, link:CLIENT_APP_URL + '?reset=' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) }; }
     case 'client_backup': { const c = cl(p.id); return { exportedAt:new Date().toISOString(), client:mPub(c), note:'Demo backup: the live service exports every saved record for this site.' }; }
