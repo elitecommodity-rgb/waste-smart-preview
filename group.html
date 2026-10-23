@@ -443,6 +443,7 @@ const PROV={
  'Northern Cape':['Kimberley','Upington']};
 const WEIGHT={'Gauteng':.32,'Western Cape':.2,'KwaZulu-Natal':.18,'Eastern Cape':.08,'Free State':.05,'Limpopo':.05,'Mpumalanga':.05,'North West':.04,'Northern Cape':.03};
 function build(kind){
+  if(kind==='b'&&window.WS_GROUP_DATA)return JSON.parse(JSON.stringify(window.WS_GROUP_DATA));   // measured data from a test run (see the scenario pack)
   const r=rng(kind==='e'?7:kind==='m'?21:3), D={regions:[],areas:[],sites:[],users:[],id:1};
   let name,brands,provs,total;
   if(kind==='s'){name='Harbour Hospitality (Pty) Ltd';brands=['Harbour Street Kitchen','The Anchor Grill','Bayside Canteen'];provs={'KwaZulu-Natal':['Durban Central','Umhlanga']};total=3}
@@ -847,5 +848,30 @@ function saveCfg(w){const g=id=>parseFloat($('#'+id)?.value);
 function load(k){S.D=build(k);S.reg=S.area=S.site=null;S.fr=S.fa=S.ft=S.fs=S.sq='';S.page=0;compute();render()}
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(b){S.tab=b.dataset.t;render();window.scrollTo(0,0)}});
 $('#dsSel').addEventListener('change',e=>load(e.target.value));
-load('e');
+
+/* ============ live mode (production group.html): sign in against group.php and show the group's measured data ============ */
+const GP=window.WS_GROUP_API||'group.php', GK='ws_group_token';
+async function gcall(action,body,tok){const r=await fetch(GP,{method:'POST',headers:Object.assign({'Content-Type':'application/json'},tok?{Authorization:'Bearer '+tok}:{}),body:JSON.stringify(Object.assign({action},body||{}))});let j={};try{j=await r.json()}catch(e){}return{ok:r.ok,status:r.status,j}}
+function glogin(msg){
+  document.body.style.overflow='hidden';
+  $('#layer').innerHTML=`<div class="ov c"><div class="card" style="max-width:380px;width:100%"><div class="hd"><h3>Sign in to your group</h3></div><p class="sub" style="margin-top:0">Multi user / corporate. Use the email and password Gilded Age Consulting set up for your group.</p><div class="frm"><div class="fld"><label for="gl_e">Email</label><input id="gl_e" type="email" autocomplete="username"></div><div class="fld"><label for="gl_p">Password</label><input id="gl_p" type="password" autocomplete="current-password"></div></div><p id="gl_m" class="sub" style="color:var(--bad,#d33)">${esc(msg||'')}</p><button class="btn pri" id="gl_b">Sign in</button><p class="sub">Forgotten your password? Contact Gilded Age Consulting via www.gildedac.co.za</p></div></div>`;
+  const go=async()=>{$('#gl_b').disabled=true;const r=await gcall('login',{email:$('#gl_e').value,password:$('#gl_p').value});if(r.ok&&r.j.token){try{sessionStorage.setItem(GK,r.j.token)}catch(e){}$('#layer').innerHTML='';document.body.style.overflow='';gload()}else{$('#gl_m').textContent=r.j.error||'Could not sign in.';$('#gl_b').disabled=false}};
+  $('#gl_b').onclick=go;$('#gl_p').onkeydown=e=>{if(e.key==='Enter')go()};$('#gl_e').focus();
+}
+async function gload(){
+  let t='';try{t=sessionStorage.getItem(GK)||''}catch(e){}
+  if(!t)return glogin();
+  $('#main').innerHTML='<p class="sub" style="padding:40px 0">Loading your group…</p>';
+  const r=await gcall('data',{},t);
+  if(r.status===401){try{sessionStorage.removeItem(GK)}catch(e){}return glogin('Please sign in again.')}
+  if(!r.ok)return $('#main').innerHTML='<p class="sub">'+esc(r.j.error||'The group service is not reachable.')+'</p>';
+  window.WS_GROUP_DATA=r.j;S.D=r.j;S.reg=S.area=S.site=null;S.fr=S.fa=S.ft=S.fs=S.sq='';S.page=0;compute();render();
+}
+if(window.WS_GROUP_LIVE){
+  const msg=()=>toast('Sites, structure and rates for your group are managed by Gilded Age Consulting (www.gildedac.co.za).');
+  nodeForm=siteForm=bulkImport=saveCfg=msg;
+  const d=document.querySelector('.demo');if(d)d.innerHTML='<a href="app.html">Site app</a> · <a href="#" onclick="try{sessionStorage.removeItem(\'ws_group_token\')}catch(e){}location.reload();return false">Sign out</a>';
+  const ds=$('#dsSel');if(ds)ds.style.display='none';
+  S.D={name:'',regions:[],areas:[],sites:[],users:[]};compute();gload();
+} else if(window.WS_GROUP_DATA){const o=document.createElement('option');o.value='b';o.textContent=window.WS_GROUP_DATA.optionLabel||'Measured test run';$('#dsSel').insertBefore(o,$('#dsSel').firstChild);$('#dsSel').value='b';load('b')}else load('e');
 </script></body></html>

@@ -615,7 +615,7 @@ function renderSection(){
       <td>${dots(c.health)}<div class="sub">${c.devices.length} device${c.devices.length === 1 ? '' : 's'}</div></td><td>${ago(c.lastDataHours)}</td><td>${esc(c.ownerEmail)}</td></tr>`;
   let body;
   if (kind === 'corporate') { const by = {}; rows.forEach(c => (by[c.group] = by[c.group] || []).push(c));
-    body = Object.keys(by).sort().map(g => `<tr class="gh"><td colspan="4">${esc(g)} <span class="sub">· ${by[g].length} site${by[g].length === 1 ? '' : 's'}${by[g].length < 2 ? ' · add another site to complete the group' : ''}</span></td><td style="text-align:right"><button class="btn small ghost" onclick="event.stopPropagation();go('onboard',{kind:'corporate',group:'${esc(g).replace(/'/g, '')}'})">+ Site</button></td></tr>` + by[g].map(row).join('')).join(''); }
+    body = Object.keys(by).sort().map(g => `<tr class="gh"><td colspan="4">${esc(g)} <span class="sub">· ${by[g].length} site${by[g].length === 1 ? '' : 's'}${by[g].length < 2 ? ' · add another site to complete the group' : ''}</span></td><td style="text-align:right"><button class="btn small ghost" onclick="event.stopPropagation();groupAdminModal('${esc(g).replace(/'/g, '')}')">Group login</button> <button class="btn small ghost" onclick="event.stopPropagation();go('onboard',{kind:'corporate',group:'${esc(g).replace(/'/g, '')}'})">+ Site</button></td></tr>` + by[g].map(row).join('')).join(''); }
   else body = rows.map(row).join('');
   $('ovBody').innerHTML = `
   <div class="kpis">
@@ -860,6 +860,15 @@ function statusModal(st){
   <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn ${off ? 'danger' : 'gold'}" onclick="setStatus('${st}')">${off ? 'Switch off' : 'Switch on'}</button></div>`);
 }
 async function setStatus(s){ const why = $('stWhy') ? $('stWhy').value.trim() : ''; try { await call('client_status', { id: state.client.client.id, status: s, reason: why }); closeModal(); toast(s === 'active' ? 'Site switched on' : 'Site switched off'); viewClient(state.client.client.id); } catch(e){ toast(e.message); } }
+
+async function groupAdminModal(g){
+  let list = []; try { list = (await call('group_admins_list', { group:g })).admins; } catch(e){}
+  openModal(`<h2>Group login: ${esc(g)}</h2><p>The group administrator signs in at <b>group.html</b> and sees every site in this group, nothing else.</p>
+  ${list.length ? '<div class="sub">' + list.map(a => esc(a.name) + ' &middot; ' + esc(a.email) + (a.active ? '' : ' (off)') + (a.lastLogin ? ' &middot; last sign-in ' + esc(a.lastLogin) : '')).join('<br>') + '</div>' : '<div class="sub">No group administrator yet.</div>'}
+  <label>Name</label><input type="text" id="gaN" maxlength="120"><label>Email</label><input type="email" id="gaE"><label>Password (6+ characters with a number)</label><input type="text" id="gaP" autocomplete="off">
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Close</button><button class="btn gold" onclick="saveGroupAdmin('${esc(g).replace(/'/g, '')}')">Save group login</button></div>`);
+}
+async function saveGroupAdmin(g){ try { await call('group_admin_save', { group:g, name:$('gaN').value, email:$('gaE').value, password:$('gaP').value }); closeModal(); toast('Group login saved. Give them the email and password.'); } catch(e){ toast(e.message); } }
 function afterAuth(id){ if ($('tabBody')) viewClient(id); else go('overview'); }
 async function authorise(id){
   try { const r = await call('client_authorise', { id });
@@ -1055,6 +1064,8 @@ function mock(a, p){
       return { client:mPub(c), created, inviteLink:CLIENT_APP_URL + '?setpin=' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2), email:{ sent:!!p.sendInvite } }; }
     case 'client_update': { const c = cl(p.id); if (['group','region','area','kind'].some(k => p[k] !== undefined)) { const o = mRules(p.kind || null, p.group !== undefined ? p.group.trim() : c.group, p.region !== undefined ? p.region.trim() : c.region, p.area !== undefined ? p.area.trim() : c.area); c.group = o[0]; c.region = o[1]; c.area = o[2]; } ['name','type','contact','ownerEmail','tz','currency','notes','settings'].forEach(k => { if (p[k] !== undefined) c[k] = p[k]; }); mAudit(who, 'updated the details', c.id); return { ok:true }; }
     case 'client_status': { const c = cl(p.id); const was = c.status; c.status = p.status === 'suspended' ? 'suspended' : 'active'; M.devices.filter(d => d.clientId === c.id).forEach(d => { d.enabled = c.status === 'active'; d.health = d.enabled ? (d.hoursAgo == null ? 'never' : (d.hoursAgo < 2 ? 'live' : d.health === 'disabled' ? 'live' : d.health)) : 'disabled'; }); mAudit(who, (c.status === 'suspended' ? 'suspended the site' : (was === 'pending' ? 'activated the site without a code' : 'reactivated the site')) + (p.reason ? ': ' + p.reason : ''), c.id); return { ok:true }; }
+    case 'group_admins_list': return { admins:[] };
+    case 'group_admin_save': return { ok:true };
     case 'client_authorise': { const c = cl(p.id); if (c.status !== 'pending') throw new Error(c.status === 'active' ? 'This site is already active.' : 'This site is suspended. Reactivate it instead.'); c._code = String(100000 + Math.floor(Math.random() * 900000)); mAudit(who, 'confirmed payment and emailed the verification code', c.id); return { ok:true, email:{ sent:true } }; }
     case 'backups_list': { const rows = M.clients.map(c => { const b = M.bk[c.id]; const age = b ? (Date.now() - new Date(b.takenAt.replace(' ', 'T') + 'Z').getTime()) / 3600000 : null; return { id:c.id, name:c.name, ownerEmail:c.ownerEmail, status:c.status, takenAt:b ? b.takenAt : null, ageHours:age == null ? null : Math.round(age * 10) / 10, fresh:age != null && age <= 26, bytes:b ? 18000 + c.id * 9100 : 0, rows:b ? 400 + c.id * 220 : 0, copies:b ? b.copies : 0 }; }); const stale = rows.filter(r => !r.fresh).length; const last = rows.map(r => r.takenAt).filter(Boolean).sort().pop() || null; return { backups:rows, summary:{ sites:rows.length, fresh:rows.length - stale, stale, lastRun:last, nextDue:null, keep:7, cron:false } }; }
     case 'backup_run': { const now = new Date().toISOString().slice(0, 19).replace('T', ' '); const ids = p.id ? [+p.id] : M.clients.map(c => c.id); ids.forEach(id => { const o = M.bk[id]; M.bk[id] = { takenAt:now, copies:Math.min(7, (o ? o.copies : 0) + 1) }; }); mAudit(who, p.id ? 'ran a backup of this site' : 'ran a backup of every site', p.id ? +p.id : null); return { ok:true, sites:ids.length }; }
