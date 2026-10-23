@@ -661,7 +661,7 @@ html,body{max-width:100%;overflow-x:hidden}
     <div class="editor-card" style="margin-bottom:16px"><h4>Hand-keyed sales (optional)</h4><p class="section-sub">Sales arrive on their own from a connected POS. Key a day's total here only for a till that is not connected. A typed figure wins over the feed.</p>
       <div class="form-grid"><div class="field"><label class="field-label" for="salesReportDate">Date</label><input type="date" id="salesReportDate"></div><div class="field"><label class="field-label" for="salesReportTotal">Total sales</label><input type="number" step="0.01" min="0" id="salesReportTotal" placeholder="0.00"></div></div>
       <button class="btn primary small" onclick="saveSalesReportTotal()">Save sales figure</button><div id="salesReportHistory" class="report-out" style="margin-top:12px"></div></div>
-    <div class="editor-card" id="billingCard"><h4>Billing: from R600 per site per month</h4><p class="section-sub">Pay by direct EFT. Use your business name as the reference, then send proof of payment through www.gildedac.co.za.</p><div id="eftDetailsBlock" style="margin-bottom:12px"></div><button class="btn ghost small" onclick="copyEftDetails()">Copy banking details</button></div>
+    <div class="editor-card" id="billingCard"><h4>Billing: from R600 per site per month</h4><p class="section-sub">Pay by direct EFT. Use your business name as the reference, then email proof of payment to <a href="mailto:accounts@gildedac.co.za">accounts@gildedac.co.za</a>.</p><div id="eftDetailsBlock" style="margin-bottom:12px"></div><button class="btn ghost small" onclick="copyEftDetails()">Copy banking details</button></div>
     <div class="foot"><b id="footBizName">Waste Smart</b> · Powered by Waste Smart, Gilded Age Consulting · <span class="mono" id="buildVersionNote"></span></div>
   </div></section>
 
@@ -972,7 +972,7 @@ const WSR = (function(){
 // One admin login. Scales, meters and the POS feed in on their own (see ingest.php); anything can be typed by hand
 // as a backup, and a typed figure always wins for that day.
 const API_ENDPOINT = 'https://gildedac.co.za/app/api.php'; // set to match your live deployment
-const BUILD_VERSION = 'v6.6.2';
+const BUILD_VERSION = 'v6.6.3';
 const BUILD_DATE = '2026-10-23';
 const AUTH_TOKEN_KEY = 'ws_auth_token', AUTH_SITE_KEY = 'ws_auth_site', LOOK_KEY = 'ws_look_v2';
 
