@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-look="x"><head>
-<script src="shim.js"></script><meta charset="utf-8"><meta name="theme-color" content="#0C1118"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="demo/shim.js"></script><meta charset="utf-8"><meta name="theme-color" content="#0C1118"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Waste Smart</title><meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
@@ -445,6 +445,8 @@ html,body{max-width:100%;overflow-x:hidden}
 @media (max-width:640px){.bi-row input[type=date]{font-size:16px;min-height:44px}}
 .auth-alt{margin:14px 0 0;text-align:center;font-size:13px}.auth-alt a{color:var(--accent)}
 
+.rp-in{display:flex;flex-wrap:wrap;gap:6px}.rp-in span{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--mute)}
+
 </style></head><body>
 <!-- ================= AUTH ================= -->
 <div id="authScreen" hidden>
@@ -461,6 +463,7 @@ html,body{max-width:100%;overflow-x:hidden}
       <div id="authLoginErr" class="lock-err"></div>
       <button class="btn primary block" id="authLoginBtn" onclick="submitLogin()">Log in</button>
       <p class="auth-alt"><a href="#" onclick="showAuthPanel('forgot');return false">Forgot your PIN?</a></p>
+      <p class="auth-alt">Single user site sign-in. Part of a group? <a href="group.html">Multi user / corporate sign-in</a></p>
     </div>
     <div id="authForgotPanel" hidden>
       <div class="field"><label class="field-label" for="forgotEmail">Business email</label><input type="email" id="forgotEmail" placeholder="you@yourbusiness.co.za" autocomplete="username"></div>
@@ -580,7 +583,7 @@ html,body{max-width:100%;overflow-x:hidden}
       <div class="bi-card wide"><h3>Device health</h3><div class="sub" id="biHealthSub"></div><div id="biHealth"></div></div>
     </div>
     <div class="bi-card wide" style="margin-bottom:18px">
-      <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;justify-content:space-between"><div><h3>Day by day</h3><div class="sub">Click a header to sort, a row to see where each figure came from.</div></div><button class="btn ghost small" onclick="biExportCsv()">Download CSV</button></div>
+      <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;justify-content:space-between"><div><h3>Day by day</h3><div class="sub">Click a header to sort, a row to see where each figure came from.</div></div><div class="btnrow"><button class="btn ghost small" onclick="boardReport('pdf')">Report PDF</button><button class="btn ghost small" onclick="boardReport('docx')">Report Word</button><button class="btn ghost small" onclick="biExportCsv()">CSV</button></div></div>
       <div class="bi-tablewrap"><table class="htable bi-table"><thead id="biTHead"></thead><tbody id="biTBody"></tbody></table></div><div id="biMore" style="margin-top:8px"></div>
     </div>
     <details class="card" style="margin-bottom:18px"><summary style="cursor:pointer;font-weight:700">Manage entries (delete a day)</summary><div class="report-out" style="margin-top:10px"><table class="htable"><thead><tr><th>Date</th><th class="num">Waste kg</th><th class="num">Recycling kg</th><th class="num">Oil kg</th><th></th></tr></thead><tbody id="historyBody"></tbody></table></div></details>
@@ -607,7 +610,7 @@ html,body{max-width:100%;overflow-x:hidden}
 
   <!-- REPORTS -->
   <section class="view" id="v_reports" hidden><div class="wrap">
-    <div class="view-head"><div class="eyebrow">Reporting</div><h2>Management reporting</h2><p class="section-sub">Choose a date range, preview a report and download it as CSV.</p></div>
+    <div class="view-head"><div class="eyebrow">Reporting</div><h2>Management reporting</h2><p class="section-sub">Choose a date range, preview a report on screen and download it as a PDF or Word document, or the raw figures as CSV.</p></div>
     <div class="card" style="margin-bottom:16px"><div class="form-grid"><div class="field"><label class="field-label" for="repFrom">From</label><input type="date" id="repFrom"></div><div class="field"><label class="field-label" for="repTo">To</label><input type="date" id="repTo"></div></div>
       <div class="btnrow"><button class="btn ghost small" onclick="setReportRange('week')">This week</button><button class="btn ghost small" onclick="setReportRange('month')">This month</button><button class="btn ghost small" onclick="setReportRange('lastmonth')">Last month</button><button class="btn ghost small" onclick="setReportRange('year')">This year</button><button class="btn ghost small" onclick="setReportRange('all')">All</button></div></div>
     <div class="grid-2" id="reportCards"></div>
@@ -667,12 +670,310 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="toast" id="toast" role="status"></div>
 
 <script>
+/* ===================== WSR: report engine =====================
+   One report model -> on-screen preview, PDF and Word (.docx). No libraries, no network.
+   Charts are drawn on a canvas and embedded as images; text, tables and tiles stay real text.
+   doc = { title, subtitle, client, period, generated, blocks:[...] }
+   blocks: h2 | p | note | kpis | charts | table | actions | pagebreak
+*/
+const WSR = (function(){
+  const COL = { ink:'#0C1118', mute:'#5B6675', line:'#D9DEE5', panel:'#F4F6F8', band:'#0C1118', accent:'#0E9F8E', good:'#2F9E44', bad:'#D9480F', warn:'#B7791F', white:'#FFFFFF', zebra:'#F7F9FB' };
+  const FONT = 'Helvetica, Arial, "Liberation Sans", sans-serif';
+  const ORG = 'Gilded Age Consulting', ORG_URL = 'www.gildedac.co.za';
+  const PW = 595.28, PH = 841.89, MX = 36, CW = PW - MX*2;
+  const mctx = document.createElement('canvas').getContext('2d');
+  const clean = s => String(s == null ? '' : s).replace(/[  ]/g,' ').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,'');
+  function tw(s, size, bold){ mctx.font = (bold?'bold ':'') + '100px ' + FONT; return mctx.measureText(clean(s)).width * size / 100; }
+  function wrap(s, size, bold, maxW){
+    const out = []; clean(s).split(/\n/).forEach(par=>{ let line = '';
+      par.split(/\s+/).filter(Boolean).forEach(w=>{ const t = line ? line + ' ' + w : w; if (tw(t,size,bold) <= maxW || !line) line = t; else { out.push(line); line = w; } });
+      out.push(line); });
+    return out;
+  }
+  function fit(s, size, bold, maxW){ s = clean(s); if (tw(s,size,bold) <= maxW) return s; while (s.length > 1 && tw(s + '…', size, bold) > maxW) s = s.slice(0,-1); return s + '…'; }
+  const hex = h => [1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255);
+  function fnum(v, dp){ v = Number(v)||0; return clean(v.toLocaleString('en-ZA',{ maximumFractionDigits: dp==null ? (Math.abs(v)<10?1:0) : dp, minimumFractionDigits: dp==null?0:dp })); }
+
+  /* ---------------- charts (canvas -> JPEG bytes) ---------------- */
+  function canvasFor(W, H){ const s = 4, c = document.createElement('canvas'); c.width = Math.round(W*s); c.height = Math.round(H*s); const x = c.getContext('2d'); x.scale(s,s); x.fillStyle = '#fff'; x.fillRect(0,0,W,H); x.textBaseline = 'alphabetic'; return { c, x }; }
+  const ft = (sz,b)=> (b?'bold ':'') + sz + 'px ' + FONT;
+  function ticks(max){ if (!(max > 0)) max = 1; const p = Math.pow(10, Math.floor(Math.log10(max))), n = max/p, m = n<=1?1:n<=2?2:n<=4?4:n<=8?8:10, top = m*p; return { top, step: top/4 }; }
+  function jpeg(c){ const u = c.toDataURL('image/jpeg', 0.93).split(',')[1], b = atob(u), a = new Uint8Array(b.length); for (let i=0;i<b.length;i++) a[i] = b.charCodeAt(i); return a; }
+  function legendRow(x, items, px, py, maxW){ let cx = px; x.font = ft(8); items.forEach(it=>{ const w = tw(it.name,8)+16; if (cx + w > px + maxW){ return; } x.fillStyle = it.color; x.fillRect(cx, py-7, 8, 8); x.fillStyle = COL.mute; x.fillText(it.name, cx+12, py); cx += w + 6; }); }
+  function xLabels(x, labels, left, plotW, y){ const n = labels.length; if (!n) return; const slot = plotW/n; const maxw = Math.max(...labels.map(l=>tw(l,7.5))) + 6; const every = Math.max(1, Math.ceil(maxw/slot)); x.font = ft(7.5); x.fillStyle = COL.mute; x.textAlign = 'center'; labels.forEach((l,i)=>{ if (i % every === 0) x.fillText(l, left + slot*(i+.5), y); }); x.textAlign = 'left'; }
+  function drawChart(sp){
+    const W = sp.w || 245, H = sp.h || 150, { c, x } = canvasFor(W, H), unit = sp.unit ? ' ' + sp.unit : '';
+    const fmt = sp.fmt || (v=>fnum(v));
+    const any = sp.kind === 'donut' ? (sp.parts||[]).some(p=>p.v>0) : sp.kind === 'hbar' ? (sp.vals||[]).some(v=>v>0) : sp.kind === 'waterfall' ? (sp.steps||[]).some(s=>s.v!==0) : (sp.series||[]).some(s=>s.vals.some(v=>v>0));
+    if (!any) return null;
+    if (sp.kind === 'bars' || sp.kind === 'line'){
+      const ser = sp.series, labels = sp.labels, n = labels.length, multi = ser.length > 1;
+      const top = multi ? 30 : 12, left = 40, right = 8, bottom = 20, pw = W-left-right, ph = H-top-bottom;
+      let mx = 0; if (sp.kind === 'bars' && sp.stacked) for (let i=0;i<n;i++) mx = Math.max(mx, ser.reduce((s,q)=>s+(q.vals[i]||0),0)); else ser.forEach(q=>q.vals.forEach(v=>{ mx = Math.max(mx,v); }));
+      const tk = ticks(mx); x.font = ft(7.5); x.strokeStyle = '#E6EAEF'; x.lineWidth = .6; x.fillStyle = COL.mute; x.textAlign = 'right';
+      for (let i=0;i<=4;i++){ const v = tk.step*i, yy = top + ph - ph*v/tk.top; x.beginPath(); x.moveTo(left, yy); x.lineTo(W-right, yy); x.stroke(); x.fillText(fmt(v), left-5, yy+2.5); }
+      x.textAlign = 'left'; if (multi) legendRow(x, ser, left, 14, pw);
+      const slot = pw/n;
+      if (sp.kind === 'bars'){
+        const k = sp.stacked ? 1 : ser.length, bw = Math.min(26, slot*.72/k), gw = bw*k;
+        for (let i=0;i<n;i++){ let base = top+ph; const gx = left + slot*i + (slot-gw)/2;
+          ser.forEach((q,j)=>{ const v = q.vals[i]||0, h = ph*v/tk.top; if (h <= 0) return; x.fillStyle = q.color; const bx = sp.stacked ? gx : gx + j*bw;
+            if (sp.stacked){ x.fillRect(bx, base-h, bw, Math.max(h-.6,.4)); base -= h; } else { x.fillRect(bx, base-h, bw-(k>1?.8:0), h); } });
+          if (!multi && n <= 12 && ser[0].vals[i] > 0){ x.fillStyle = COL.ink; x.font = ft(7); x.textAlign = 'center'; x.fillText(fmt(ser[0].vals[i]), gx+bw/2, top+ph-ph*ser[0].vals[i]/tk.top-3); x.textAlign = 'left'; } }
+      } else {
+        ser.forEach(q=>{ const pts = q.vals.map((v,i)=>[left+slot*(i+.5), top+ph-ph*(v||0)/tk.top]);
+          if (sp.area !== false){ x.beginPath(); x.moveTo(pts[0][0], top+ph); pts.forEach(p=>x.lineTo(p[0],p[1])); x.lineTo(pts[pts.length-1][0], top+ph); x.closePath(); x.globalAlpha = .13; x.fillStyle = q.color; x.fill(); x.globalAlpha = 1; }
+          x.beginPath(); pts.forEach((p,i)=> i ? x.lineTo(p[0],p[1]) : x.moveTo(p[0],p[1])); x.strokeStyle = q.color; x.lineWidth = 1.6; x.lineJoin = 'round'; x.stroke();
+          const lp = pts[pts.length-1]; x.beginPath(); x.arc(lp[0], lp[1], 2.4, 0, 7); x.fillStyle = q.color; x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 1; x.stroke(); });
+      }
+      x.strokeStyle = COL.line; x.lineWidth = .8; x.beginPath(); x.moveTo(left, top+ph); x.lineTo(W-right, top+ph); x.stroke();
+      xLabels(x, labels, left, pw, H-6);
+    } else if (sp.kind === 'hbar'){
+      const n = sp.labels.length, lw = Math.min(W*.42, Math.max(...sp.labels.map(l=>tw(l,8)))+8), left = lw, right = 56, rowH = Math.min(24, (H-8)/n), mx = Math.max(...sp.vals, 1e-9);
+      for (let i=0;i<n;i++){ const yy = 6 + i*rowH, bh = Math.min(11, rowH*.56), by = yy + (rowH-bh)/2, w = (W-left-right)*sp.vals[i]/mx;
+        x.font = ft(8); x.fillStyle = COL.ink; x.textAlign = 'left'; x.fillText(fit(sp.labels[i],8,false,lw-8), 0, by+bh-1.5);
+        x.fillStyle = '#EEF1F4'; x.fillRect(left, by, W-left-right, bh); x.fillStyle = (sp.colors||[])[i] || sp.color || COL.accent; x.fillRect(left, by, Math.max(w, sp.vals[i]>0?1.5:0), bh);
+        x.fillStyle = COL.ink; x.font = ft(8, true); x.fillText(fmt(sp.vals[i]) + unit, left + (W-left-right) + 5, by+bh-1.5); }
+    } else if (sp.kind === 'donut'){
+      const parts = sp.parts.filter(p=>p.v>0), tot = parts.reduce((s,p)=>s+p.v,0), narrow = W < 330, r = narrow ? Math.min(H/2-8, 40) : Math.min(H/2-6, W*.3), cx = r+8, cy = H/2, ri = r*.62; let a = -Math.PI/2;
+      parts.forEach(p=>{ const da = p.v/tot*Math.PI*2; x.beginPath(); x.arc(cx,cy,r,a,a+da); x.arc(cx,cy,ri,a+da,a,true); x.closePath(); x.fillStyle = p.color; x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 1.2; x.stroke(); a += da; });
+      x.textAlign = 'center'; x.fillStyle = COL.ink; x.font = ft(Math.min(15, r*.3), true); x.fillText(clean(sp.center && sp.center.big || ''), cx, cy+2); x.font = ft(6.5); x.fillStyle = COL.mute; x.fillText(clean(sp.center && sp.center.small || ''), cx, cy+11); x.textAlign = 'left';
+      const lx = cx + r + (narrow ? 12 : 16), rowH = Math.min(17, (H-8)/Math.max(parts.length,1)), vw = narrow ? 46 : 110; let ly = cy - rowH*(parts.length-1)/2 + 3;
+      parts.forEach(p=>{ x.fillStyle = p.color; x.fillRect(lx, ly-7, 8, 8); x.fillStyle = COL.ink; x.font = ft(8); x.fillText(fit(p.name,8,false,W-lx-vw-14), lx+13, ly); x.textAlign = 'right'; x.font = ft(8,true); x.fillText(narrow ? fmt(p.v) + ' · ' + fnum(p.v/tot*100,0) + '%' : fmt(p.v) + unit + '  ·  ' + fnum(p.v/tot*100,0) + '%', W-2, ly); x.textAlign = 'left'; ly += rowH; });
+    } else if (sp.kind === 'waterfall'){
+      const st = sp.steps, n = st.length, top = 20, left = 8, right = 8, bottom = 30, pw = W-left-right, ph = H-top-bottom; let run = 0, lo = 0, hi = 0; const bars = st.map(s=>{ let a, b; if (s.total){ a = 0; b = s.v; run = s.v; } else { a = run; b = run + s.v; run = b; } lo = Math.min(lo,a,b); hi = Math.max(hi,a,b); return { a, b, s }; });
+      const span = (hi - lo) || 1, yy = v => top + ph - (v - lo)/span*ph, slot = pw/n, bw = Math.min(46, slot*.62);
+      x.strokeStyle = COL.line; x.lineWidth = .8; x.beginPath(); x.moveTo(left, yy(0)); x.lineTo(W-right, yy(0)); x.stroke();
+      bars.forEach((b,i)=>{ const bx = left + slot*i + (slot-bw)/2, y1 = yy(Math.max(b.a,b.b)), y2 = yy(Math.min(b.a,b.b)); x.fillStyle = b.s.color || (b.s.total ? COL.ink : b.s.v >= 0 ? COL.good : COL.bad); x.fillRect(bx, y1, bw, Math.max(y2-y1, 1.2));
+        if (i < n-1){ x.strokeStyle = '#9AA5B1'; x.lineWidth = .6; x.setLineDash([2,2]); x.beginPath(); x.moveTo(bx+bw, yy(b.b)); x.lineTo(bx+slot, yy(b.b)); x.stroke(); x.setLineDash([]); }
+        x.textAlign = 'center'; x.fillStyle = COL.ink; x.font = ft(8,true); const lab = (b.s.v>0&&!b.s.total?'+':b.s.v<0?'−':'') + fmt(Math.abs(b.s.v)); x.fillText(lab, bx+bw/2, (b.s.v >= 0 || b.s.total ? y1 : y2) + (b.s.v >= 0 || b.s.total ? -3 : 10));
+        x.font = ft(7.5); x.fillStyle = COL.mute; wrap(b.s.name, 7.5, false, slot-4).slice(0,2).forEach((ln,k)=>x.fillText(ln, bx+bw/2, H-bottom+13+k*9)); x.textAlign = 'left'; });
+    }
+    return { bytes: jpeg(c), w: W, h: H, url: c.toDataURL('image/jpeg', .9) };
+  }
+
+  /* ---------------- PDF ---------------- */
+  const WIN = { 8211:0x96, 8212:0x97, 8216:0x91, 8217:0x92, 8220:0x93, 8221:0x94, 8226:0x95, 8230:0x85, 8364:0x80, 8722:0x2D, 8201:0x20, 160:0xA0 };
+  function pdfHex(s){ s = clean(s); let o = ''; for (const ch of s){ let c = ch.codePointAt(0); c = WIN[c] != null ? WIN[c] : c; if (c > 255) c = 63; o += c.toString(16).padStart(2,'0'); } return '<' + o + '>'; }
+  const f2 = n => (Math.round(n*100)/100).toString();
+  function colFit(b, total, sz){
+    const dat = i=>Math.max(0, ...b.rows.slice(0,120).map(r=>tw(typeof r[i]==='number'?fnum(r[i]):r[i], sz, false))), hd = i=>tw(b.head[i], sz, true);
+    let w = b.head.map((h,i)=>Math.max(dat(i), hd(i)) + 10), sum = w.reduce((a,v)=>a+v,0);
+    if (sum > total){ w = b.head.map((h,i)=>Math.max(dat(i), Math.min(hd(i), dat(i)*1.35)) + 8); sum = w.reduce((a,v)=>a+v,0); }
+    return w.map(v=>v*total/sum);
+  }
+  function layout(doc){
+    const pages = []; let pg = null, y = 0;
+    const newPage = first => { pg = { ops:[], first }; pages.push(pg); y = first ? 0 : 44; };
+    const R = (x_,y_,w,h,fill,stroke,lw)=>pg.ops.push({ t:'r', x:x_, y:y_, w, h, fill, stroke, lw });
+    const L = (x1,y1,x2,y2,col,lw)=>pg.ops.push({ t:'l', x1,y1,x2,y2,col,lw });
+    const T = (s,x_,y_,size,bold,col,align)=>pg.ops.push({ t:'t', s:clean(s), x:x_, y:y_, size, bold, col, align });
+    const I = (img,x_,y_,w,h)=>pg.ops.push({ t:'i', img, x:x_, y:y_, w, h });
+    const LIM = PH - 52, need = h => { if (y + h > LIM) { newPage(false); return true; } return false; };
+    newPage(true);
+    /* cover band */
+    const band = 128; R(0,0,PW,band,COL.band); R(0,band,PW,4,COL.accent);
+    T((doc.org || ORG).toUpperCase() + '  ·  WASTE SMART', MX, 34, 8, true, '#5EEAD4');
+    const tl = wrap(doc.title, 23, true, CW - 170).slice(0,2); tl.forEach((ln,i)=>T(ln, MX, 66 + i*26, 23, true, '#FFFFFF'));
+    const sy = 66 + (tl.length-1)*26 + 22; wrap(doc.subtitle || '', 10, false, CW - 170).slice(0,2).forEach((ln,i)=>T(ln, MX, sy + i*13, 10, false, '#B6C2CF'));
+    const meta = [['CLIENT', doc.client], ['PERIOD', doc.period], ['PREPARED', doc.generated]].filter(m=>m[1]); meta.forEach((m,i)=>{ T(m[0], PW-MX, 34+i*30, 6.5, true, '#7C8A99', 'r'); T(fit(m[1],9,true,200), PW-MX, 45+i*30, 9, true, '#FFFFFF', 'r'); });
+    y = band + 4 + 20;
+    doc.blocks.forEach(b=>{
+      if (b.t === 'pagebreak'){ newPage(false); return; }
+      if (b.t === 'h2'){ if (!pg.first || y > band + 30) { need(90); if (y > 44) y += 8; } R(MX, y, 3, 14, COL.accent); T(b.text, MX+10, y+11, 12.5, true, COL.ink); L(MX, y+20, PW-MX, y+20, COL.line, .6); y += 30; if (b.sub){ wrap(b.sub, 8, false, CW).forEach(ln=>{ T(ln, MX, y, 8, false, COL.mute); y += 11; }); y += 4; } return; }
+      if (b.t === 'p' || b.t === 'note'){ const sz = b.t === 'p' ? 9 : 7.5, lh = sz + 3.6, ls = wrap(b.text, sz, false, CW); ls.forEach(ln=>{ need(lh); T(ln, MX, y+sz, sz, false, b.t === 'p' ? COL.ink : COL.mute); y += lh; }); y += 6; return; }
+      if (b.t === 'kpis'){ const n = b.items.length, per = n<=5 ? n : (n%4===0?4:n%3===0?3:4), gap = 8, tw_ = (CW - gap*(per-1))/per, th = 60;
+        for (let i=0;i<n;i+=per){ need(th+8); b.items.slice(i,i+per).forEach((k,j)=>{ const x0 = MX + j*(tw_+gap); R(x0,y,tw_,th,COL.panel); R(x0,y,tw_,2.6,k.color || COL.accent);
+            T(fit(k.label.toUpperCase(),6.8,true,tw_-14), x0+8, y+16, 6.8, true, COL.mute); let vs = 17; while (vs > 10 && tw(k.value,vs,true) > tw_-14) vs--; T(k.value, x0+8, y+37, vs, true, COL.ink);
+            if (k.sub) T(fit(k.sub,7,false,tw_-14), x0+8, y+51, 7, false, k.tone === 'good' ? COL.good : k.tone === 'bad' ? COL.bad : COL.mute); }); y += th + 8; } y += 4; return; }
+      if (b.t === 'charts'){ const cols = b.items.length, gap = 10, cw = (CW - gap*(cols-1))/cols, hs = b.items.map(it=> it.img ? it.img.h : 40), ch = Math.max(...hs) + 34;
+        need(ch + 8); b.items.forEach((it,j)=>{ const x0 = MX + j*(cw+gap); R(x0,y,cw,ch,COL.white,COL.line,.7); R(x0,y,cw,2.2,it.accent || COL.accent);
+          T(fit(it.title,9.5,true,cw-16), x0+8, y+16, 9.5, true, COL.ink); if (it.sub) T(fit(it.sub,7.2,false,cw-16), x0+8, y+26, 7.2, false, COL.mute);
+          if (it.img){ I(it.img, x0+(cw-it.img.w)/2, y+31, it.img.w, it.img.h); } else T('No data in this period yet.', x0+8, y+60, 8.5, false, COL.mute); }); y += ch + 10; return; }
+      if (b.t === 'table'){ const sz = b.size || 7.5, rh = sz + 8, hh = rh + 2, nc = b.head.length, al = b.align || b.head.map((h,i)=> i===0 ? 'l' : 'r');
+        const cws = colFit(b, CW, sz);
+        const head = () => { R(MX,y,CW,hh,COL.band); let cx = MX; b.head.forEach((h,i)=>{ const lbl = fit(h,sz,true,cws[i]-8); T(lbl, al[i]==='r' ? cx+cws[i]-4 : cx+4, y+hh-6, sz, true, '#FFFFFF', al[i]); cx += cws[i]; }); y += hh; };
+        if (b.title){ need(hh+rh*3+20); T(b.title, MX, y+10, 9.5, true, COL.ink); y += 16; } need(hh + rh*2); head();
+        b.rows.forEach((r,ri)=>{ if (y + rh > LIM){ newPage(false); head(); } const tot = b.totals && ri === b.rows.length-1; if (tot) R(MX,y,CW,rh,'#E3F4F1'); else if (ri%2) R(MX,y,CW,rh,COL.zebra);
+          let cx = MX; r.forEach((v,i)=>{ const s = fit(typeof v === 'number' ? fnum(v) : v, sz, tot, cws[i]-8); T(s, al[i]==='r' ? cx+cws[i]-4 : cx+4, y+rh-4.2, sz, tot, COL.ink, al[i]); cx += cws[i]; }); y += rh; });
+        L(MX,y,PW-MX,y,COL.line,.7); y += 12; return; }
+      if (b.t === 'actions'){ b.items.forEach(a=>{ const hl = wrap(a.head, 9, true, CW-60), bl = wrap(a.text||'', 8, false, CW-60), h = hl.length*12 + bl.length*10.5 + 10; need(h);
+          const col = a.tag === 'HIGH' ? COL.bad : a.tag === 'MEDIUM' ? COL.warn : COL.accent; R(MX,y+1,44,12,col); T(a.tag, MX+22, y+9.6, 6.5, true, '#FFFFFF', 'c'); let yy = y + 10; hl.forEach(ln=>{ T(ln, MX+54, yy, 9, true, COL.ink); yy += 12; }); bl.forEach(ln=>{ T(ln, MX+54, yy-1, 8, false, COL.mute); yy += 10.5; }); y += h; L(MX,y-3,PW-MX,y-3,'#EDF0F3',.5); }); y += 6; return; }
+    });
+    const N = pages.length;
+    pages.forEach((p,i)=>{ if (!p.first){ p.ops.unshift({ t:'r', x:0, y:0, w:PW, h:26, fill:COL.band }, { t:'r', x:0, y:26, w:PW, h:2, fill:COL.accent }, { t:'t', s:clean(doc.title), x:MX, y:17, size:8, bold:true, col:'#FFFFFF' }, { t:'t', s:clean(doc.client||''), x:PW-MX, y:17, size:8, bold:false, col:'#B6C2CF', align:'r' }); }
+      p.ops.push({ t:'l', x1:MX, y1:PH-40, x2:PW-MX, y2:PH-40, col:COL.line, lw:.6 }, { t:'t', s:fit(clean((doc.client ? doc.client + '  ·  ' : '') + doc.title),7,false,190), x:MX, y:PH-28, size:7, bold:false, col:COL.mute },
+        { t:'t', s:'Prepared by ' + (doc.org || ORG) + '  ·  ' + ORG_URL, x:PW/2+20, y:PH-28, size:7, bold:false, col:COL.mute, align:'c' }, { t:'t', s:'Page ' + (i+1) + ' of ' + N, x:PW-MX, y:PH-28, size:7, bold:true, col:COL.ink, align:'r' }); });
+    return pages;
+  }
+  function toPDF(doc){
+    const pages = layout(doc), imgs = [], parts = [], offs = []; let len = 0;
+    const enc = s => { const a = new Uint8Array(s.length); for (let i=0;i<s.length;i++) a[i] = s.charCodeAt(i) & 255; return a; };
+    const put = d => { const a = typeof d === 'string' ? enc(d) : d; parts.push(a); len += a.length; };
+    const objs = []; // [{id, bytes[]}]
+    const ids = new Map(); pages.forEach(p=>p.ops.forEach(o=>{ if (o.t === 'i' && !ids.has(o.img)) { ids.set(o.img, 0); imgs.push(o.img); } }));
+    // object numbering: 1 catalog, 2 pages, 3 F1, 4 F2, 5 info, then images, then per page (page,content)
+    const imgBase = 6; imgs.forEach((im,i)=>{ ids.set(im, imgBase + i); });
+    const pageBase = imgBase + imgs.length, pageId = i => pageBase + i*2, contId = i => pageBase + i*2 + 1;
+    put('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+    const obj = (id, body) => { offs[id] = len; put(id + ' 0 obj\n'); put(body); put('\nendobj\n'); };
+    const objStream = (id, dict, data) => { offs[id] = len; put(id + ' 0 obj\n<<' + dict + ' /Length ' + data.length + '>>\nstream\n'); put(data); put('\nendstream\nendobj\n'); };
+    obj(1, '<< /Type /Catalog /Pages 2 0 R /Lang (en-ZA) >>');
+    obj(2, '<< /Type /Pages /Kids [' + pages.map((p,i)=>pageId(i)+' 0 R').join(' ') + '] /Count ' + pages.length + ' >>');
+    obj(3, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+    obj(4, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+    const d = new Date(), ds = 'D:' + d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0') + String(d.getHours()).padStart(2,'0') + String(d.getMinutes()).padStart(2,'0') + '00';
+    obj(5, '<< /Title ' + pdfHex(doc.title) + ' /Author ' + pdfHex(doc.org || ORG) + ' /Subject ' + pdfHex(doc.subtitle || '') + ' /Creator ' + pdfHex('Waste Smart') + ' /CreationDate (' + ds + ') >>');
+    imgs.forEach(im=> objStream(ids.get(im), '/Type /XObject /Subtype /Image /Width ' + Math.round(im.w*4) + ' /Height ' + Math.round(im.h*4) + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode', im.bytes));
+    pages.forEach((p,i)=>{
+      const cs = []; const col = (c, st) => { const [r,g,b] = hex(c); return f2(r)+' '+f2(g)+' '+f2(b)+(st?' RG':' rg'); };
+      p.ops.forEach(o=>{
+        if (o.t === 'r'){ if (o.fill){ cs.push(col(o.fill)); cs.push(f2(o.x)+' '+f2(PH-o.y-o.h)+' '+f2(o.w)+' '+f2(o.h)+' re f'); } if (o.stroke){ cs.push(col(o.stroke,1)); cs.push(f2(o.lw||.7)+' w '+f2(o.x)+' '+f2(PH-o.y-o.h)+' '+f2(o.w)+' '+f2(o.h)+' re S'); } }
+        else if (o.t === 'l'){ cs.push(col(o.col,1)); cs.push(f2(o.lw||.7)+' w '+f2(o.x1)+' '+f2(PH-o.y1)+' m '+f2(o.x2)+' '+f2(PH-o.y2)+' l S'); }
+        else if (o.t === 'i'){ cs.push('q '+f2(o.w)+' 0 0 '+f2(o.h)+' '+f2(o.x)+' '+f2(PH-o.y-o.h)+' cm /Im'+ids.get(o.img)+' Do Q'); }
+        else if (o.t === 't'){ const w = tw(o.s, o.size, o.bold); const x0 = o.align === 'r' ? o.x - w : o.align === 'c' ? o.x - w/2 : o.x; cs.push('BT '+col(o.col||COL.ink)+' /F'+(o.bold?2:1)+' '+f2(o.size)+' Tf '+f2(x0)+' '+f2(PH-o.y)+' Td '+pdfHex(o.s)+' Tj ET'); }
+      });
+      const xo = [...new Set(p.ops.filter(o=>o.t==='i').map(o=>ids.get(o.img)))];
+      obj(pageId(i), '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+PW+' '+PH+'] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> /XObject << '+xo.map(id=>'/Im'+id+' '+id+' 0 R').join(' ')+' >> >> /Contents '+contId(i)+' 0 R >>');
+      objStream(contId(i), '', enc(cs.join('\n')));
+    });
+    const total = pageBase + pages.length*2, xref = len; let x = 'xref\n0 ' + total + '\n0000000000 65535 f \n';
+    for (let i=1;i<total;i++) x += String(offs[i]).padStart(10,'0') + ' 00000 n \n';
+    put(x + 'trailer\n<< /Size ' + total + ' /Root 1 0 R /Info 5 0 R >>\nstartxref\n' + xref + '\n%%EOF');
+    const out = new Uint8Array(len); let o = 0; parts.forEach(a=>{ out.set(a,o); o += a.length; }); return out;
+  }
+
+  /* ---------------- DOCX ---------------- */
+  const X = s => clean(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const tw20 = pt => Math.round(pt*20), noHash = c => c.replace('#','');
+  function crcTable(){ const t = []; for (let n=0;n<256;n++){ let c = n; for (let k=0;k<8;k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; }
+  const CRC = crcTable(); const crc32 = a => { let c = 0xFFFFFFFF; for (let i=0;i<a.length;i++) c = CRC[(c ^ a[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  function zip(files){
+    const u8 = s => new TextEncoder().encode(s), parts = [], cd = []; let off = 0; const now = new Date(), dt = ((now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1)), dd = (((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate());
+    const w16 = (a,v)=>a.push(v&255,(v>>8)&255), w32 = (a,v)=>a.push(v&255,(v>>8)&255,(v>>16)&255,(v>>>24)&255);
+    files.forEach(f=>{ const name = u8(f.name), data = typeof f.data === 'string' ? u8(f.data) : f.data, crc = crc32(data), h = [];
+      w32(h,0x04034b50); w16(h,20); w16(h,0x0800); w16(h,0); w16(h,dt); w16(h,dd); w32(h,crc); w32(h,data.length); w32(h,data.length); w16(h,name.length); w16(h,0);
+      parts.push(new Uint8Array(h), name, data); const c = []; w32(c,0x02014b50); w16(c,20); w16(c,20); w16(c,0x0800); w16(c,0); w16(c,dt); w16(c,dd); w32(c,crc); w32(c,data.length); w32(c,data.length); w16(c,name.length); w16(c,0); w16(c,0); w16(c,0); w16(c,0); w32(c,0); w32(c,off);
+      cd.push(new Uint8Array(c), name); off += h.length + name.length + data.length; });
+    let cdLen = 0; cd.forEach(a=>cdLen += a.length); const e = []; w32(e,0x06054b50); w16(e,0); w16(e,0); w16(e,files.length); w16(e,files.length); w32(e,cdLen); w32(e,off); w16(e,0);
+    const all = [...parts, ...cd, new Uint8Array(e)], total = all.reduce((s,a)=>s+a.length,0), out = new Uint8Array(total); let o = 0; all.forEach(a=>{ out.set(a,o); o += a.length; }); return out;
+  }
+  function toDOCX(doc){
+    const media = []; let docId = 1;
+    const run = (t, o)=>{ o = o||{}; return '<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>' + (o.b?'<w:b/>':'') + (o.c?'<w:color w:val="'+noHash(o.c)+'"/>':'') + '<w:sz w:val="'+Math.round((o.sz||9.5)*2)+'"/></w:rPr><w:t xml:space="preserve">'+X(t)+'</w:t></w:r>'; };
+    const para = (runs, o)=>{ o = o||{}; return '<w:p><w:pPr>' + (o.style?'<w:pStyle w:val="'+o.style+'"/>':'') + (o.keep?'<w:keepNext/>':'') + '<w:spacing w:before="'+(o.before||0)+'" w:after="'+(o.after==null?80:o.after)+'"'+(o.line?' w:line="'+o.line+'" w:lineRule="auto"':'')+'/>' + (o.jc?'<w:jc w:val="'+o.jc+'"/>':'') + (o.bar?'<w:pBdr><w:bottom w:val="single" w:sz="4" w:space="3" w:color="'+noHash(COL.line)+'"/></w:pBdr>':'') + '</w:pPr>' + runs + '</w:p>'; };
+    const cell = (inner, w, o)=>{ o = o||{}; const bd = o.border ? '<w:tcBorders><w:top w:val="single" w:sz="4" w:color="'+noHash(COL.line)+'"/><w:left w:val="single" w:sz="4" w:color="'+noHash(COL.line)+'"/><w:bottom w:val="single" w:sz="4" w:color="'+noHash(COL.line)+'"/><w:right w:val="single" w:sz="4" w:color="'+noHash(COL.line)+'"/></w:tcBorders>' : o.top ? '<w:tcBorders><w:top w:val="single" w:sz="18" w:color="'+noHash(o.top)+'"/></w:tcBorders>' : '';
+      return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+bd+(o.fill?'<w:shd w:val="clear" w:color="auto" w:fill="'+noHash(o.fill)+'"/>':'')+'<w:tcMar><w:top w:w="'+(o.pt==null?50:o.pt)+'" w:type="dxa"/><w:left w:w="'+(o.pl==null?100:o.pl)+'" w:type="dxa"/><w:bottom w:w="'+(o.pb==null?50:o.pb)+'" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tcMar><w:vAlign w:val="'+(o.va||'top')+'"/></w:tcPr>'+inner+'</w:tc>'; };
+    const tbl = (grid, rows, o)=>{ o = o||{}; return '<w:tbl><w:tblPr><w:tblW w:w="'+grid.reduce((s,v)=>s+v,0)+'" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="0" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>'+grid.map(g=>'<w:gridCol w:w="'+g+'"/>').join('')+'</w:tblGrid>'+rows.join('')+'</w:tbl>' + para('', { after: o.after==null?100:o.after, line: 120 }); };
+    const row = (cells, o)=>'<w:tr><w:trPr><w:cantSplit/>'+(o&&o.header?'<w:tblHeader/>':'')+'</w:trPr>'+cells.join('')+'</w:tr>';
+    const img = (im, alt)=>{ const id = ++docId, rid = 'rId' + (100 + media.length); media.push({ name:'media/chart'+id+'.jpg', bytes: im.bytes, rid }); const cx = Math.round(im.w*12700), cy = Math.round(im.h*12700);
+      return '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="'+cx+'" cy="'+cy+'"/><wp:docPr id="'+id+'" name="Chart '+id+'" descr="'+X(alt||'Chart')+'"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="'+id+'" name="chart'+id+'.jpg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="'+rid+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>'; };
+    const W = tw20(CW); let body = '';
+    /* cover */
+    const meta = [['CLIENT', doc.client], ['PERIOD', doc.period], ['PREPARED', doc.generated]].filter(m=>m[1]);
+    body += tbl([W*0.66|0, W - (W*0.66|0)], [row([
+      cell(para(run((doc.org||ORG).toUpperCase()+'  ·  WASTE SMART',{b:1,c:'#5EEAD4',sz:8}),{after:120}) + para(run(doc.title,{b:1,c:'#FFFFFF',sz:22}),{after:80}) + para(run(doc.subtitle||'',{c:'#B6C2CF',sz:10}),{after:60}), W*0.66|0, { fill:COL.band, pl:240, pt:240, pb:240 }),
+      cell(meta.map(m=>para(run(m[0],{b:1,c:'#7C8A99',sz:6.5}),{after:0,jc:'right'}) + para(run(m[1],{b:1,c:'#FFFFFF',sz:9}),{after:100,jc:'right'})).join(''), W - (W*0.66|0), { fill:COL.band, pt:240, pb:140, va:'center' })])], { after: 60 });
+    doc.blocks.forEach(b=>{
+      if (b.t === 'pagebreak'){ body += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'; return; }
+      if (b.t === 'h2'){ body += para(run(b.text,{b:1,c:COL.ink,sz:13}),{style:'Heading2',before:240,after:b.sub?40:100,keep:1,bar:1}); if (b.sub) body += para(run(b.sub,{c:COL.mute,sz:8.5}),{after:100,keep:1}); return; }
+      if (b.t === 'p'){ body += para(run(b.text,{sz:9.5}),{after:100,line:276}); return; }
+      if (b.t === 'note'){ body += para(run(b.text,{c:COL.mute,sz:8}),{after:100}); return; }
+      if (b.t === 'kpis'){ const n = b.items.length, per = n<=5 ? n : (n%4===0?4:n%3===0?3:4), gap = 120, cw_ = Math.floor((W - gap*(per-1))/per);
+        for (let i=0;i<n;i+=per){ const items = b.items.slice(i,i+per), grid = [], cells = []; items.forEach((k,j)=>{ if (j){ grid.push(gap); cells.push(cell(para('',{after:0}), gap, {pt:0,pb:0})); } grid.push(cw_);
+            cells.push(cell(para(run(k.label.toUpperCase(),{b:1,c:COL.mute,sz:6.5}),{after:20}) + para(run(k.value,{b:1,c:COL.ink,sz:15}),{after:20}) + para(run(k.sub||' ',{c:k.tone==='good'?COL.good:k.tone==='bad'?COL.bad:COL.mute,sz:7.5}),{after:0}), cw_, { fill:COL.panel, top:k.color||COL.accent, pt:90, pb:90 })); });
+          body += tbl(grid, [row(cells)], { after: 60 }); } return; }
+      if (b.t === 'charts'){ const cols = b.items.length, gap = 140, cw_ = Math.floor((W - gap*(cols-1))/cols), grid = [], cells = [];
+        b.items.forEach((it,j)=>{ if (j){ grid.push(gap); cells.push(cell(para('',{after:0}),gap,{pt:0,pb:0})); } grid.push(cw_);
+          cells.push(cell(para(run(it.title,{b:1,c:COL.ink,sz:9.5}),{after:10,keep:1}) + (it.sub?para(run(it.sub,{c:COL.mute,sz:7.5}),{after:40,keep:1}):'') + (it.img ? para(img(it.img, it.title),{after:0,jc:'center'}) : para(run('No data in this period yet.',{c:COL.mute,sz:8.5}),{after:0})), cw_, { border:1, top:it.accent||COL.accent, pt:80, pb:80 })); });
+        body += tbl(grid, [row(cells)], { after: 80 }); return; }
+      if (b.t === 'table'){ const sz = b.size || 7.5, al = b.align || b.head.map((h,i)=> i===0 ? 'l' : 'r'), wdt = colFit(b, CW, sz);
+        let grid = wdt.map(v=>Math.floor(v*20)); grid[grid.length-1] += W - grid.reduce((s,v)=>s+v,0);
+        if (b.title) body += para(run(b.title,{b:1,c:COL.ink,sz:9.5}),{before:80,after:60,keep:1});
+        const hs = [row(b.head.map((h,i)=>cell(para(run(h,{b:1,c:'#FFFFFF',sz}),{after:0,jc:al[i]==='r'?'right':'left'}), grid[i], { fill:COL.band, pt:40, pb:40, pl:70 })), { header:1 })];
+        b.rows.forEach((r,ri)=>{ const tot = b.totals && ri === b.rows.length-1; hs.push(row(r.map((v,i)=>cell(para(run(typeof v === 'number' ? fnum(v) : v,{b:tot,c:COL.ink,sz}),{after:0,jc:al[i]==='r'?'right':'left'}), grid[i], { fill: tot ? '#E3F4F1' : ri%2 ? COL.zebra : null, pt:30, pb:30, pl:70 })))); });
+        body += tbl(grid, hs, { after: 100 }); return; }
+      if (b.t === 'actions'){ const g1 = 1000, g2 = W - 1000, rows = b.items.map(a=>{ const col = a.tag === 'HIGH' ? COL.bad : a.tag === 'MEDIUM' ? COL.warn : COL.accent;
+          return row([cell(para(run(a.tag,{b:1,c:'#FFFFFF',sz:7}),{after:0,jc:'center'}), g1, { fill:col, pt:30, pb:30, va:'center' }), cell(para(run(a.head,{b:1,c:COL.ink,sz:9.5}),{after:20}) + para(run(a.text||'',{c:COL.mute,sz:8.5}),{after:0}), g2, { pl:160, pt:50, pb:50 })]); });
+        body += tbl([g1,g2], rows, { after: 100 }); return; }
+    });
+    const sect = '<w:sectPr><w:footerReference w:type="default" r:id="rId2"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="720" w:right="720" w:bottom="900" w:left="720" w:header="400" w:footer="400"/></w:sectPr>';
+    const NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"';
+    const fld = (code)=>'<w:r><w:rPr><w:sz w:val="14"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:sz w:val="14"/></w:rPr><w:instrText xml:space="preserve"> '+code+' </w:instrText></w:r><w:r><w:rPr><w:sz w:val="14"/></w:rPr><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:sz w:val="14"/></w:rPr><w:t>1</w:t></w:r><w:r><w:rPr><w:sz w:val="14"/></w:rPr><w:fldChar w:fldCharType="end"/></w:r>';
+    const footer = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr '+NS+'><w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="4" w:space="4" w:color="'+noHash(COL.line)+'"/></w:pBdr><w:tabs><w:tab w:val="right" w:pos="'+W+'"/></w:tabs><w:spacing w:after="0"/></w:pPr>'
+      + run((doc.client?doc.client+'  ·  ':'')+doc.title+'  ·  Prepared by '+(doc.org||ORG)+'  ·  '+ORG_URL,{c:COL.mute,sz:7}) + '<w:r><w:tab/></w:r>' + run('Page ',{c:COL.mute,sz:7}) + fld('PAGE') + run(' of ',{c:COL.mute,sz:7}) + fld('NUMPAGES') + '</w:p></w:ftr>';
+    const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:sz w:val="19"/><w:lang w:val="en-ZA"/></w:rPr></w:rPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:outlineLvl w:val="1"/></w:pPr></w:style></w:styles>';
+    const rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>' + media.map(m=>'<Relationship Id="'+m.rid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="'+m.name+'"/>').join('') + '</Relationships>';
+    const iso = new Date().toISOString().replace(/\.\d+Z$/,'Z');
+    return zip([
+      { name:'[Content_Types].xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>' },
+      { name:'_rels/.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>' },
+      { name:'docProps/core.xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>'+X(doc.title)+'</dc:title><dc:creator>'+X(doc.org||ORG)+'</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">'+iso+'</dcterms:created></cp:coreProperties>' },
+      { name:'word/document.xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document '+NS+'><w:body>'+body+sect+'</w:body></w:document>' },
+      { name:'word/styles.xml', data:styles }, { name:'word/footer1.xml', data:footer }, { name:'word/_rels/document.xml.rels', data:rels },
+      ...media.map(m=>({ name:'word/'+m.name, data:m.bytes }))
+    ]);
+  }
+
+  /* ---------------- on-screen preview ---------------- */
+  const CSS = `.wsr-ov{position:fixed;inset:0;z-index:9999;background:#080C12;display:flex;flex-direction:column;font-family:${FONT}}
+  .wsr-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px max(14px,env(safe-area-inset-left,0px));background:#0C1118;border-bottom:1px solid #243041;color:#E8EDF4}
+  .wsr-bar b{font-size:14px;margin-right:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wsr-bar button{font:600 13px ${FONT};border:1px solid #2E3B4E;background:#16202D;color:#E8EDF4;border-radius:8px;padding:8px 14px;cursor:pointer}
+  .wsr-bar button.pri{background:#14B8A6;border-color:#14B8A6;color:#06201C}.wsr-bar button:disabled{opacity:.55;cursor:wait}
+  .wsr-scroll{flex:1;overflow:auto;padding:18px max(10px,env(safe-area-inset-left,0px)) 40px}
+  .wsr-paper{max-width:860px;margin:0 auto;background:#fff;color:#0C1118;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.4);overflow:hidden;font-size:13px;line-height:1.5}
+  .wsr-cover{background:#0C1118;color:#fff;padding:26px 28px 22px;border-bottom:4px solid #0E9F8E;display:flex;gap:20px;flex-wrap:wrap;justify-content:space-between}
+  .wsr-cover small{display:block;color:#5EEAD4;font-weight:700;letter-spacing:.08em;font-size:11px}.wsr-cover h1{margin:6px 0 4px;font-size:26px;line-height:1.15}.wsr-cover p{margin:0;color:#B6C2CF}
+  .wsr-meta{text-align:right;font-size:12px}.wsr-meta span{display:block;color:#7C8A99;font-size:10px;font-weight:700;letter-spacing:.08em;margin-top:8px}.wsr-meta b{font-size:13px}
+  .wsr-body{padding:6px 28px 26px}.wsr-body h2{font-size:17px;margin:24px 0 10px;padding:0 0 6px 11px;border-bottom:1px solid #D9DEE5;position:relative}.wsr-body h2:before{content:"";position:absolute;left:0;top:3px;width:4px;height:18px;background:#0E9F8E}
+  .wsr-sub{color:#5B6675;font-size:12px;margin:-4px 0 10px}.wsr-body p{margin:6px 0}.wsr-note{color:#5B6675;font-size:11.5px}
+  .wsr-kpis{display:grid;grid-template-columns:repeat(var(--per,3),minmax(0,1fr));gap:10px;margin:10px 0}@media(max-width:640px){.wsr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}.wsr-k{background:#F4F6F8;border-top:3px solid #0E9F8E;padding:10px 12px;min-width:0}
+  .wsr-k i{display:block;font-style:normal;font-size:10px;font-weight:700;letter-spacing:.07em;color:#5B6675;text-transform:uppercase}.wsr-k b{display:block;font-size:22px;margin:3px 0 1px;overflow-wrap:anywhere}.wsr-k em{font-style:normal;font-size:11.5px;color:#5B6675}.wsr-k em.good{color:#2F9E44}.wsr-k em.bad{color:#D9480F}
+  .wsr-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:10px 0}.wsr-c{border:1px solid #D9DEE5;border-top:3px solid #0E9F8E;padding:10px 12px;min-width:0}.wsr-c h3{margin:0;font-size:13px}.wsr-c small{display:block;color:#5B6675;font-size:11px;margin-bottom:6px}.wsr-c img{display:block;width:100%;height:auto}
+  .wsr-tw{overflow-x:auto;margin:8px 0}.wsr-body table{border-collapse:collapse;width:100%;font-size:12px}.wsr-body th{background:#0C1118;color:#fff;text-align:left;padding:6px 9px;white-space:nowrap}.wsr-body td{padding:5px 9px;border-bottom:1px solid #EDF0F3;white-space:nowrap}.wsr-body tr:nth-child(even) td{background:#F7F9FB}.wsr-body .r{text-align:right}.wsr-body tr.tot td{background:#E3F4F1;font-weight:700}
+  .wsr-act{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #EDF0F3}.wsr-act span{flex:none;width:62px;text-align:center;color:#fff;font-size:10px;font-weight:700;padding:3px 0;height:max-content}.wsr-act b{display:block}.wsr-act small{color:#5B6675;font-size:12px}
+  .wsr-foot{padding:12px 28px;border-top:1px solid #D9DEE5;color:#5B6675;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}`;
+  const H = s => X(s);
+  function preview(doc){
+    const tag = t => t === 'HIGH' ? COL.bad : t === 'MEDIUM' ? COL.warn : COL.accent;
+    const meta = [['CLIENT', doc.client], ['PERIOD', doc.period], ['PREPARED', doc.generated]].filter(m=>m[1]);
+    let h = `<div class="wsr-paper"><div class="wsr-cover"><div><small>${H((doc.org||ORG).toUpperCase())} · WASTE SMART</small><h1>${H(doc.title)}</h1><p>${H(doc.subtitle||'')}</p></div><div class="wsr-meta">${meta.map(m=>`<span>${m[0]}</span><b>${H(m[1])}</b>`).join('')}</div></div><div class="wsr-body">`;
+    doc.blocks.forEach(b=>{
+      if (b.t === 'h2') h += `<h2>${H(b.text)}</h2>${b.sub?`<div class="wsr-sub">${H(b.sub)}</div>`:''}`;
+      else if (b.t === 'p') h += `<p>${H(b.text)}</p>`; else if (b.t === 'note') h += `<p class="wsr-note">${H(b.text)}</p>`;
+      else if (b.t === 'kpis') h += `<div class="wsr-kpis" style="--per:${(()=>{ const n = b.items.length; return n<=5 ? Math.min(n,5) : (n%4===0?4:n%3===0?3:4); })()}">${b.items.map(k=>`<div class="wsr-k" style="border-top-color:${k.color||COL.accent}"><i>${H(k.label)}</i><b>${H(k.value)}</b><em class="${k.tone||''}">${H(k.sub||'')}</em></div>`).join('')}</div>`;
+      else if (b.t === 'charts') h += `<div class="wsr-charts">${b.items.map(it=>`<div class="wsr-c" ${it.accent?`style="border-top-color:${it.accent}"`:''}><h3>${H(it.title)}</h3><small>${H(it.sub||'')}</small>${it.img?`<img alt="${H(it.title)}" src="${it.img.url}">`:'<div class="wsr-note">No data in this period yet.</div>'}</div>`).join('')}</div>`;
+      else if (b.t === 'table'){ const al = b.align || b.head.map((x,i)=>i===0?'l':'r'); h += (b.title?`<h3 style="font-size:13px;margin:14px 0 4px">${H(b.title)}</h3>`:'') + `<div class="wsr-tw"><table><thead><tr>${b.head.map((x,i)=>`<th class="${al[i]}">${H(x)}</th>`).join('')}</tr></thead><tbody>${b.rows.slice(0,400).map((r,ri)=>`<tr class="${b.totals&&ri===b.rows.length-1?'tot':''}">${r.map((v,i)=>`<td class="${al[i]}">${H(typeof v==='number'?fnum(v):v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${b.rows.length>400?`<p class="wsr-note">Showing the first 400 of ${b.rows.length} rows. The PDF and Word versions contain every row.</p>`:''}`; }
+      else if (b.t === 'actions') h += b.items.map(a=>`<div class="wsr-act"><span style="background:${tag(a.tag)}">${H(a.tag)}</span><div><b>${H(a.head)}</b><small>${H(a.text||'')}</small></div></div>`).join('');
+    });
+    return h + `</div><div class="wsr-foot"><span>${H((doc.client?doc.client+' · ':'')+doc.title)}</span><span>Prepared by ${ORG} · ${ORG_URL}</span></div></div>`;
+  }
+
+  /* ---------------- public API ---------------- */
+  function prepare(doc){ doc.blocks.forEach(b=>{ if (b.t === 'charts') b.items.forEach(it=>{ if (it.spec && !it.imgDone){ it.img = drawChart(it.spec); it.imgDone = true; } }); }); return doc; }
+  function save(name, bytes, mime){ const blob = new Blob([bytes], { type: mime }), u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(u), 4000); }
+  const MIME = { pdf:'application/pdf', docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document' };
+  function download(doc, fmt, base){ prepare(doc); const bytes = fmt === 'pdf' ? toPDF(doc) : toDOCX(doc); save(base + '.' + fmt, bytes, MIME[fmt]); return bytes; }
+  function show(build, o){
+    o = o || {}; if (!document.getElementById('wsrCss')){ const st = document.createElement('style'); st.id = 'wsrCss'; st.textContent = CSS; document.head.appendChild(st); }
+    const old = document.getElementById('wsrOv'); if (old) old.remove();
+    const doc = prepare(typeof build === 'function' ? build() : build), ov = document.createElement('div'); ov.className = 'wsr-ov'; ov.id = 'wsrOv'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-label', doc.title);
+    const base = o.base || 'report';
+    ov.innerHTML = `<div class="wsr-bar"><b>${H(doc.title)}</b><button class="pri" data-f="pdf">Download PDF</button><button data-f="docx">Download Word</button>${o.csv?'<button data-f="csv">Download CSV</button>':''}<button data-f="x">Close</button></div><div class="wsr-scroll">${preview(doc)}</div>`;
+    ov.addEventListener('click', ev=>{ const bt = ev.target.closest('button[data-f]'); if (!bt) return; const f = bt.dataset.f; if (f === 'x') ov.remove(); else if (f === 'csv') o.csv(); else { bt.disabled = true; setTimeout(()=>{ try{ download(doc, f, base); }catch(e){ console.error(e); if (typeof toast === 'function') toast('Could not build the file: ' + e.message); } bt.disabled = false; }, 30); } });
+    document.addEventListener('keydown', function esc(e){ if (e.key === 'Escape'){ ov.remove(); document.removeEventListener('keydown', esc); } });
+    document.body.appendChild(ov); return doc;
+  }
+  return { COL, fnum, drawChart, prepare, toPDF, toDOCX, preview, download, show, save, layout };
+})();
+
 /* ===================== Waste Smart v6.4 — admin app ===================== */
 // One admin login. Scales, meters and the POS feed in on their own (see ingest.php); anything can be typed by hand
 // as a backup, and a typed figure always wins for that day.
 const API_ENDPOINT = 'https://gildedac.co.za/app/api.php'; // set to match your live deployment
-const BUILD_VERSION = 'v6.4.1';
-const BUILD_DATE = '2026-10-22';
+const BUILD_VERSION = 'v6.6.0';
+const BUILD_DATE = '2026-10-23';
 const AUTH_TOKEN_KEY = 'ws_auth_token', AUTH_SITE_KEY = 'ws_auth_site', LOOK_KEY = 'ws_look_v2';
 
 function getAuthToken(){ try{ return localStorage.getItem(AUTH_TOKEN_KEY); }catch(e){ return null; } }
@@ -1783,18 +2084,22 @@ function ovCostsC(m, pm){
 function ovLeaksC(lk){
   $('ovLeaks').innerHTML = lk.items.length ? lk.items.map(i=>`<div class="ov-li"><div><b>${esc(i.n)}</b><small>${esc(i.b)}</small></div><span class="v">${i.v>0 ? fmtMoney(i.v) : nf(i.kg)+' kg'}</span></div>`).join('') : '<div class="ov-empty">No leakage identified in this period. Findings appear once there is enough history from the scale, POS and meters.</div>';
 }
-function ovActionsC(m, pm, rg, lk){
-  const L = [], add = (p, h, d)=>L.push(`<div class="ov-act"><span class="tag ${p==='HIGH'?'hi':p==='MEDIUM'?'md':'lo'}">${p}</span><div><b>${h}</b><small>${d}</small></div></div>`);
+function actionsModel(m, pm, rg){
+  const L = [], add = (p, h, d)=>L.push({ p, h, d });
   const wn = wasteNorm(), flagged = Object.values(wn.days).filter(d=>d.flag && d.date>=rg.from && d.date<=rg.to);
   if (flagged.length){ const byWd = {}; flagged.forEach(d=>{ byWd[d.weekday] = (byWd[d.weekday]||0) + 1; }); const top = Object.entries(byWd).sort((x,y)=>y[1]-x[1])[0];
-    add('HIGH', `Review ${esc(WD[+top[0]])} preparation volumes`, `${top[1]} of ${flagged.length} flagged day${flagged.length>1?'s':''} fell on a ${esc(WD[+top[0]])}, above the expected level.`); }
+    add('HIGH', `Review ${WD[+top[0]]} preparation volumes`, `${top[1]} of ${flagged.length} flagged day${flagged.length>1?'s':''} fell on a ${WD[+top[0]]}, above the expected level.`); }
   const a = pfAfterModel(rg), t = feedState.settings || {};
   if (a && a.e.n > 0 && t.tariff_kwh > 0){ const mo = a.e.closed / a.e.n * MON * t.tariff_kwh; if (mo >= 1) add('HIGH', 'Enforce close-down procedure', `Closed-hour electricity costs about ${fmtMoney(mo)} a month. Check what is left running overnight.`); }
   const vr = ((feedState.pos||{}).voidsDailyReason||[]).filter(r=>r.date>=rg.from && r.date<=rg.to), by = {}; vr.forEach(r=>{ by[r.reason] = (by[r.reason]||0) + r.value; });
-  const topV = Object.entries(by).sort((x,y)=>y[1]-x[1])[0]; if (topV && topV[1] > 0) add('MEDIUM', `Investigate "${esc(topV[0])}" write-offs`, `Largest till write-off reason at ${fmtMoney(topV[1])}. Check storage, ordering and handling.`);
-  m.costs.forEach(c=>{ const p = (pm.costs.find(x=>x.k===c.k)||{}).v || 0; if (L.length < 5 && p > 0 && c.v > p*1.1 && c.v - p >= 1) add('MEDIUM', `${esc(c.name)} up ${nf((c.v-p)/p*100,0)}%`, `${fmtMoney(c.v-p)} more than the prior period.`); });
+  const topV = Object.entries(by).sort((x,y)=>y[1]-x[1])[0]; if (topV && topV[1] > 0) add('MEDIUM', `Investigate "${topV[0]}" write-offs`, `Largest till write-off reason at ${fmtMoney(topV[1])}. Check storage, ordering and handling.`);
+  m.costs.forEach(c=>{ const p = (pm.costs.find(x=>x.k===c.k)||{}).v || 0; if (L.length < 5 && p > 0 && c.v > p*1.1 && c.v - p >= 1) add('MEDIUM', `${c.name} up ${nf((c.v-p)/p*100,0)}%`, `${fmtMoney(c.v-p)} more than the prior period.`); });
   if (m.waste > 0 && !(rates.foodCostPerKg > 0)) add('LOW', 'Set average food cost per kg', 'Needed to value food waste. Add it under Administration.');
-  $('pfActions').innerHTML = L.length ? L.slice(0,5).join('') : '<div class="ov-empty">Nothing requires attention. Recommendations appear once there is a full period of data.</div>';
+  return L.slice(0,5);
+}
+function ovActionsC(m, pm, rg, lk){
+  const L = actionsModel(m, pm, rg).map(a=>`<div class="ov-act"><span class="tag ${a.p==='HIGH'?'hi':a.p==='MEDIUM'?'md':'lo'}">${a.p}</span><div><b>${esc(a.h)}</b><small>${esc(a.d)}</small></div></div>`);
+  $('pfActions').innerHTML = L.length ? L.join('') : '<div class="ov-empty">Nothing requires attention. Recommendations appear once there is a full period of data.</div>';
 }
 function pfSetup(m){
   const need = [...m.costs, ...m.income].filter(x=>x.need && (x.k!=='oil' && x.k!=='recyc' || true)).map(x=>x.need);
@@ -2048,22 +2353,6 @@ function reportRows(){
   const f = $('repFrom').value, t = $('repTo').value; if (!f || !t) return null;
   const s = biF.source; biF.source = 'all'; const rows = biRows(f, t, false); biF.source = s; return rows;
 }
-function renderReports(){
-  if (!$('repFrom').value){ const now = new Date(); $('repFrom').value = isoDate(new Date(now.getFullYear(), now.getMonth(), 1)); $('repTo').value = isoDate(now); }
-  $('repFrom').onchange = $('repTo').onchange = renderReports;
-  const rows = reportRows() || [];
-  $('reportCards').innerHTML = REPORTS.map(rp=>{
-    const data = rows.map(rp.row), shown = data.slice(0,6);
-    return `<div class="card"><h4>${esc(rp.title)}</h4><p class="section-sub" style="margin-bottom:8px">${esc(rp.sub)}</p>
-      <div class="report-out">${data.length ? `<table class="htable"><thead><tr>${rp.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${shown.map(r=>`<tr>${r.map(c=>`<td>${typeof c==='number'?nf(c,2):esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>${data.length>6?`<div class="costline">Showing 6 of ${data.length} rows</div>`:''}` : '<div class="bi-empty">No data in this range.</div>'}</div>
-      <div class="btnrow" style="margin-top:10px"><button class="btn primary small" onclick="downloadReport('${rp.id}')">Download CSV</button></div></div>`;
-  }).join('');
-}
-function downloadReport(id){
-  const rp = REPORTS.find(r=>r.id===id), rows = reportRows(); if (!rp || !rows || !rows.length){ toast('No data in this range.'); return; }
-  const biz = ((setup && setup.name) || 'WasteSmart').replace(/[^a-z0-9]+/gi,'_');
-  triggerDownload(`${biz}_${rp.id}_${$('repFrom').value}_to_${$('repTo').value}.csv`, toCSV(rp.head, rows.map(rp.row)));
-}
 
 /* ===================== SETTINGS ===================== */
 function renderSettings(){
@@ -2108,6 +2397,205 @@ function renderSalesHistory(){
   const el = $('salesReportHistory'); if (!el) return;
   const list = entries.filter(e=>e.salesTyped).sort((a,b)=>a.date<b.date?1:-1).slice(0,10);
   el.innerHTML = list.length ? `<table class="htable"><thead><tr><th>Date</th><th>Total sales</th></tr></thead><tbody>${list.map(e=>`<tr><td class="mono">${esc(e.date)}</td><td class="mono">${fmtMoney(e.salesTotal)}</td></tr>`).join('')}</tbody></table>` : '<p class="section-sub">No hand-keyed sales yet.</p>';
+}
+
+/* ===================== REPORT PACK: preview, PDF, Word, CSV ===================== */
+const PC = { waste:'#E8590C', plastic:'#2F9E44', paper:'#C99700', glass:'#1C7ED6', cans:'#7048E8', oil:'#8D6E63', gas:'#D6336C', elec:'#3B5BDB', water:'#0CA678', recyc:'#2F9E44', teal:'#0E9F8E', ink:'#0C1118', bad:'#D9480F', good:'#2F9E44' };
+const MATC = { plastic:PC.plastic, paper:PC.paper, glass:PC.glass, cans:PC.cans };
+function repRows(from, to){ const s = biF.source; biF.source = 'all'; const r = biRows(from, to, false); biF.source = s; return r; }
+function repCtx(from, to){
+  const n = dayDiff(from, to) + 1, pf = addDays(from, -n), pt = addDays(from, -1);
+  return { from, to, days:n, rows:repRows(from, to), prev:repRows(pf, pt), m:profitModel(from, to), pm:profitModel(pf, pt), rg:{ from, to } };
+}
+function dTxt(cur, prev, lowerGood){
+  if (!(prev > 0)) return { sub:'No prior period to compare', tone:'' };
+  const p = (cur - prev) / prev * 100; if (Math.abs(p) < 1) return { sub:'Level with the prior period', tone:'' };
+  const up = p > 0; return { sub:(up ? '+' : '-') + nf(Math.abs(p), 0) + '% vs prior period', tone:(up === lowerGood) ? 'bad' : 'good' };
+}
+function repDoc(title, subtitle, c){
+  return { title, subtitle, client:(setup && setup.name) || 'Waste Smart site', period:c.from + ' to ' + c.to, generated:new Date().toLocaleDateString('en-ZA', { day:'numeric', month:'long', year:'numeric' }), blocks:[] };
+}
+const HEALTH = { live:'Live', quiet:'Late', stale:'Stale', never:'No data yet', disabled:'Off' };
+function money(v){ return fmtMoney(v); }
+
+/* ---------- shared sections ---------- */
+function secKpisFinance(c){
+  const m = c.m, pm = c.pm, hasS = m.sales > 0, rec = m.income.reduce((s,i)=>s+i.v,0), w = m.waste, rc = sumOf(c.rows,'recyc'), div = (w + rc) > 0 ? rc / (w + rc) * 100 : null;
+  const dw = dTxt(w, sumOf(c.prev,'waste'), true), pw = sumOf(c.prev,'waste'), prc = sumOf(c.prev,'recyc'), pdiv = (pw + prc) > 0 ? prc / (pw + prc) * 100 : null;
+  return { t:'kpis', items:[
+    { label:'Net contribution', value:hasS ? money(m.left) : 'n/a', sub:hasS ? pctOf(m.left, m.sales) + ' of revenue' : 'Needs POS or typed sales', tone:hasS ? (m.left >= 0 ? 'good' : 'bad') : '', color:PC.teal },
+    { label:'Revenue', value:hasS ? money(m.sales) : 'n/a', sub:hasS ? nf(c.rows.filter(r=>r.sales>0).length, 0) + ' trading days with sales' : 'No sales in this period', color:PC.ink },
+    { label:'Tracked cost of operations', value:money(m.totalCost), sub:hasS ? pctOf(m.totalCost, m.sales) + ' of revenue' : 'Collection, food waste, utilities', color:PC.bad },
+    { label:'Recovery income', value:money(rec), sub:'Recycling and used cooking oil', color:PC.good },
+    { label:'Kitchen waste', value:nf(w) + ' kg', sub:dw.sub, tone:dw.tone, color:PC.waste },
+    { label:'Diverted from landfill', value:div == null ? 'n/a' : nf(div, 0) + '%', sub:div != null && pdiv != null ? (div >= pdiv ? '+' : '-') + nf(Math.abs(div - pdiv), 0) + ' points vs prior' : 'Weight recycled / total weighed', tone:div != null && pdiv != null ? (div >= pdiv ? 'good' : 'bad') : '', color:PC.recyc }
+  ] };
+}
+function narrative(c){
+  const m = c.m, w = m.waste, rc = sumOf(c.rows,'recyc'), lk = ovLeakModel(m, c.rg), s = [];
+  s.push(`This report covers ${c.from} to ${c.to}: ${c.days} day${c.days === 1 ? '' : 's'}, of which ${c.rows.length} ${c.rows.length === 1 ? 'has' : 'have'} figures.`);
+  if (m.sales > 0) s.push(`Revenue was ${money(m.sales)}. Tracked cost of operations was ${money(m.totalCost)} (${pctOf(m.totalCost, m.sales)} of revenue) and recovery income was ${money(m.totalIncome)}, which leaves a net contribution of ${money(m.left)}.`);
+  else s.push(`Tracked cost of operations was ${money(m.totalCost)} and recovery income was ${money(m.totalIncome)}. Net contribution is not shown because no sales were available for the period.`);
+  if (w > 0 || rc > 0) s.push(`${nf(w)} kg of kitchen waste and ${nf(rc)} kg of recyclables were weighed${(w + rc) > 0 ? ', so ' + nf(rc / (w + rc) * 100, 0) + '% of the weighed material was diverted from landfill' : ''}.`);
+  if (lk.total > 0) s.push(`Controllable leakage of ${money(lk.total)} was identified across ${lk.items.length} item${lk.items.length === 1 ? '' : 's'}; see the findings section.`);
+  return s.join(' ');
+}
+function secBridge(c){
+  const m = c.m, steps = [], fm = v => money(v); if (m.sales > 0) steps.push({ name:'Revenue', v:m.sales, total:true });
+  m.costs.filter(x=>x.v > 0).sort((a,b)=>b.v-a.v).forEach(x=>steps.push({ name:x.k === 'food' ? 'Food waste' : x.name, v:-x.v }));
+  m.income.filter(x=>x.v > 0).forEach(x=>steps.push({ name:x.name === 'Used cooking oil' ? 'Used oil' : x.name, v:x.v }));
+  steps.push({ name:m.sales > 0 ? 'Net contribution' : 'Net position', v:m.left, total:true });
+  const costs = m.costs.filter(x=>x.v > 0).sort((a,b)=>b.v-a.v), nameOf = x => x.k === 'food' ? 'Food thrown away' : x.name;
+  const items = [{ title:'From revenue to net contribution', sub:'Each tracked cost takes away, each recovery adds back', spec:{ kind:'waterfall', w:507, h:176, steps, fmt:fm } }];
+  const out = [{ t:'charts', items }];
+  out.push({ t:'charts', items:[
+    { title:'Where the money goes', sub:'Tracked cost by category', accent:PC.bad, spec:{ kind:'hbar', w:240, h:150, labels:costs.map(nameOf), vals:costs.map(x=>x.v), colors:costs.map(x=>({ collect:PC.waste, food:PC.waste, elec:PC.elec, gas:PC.gas, water:PC.water })[x.k] || PC.teal), fmt:fm } },
+    { title:'Cost against recovery', sub:'Money out versus money back', spec:{ kind:'hbar', w:240, h:150, labels:['Tracked cost','Recycling','Used cooking oil'], vals:[m.totalCost, m.income[0].v, m.income[1].v], colors:[PC.bad, PC.good, PC.oil], fmt:fm } }
+  ] });
+  const pmOf = k => (c.pm.costs.find(x=>x.k === k) || {}).v || 0, rows = [];
+  m.costs.forEach(x=>{ const p = pmOf(x.k), d = p > 0 ? (x.v - p) / p * 100 : null; rows.push([nameOf(x), money(x.v), m.sales > 0 ? pctOf(x.v, m.sales) : '—', money(p), d == null ? '—' : (d >= 0 ? '+' : '-') + nf(Math.abs(d), 0) + '%']); });
+  rows.push(['Total tracked cost', money(m.totalCost), m.sales > 0 ? pctOf(m.totalCost, m.sales) : '—', money(c.pm.totalCost), c.pm.totalCost > 0 ? ((m.totalCost - c.pm.totalCost) / c.pm.totalCost >= 0 ? '+' : '-') + nf(Math.abs((m.totalCost - c.pm.totalCost) / c.pm.totalCost * 100), 0) + '%' : '—']);
+  out.push({ t:'table', title:'Cost and recovery detail', head:['Category','This period','% of revenue','Prior period','Change'], rows:m.costs.length ? rows : [], totals:true });
+  const inc = m.income.map(x=>[x.name, money(x.v), m.sales > 0 ? pctOf(x.v, m.sales) : '—', money((c.pm.income.find(y=>y.k === x.k) || {}).v || 0), x.note]);
+  out.push({ t:'table', head:['Recovery income','This period','% of revenue','Prior period','Detail'], rows:inc, align:['l','r','r','r','l'] });
+  return out;
+}
+function bucketBars(c, series, labelFn){
+  const { mode, list } = bucketize(c.rows, c.from, c.to);
+  return { labels:list.map(b=>bucketLabel(b, mode)), series:series.map(s=>({ name:s.name, color:s.color, vals:list.map(b=>sumOf(b.rows, s.key)) })), per:mode };
+}
+function weekdayAvg(rows, key){
+  const tot = [0,0,0,0,0,0,0], n = [0,0,0,0,0,0,0]; rows.forEach(r=>{ const i = (parseISO(r.date).getDay() + 6) % 7; if (r[key] > 0){ tot[i] += r[key]; n[i]++; } });
+  return tot.map((v,i)=> n[i] ? v / n[i] : 0);
+}
+function secWaste(c){
+  const rows = c.rows, w = sumOf(rows,'waste'), out = [];
+  const tb = bucketBars(c, [{ name:'Kitchen waste', key:'waste', color:PC.waste }, { name:'Recycled', key:'recyc', color:PC.recyc }]);
+  const parts = [{ name:'Kitchen waste', v:w, color:PC.waste }, ...MATS.map(m=>({ name:m[1], v:sumOf(rows,m[0]), color:MATC[m[0]] })), { name:'Other recycling', v:sumOf(rows,'mixed'), color:'#7BC47F' }, { name:'Used oil', v:sumOf(rows,'oil'), color:PC.oil }];
+  const total = parts.reduce((s,p)=>s+p.v,0);
+  out.push({ t:'charts', items:[
+    { title:'Waste and recycling over time', sub:'Kilograms per ' + tb.per, accent:PC.waste, spec:{ kind:'bars', w:240, h:165, labels:tb.labels, series:tb.series, unit:'kg' } },
+    { title:'Everything that left the kitchen', sub:'Share of weighed material, kg', spec:{ kind:'donut', w:240, h:165, parts, center:{ big:nf(total, 0), small:'kg weighed' }, unit:'kg' } }
+  ] });
+  const rb = bucketBars(c, [...MATS.map(m=>({ name:m[1], key:m[0], color:MATC[m[0]] })), { name:'Other', key:'mixed', color:'#7BC47F' }]);
+  const wd = weekdayAvg(rows, 'waste');
+  out.push({ t:'charts', items:[
+    { title:'Recycling by material', sub:'Kilograms per ' + rb.per, accent:PC.recyc, spec:{ kind:'bars', stacked:true, w:240, h:165, labels:rb.labels, series:rb.series, unit:'kg' } },
+    { title:'Average waste by weekday', sub:'Kilograms on days with waste weighed', accent:PC.waste, spec:{ kind:'bars', w:240, h:165, labels:WD, series:[{ name:'Kitchen waste', color:PC.waste, vals:wd }], unit:'kg' } }
+  ] });
+  const rc = sumOf(rows,'recyc'), mrows = MATS.map(m=>{ const kg = sumOf(rows, m[0]); return [m[1], kg, rc > 0 ? nf(kg / rc * 100, 0) + '%' : '—', (rates[m[0]] || 0) > 0 ? fmtMoneyDp(rates[m[0]], 2) : '—', money(kg * (rates[m[0]] || 0))]; });
+  const mk = sumOf(rows,'mixed'); if (mk > 0) mrows.push(['Other recycling', mk, rc > 0 ? nf(mk / rc * 100, 0) + '%' : '—', '—', money(0)]);
+  mrows.push(['Total recycled', rc, rc > 0 ? '100%' : '—', '', money(c.m.income[0].v)]);
+  out.push({ t:'table', title:'Recycling by material', head:['Material','Kilograms','Share','Price per kg','Value'], rows:mrows, totals:true });
+  const oil = sumOf(rows,'oil'); out.push({ t:'table', head:['Used cooking oil','Kilograms','Price per kg','Recovery value'], rows:[['Collected in this period', oil, (oilSettings.usedRatePerKg || 0) > 0 ? fmtMoneyDp(oilSettings.usedRatePerKg, 2) : '—', money(c.m.income[1].v)]] });
+  return out;
+}
+function utilTotals(rows){ return { gas:sumOf(rows,'gas'), kwh:sumOf(rows,'kwh'), water:sumOf(rows,'water') / 1000 }; }
+function secUtil(c, withHours){
+  const t = feedState.settings || {}, cur = utilTotals(c.rows), prv = utilTotals(c.prev), cov = sumOf(c.rows,'covers'), out = [];
+  const defs = [['Electricity','kwh','kWh',t.tariff_kwh,PC.elec,0],['Gas','gas','kg',t.tariff_gas_kg,PC.gas,1],['Water','water','kL',t.tariff_water_kl,PC.water,1]];
+  out.push({ t:'kpis', items:defs.map(d=>{ const dt = dTxt(cur[d[1]], prv[d[1]], true), cost = cur[d[1]] * (d[3] || 0); return { label:d[0], value:nf(cur[d[1]], d[5]) + ' ' + d[2], sub:(d[3] > 0 ? money(cost) + ' at your tariff. ' : 'No tariff set. ') + dt.sub, tone:dt.tone, color:d[4] }; }) });
+  const perDay = (key, div)=>({ labels:c.rows.map(r=>r.date.slice(8) + '/' + r.date.slice(5,7)), vals:c.rows.map(r=>r[key] / div) });
+  const pd = ['kwh','gas','water'].map(k=>perDay(k, k === 'water' ? 1000 : 1));
+  const mk = (d,i,u,col)=>({ title:d[0] + ' per day', sub:u, accent:col, spec:{ kind:'line', w:150, h:125, labels:pd[i].labels, series:[{ name:d[0], color:col, vals:pd[i].vals }] } });
+  out.push({ t:'charts', items:[mk(defs[0],0,'kWh',PC.elec), mk(defs[1],1,'kg',PC.gas), mk(defs[2],2,'kL',PC.water)] });
+  if (withHours){ const set = new Set(c.rows.map(r=>r.date)), hrs = (feedState.hourly || []).filter(h=>set.has(h.date));
+    const prof = (metric, color, name, unit)=>{ const sums = Array(24).fill(0), days = new Set(); hrs.filter(h=>h.metric === metric).forEach(h=>{ sums[h.hour] += h.value; days.add(h.date); }); const nd = Math.max(days.size, 1);
+      return { title:name + ' by hour', sub:'Average per hour, ' + unit, accent:color, spec:{ kind:'bars', w:150, h:125, labels:sums.map((v,i)=>String(i).padStart(2,'0')), series:[{ name:name, color, vals:sums.map(v=>v / nd) }] } }; };
+    if (hrs.length) out.push({ t:'charts', items:[prof('electricity', PC.elec, 'Electricity', 'kWh'), prof('gas', PC.gas, 'Gas', 'kg'), prof('water', PC.water, 'Water', 'L')] }); }
+  const trows = defs.map(d=>{ const cost = cur[d[1]] * (d[3] || 0), pc = prv[d[1]] * (d[3] || 0); return [d[0], nf(cur[d[1]], d[5]) + ' ' + d[2], d[3] > 0 ? fmtMoneyDp(d[3], 2) : '—', d[3] > 0 ? money(cost) : '—', d[3] > 0 && cov > 0 ? fmtMoneyDp(cost / cov, 2) : '—', d[3] > 0 ? money(pc) : '—']; });
+  const tc = defs.reduce((s,d)=>s + cur[d[1]] * (d[3] || 0), 0), tp = defs.reduce((s,d)=>s + prv[d[1]] * (d[3] || 0), 0);
+  trows.push(['Total utilities', '', '', money(tc), cov > 0 && tc > 0 ? fmtMoneyDp(tc / cov, 2) : '—', money(tp)]);
+  out.push({ t:'table', title:'Utility consumption and cost', head:['Utility','Used','Tariff','Cost','Cost per cover','Prior period cost'], rows:trows, totals:true });
+  const est = c.rows.filter(r=>r.est).length; if (est) out.push({ t:'note', text:`${est} day${est === 1 ? '' : 's'} in this period include an estimated reading because a meter did not report on time.` });
+  return out;
+}
+function secFindings(c){
+  const lk = ovLeakModel(c.m, c.rg), acts = actionsModel(c.m, c.pm, c.rg), out = [];
+  if (lk.items.length) out.push({ t:'table', title:'Controllable leakage', head:['Finding','Detail','Value'], rows:lk.items.map(i=>[i.n, i.b, i.v > 0 ? money(i.v) : nf(i.kg) + ' kg']), align:['l','l','r'] });
+  else out.push({ t:'p', text:'No controllable leakage was identified in this period. Findings appear once there is enough history from the scale, POS and meters.' });
+  if (acts.length){ out.push({ t:'h2', text:'Recommended actions' }); out.push({ t:'actions', items:acts.map(a=>({ tag:a.p, head:a.h, text:a.d })) }); }
+  return out;
+}
+function secDevices(c){
+  const devs = feedState.devices || [], est = c.rows.filter(r=>r.est).length, empty = c.rows.filter(r=>r.waste === 0 && r.recyc === 0 && r.oil === 0 && r.gas === 0 && r.kwh === 0 && r.water === 0).length, out = [];
+  out.push({ t:'p', text:`${c.rows.length} of ${c.days} days have figures${empty ? ', ' + empty + ' of them without any weighed or metered value' : ''}. ${est ? est + ' day' + (est === 1 ? ' includes' : 's include') + ' an estimated reading.' : 'No estimated days.'}` });
+  if (devs.length) out.push({ t:'table', title:'Connected devices', head:['Device','Goes to','Reports every','Status','Last seen'], rows:devs.map(d=>[d.name, targetLabel(d.target), d.intervalMin ? (d.intervalMin >= 60 ? (d.intervalMin / 60) + ' h' : d.intervalMin + ' min') : '—', HEALTH[d.health] || d.health, agoText(d.lastSeen)]), align:['l','l','l','l','l'] });
+  return out;
+}
+const DCOLS = ['Date','Waste kg','Recycled kg','Oil kg','Gas kg','kWh','Water L','Sales','Est.'];
+function dailyTable(c, title){
+  const rows = c.rows.map(r=>[r.date, r.waste, r.recyc, r.oil, r.gas, r.kwh, r.water, r.sales > 0 ? money(r.sales) : '—', r.est ? 'yes' : '']);
+  const tot = ['Total', sumOf(c.rows,'waste'), sumOf(c.rows,'recyc'), sumOf(c.rows,'oil'), sumOf(c.rows,'gas'), sumOf(c.rows,'kwh'), sumOf(c.rows,'water'), c.m.sales > 0 ? money(c.m.sales) : '—', ''];
+  return { t:'table', title, head:DCOLS, rows:rows.concat([tot]), totals:true, size:7, align:['l','r','r','r','r','r','r','r','r'] };
+}
+
+/* ---------- the reports ---------- */
+function buildMgmt(from, to){
+  const c = repCtx(from, to), d = repDoc('Management report', 'Operating position, waste, recycling, utilities and recommended actions for ' + ((setup && setup.name) || 'the site') + '.', c);
+  d.blocks.push({ t:'h2', text:'Executive summary', sub:'Headline results, compared with the ' + c.days + ' days before.' }, secKpisFinance(c), { t:'p', text:narrative(c) });
+  d.blocks.push({ t:'h2', text:'Financial position', sub:'What the tracked operation costs, what it gives back and what is left.' }, ...secBridge(c));
+  d.blocks.push({ t:'h2', text:'Waste and recycling', sub:'What was weighed, where it went and when it peaks.' }, ...secWaste(c));
+  d.blocks.push({ t:'h2', text:'Utilities', sub:'Electricity, gas and water from the smart meters, costed at your tariffs.' }, ...secUtil(c, false));
+  d.blocks.push({ t:'h2', text:'Findings', sub:'Where money is leaking and what to do about it.' }, ...secFindings(c));
+  d.blocks.push({ t:'h2', text:'Data quality and devices' }, ...secDevices(c));
+  d.blocks.push({ t:'pagebreak' }, { t:'h2', text:'Appendix: daily detail', sub:'Every day in the period, as captured.' }, dailyTable(c));
+  return d;
+}
+function buildWaste(from, to){
+  const c = repCtx(from, to), rows = c.rows, w = sumOf(rows,'waste'), rc = sumOf(rows,'recyc'), oil = sumOf(rows,'oil'), cov = sumOf(rows,'covers'), pw = sumOf(c.prev,'waste'), prc = sumOf(c.prev,'recyc'), div = (w + rc) > 0 ? rc / (w + rc) * 100 : null;
+  const d = repDoc('Waste, recycling and used oil', 'Everything weighed in the kitchen, how much was recycled and what it was worth.', c), dw = dTxt(w, pw, true), dr = dTxt(rc, prc, false);
+  d.blocks.push({ t:'h2', text:'Summary' }, { t:'kpis', items:[
+    { label:'Kitchen waste', value:nf(w) + ' kg', sub:dw.sub, tone:dw.tone, color:PC.waste }, { label:'Recycled', value:nf(rc) + ' kg', sub:dr.sub, tone:dr.tone, color:PC.recyc },
+    { label:'Diverted from landfill', value:div == null ? 'n/a' : nf(div, 0) + '%', sub:'Weight recycled / total weighed', color:PC.recyc }, { label:'Used cooking oil', value:nf(oil) + ' kg', sub:money(c.m.income[1].v) + ' recovery value', color:PC.oil },
+    { label:'Food thrown away', value:(+rates.foodCostPerKg > 0) ? money(c.m.costs.find(x=>x.k === 'food').v) : 'n/a', sub:(+rates.foodCostPerKg > 0) ? 'At ' + fmtMoneyDp(rates.foodCostPerKg, 2) + ' per kg' : 'Set food cost per kg', color:PC.bad },
+    { label:'Waste per cover', value:cov > 0 ? nf(w / cov * 1000, 0) + ' g' : 'n/a', sub:cov > 0 ? nf(cov, 0) + ' covers from the POS' : 'Needs POS covers', color:PC.teal } ] });
+  d.blocks.push({ t:'h2', text:'Trends and mix' }, ...secWaste(c));
+  const wn = wasteNorm(), fl = Object.values(wn.days).filter(x=>x.flag && x.date >= from && x.date <= to).sort((a,b)=>b.excessKg - a.excessKg);
+  if (fl.length) d.blocks.push({ t:'h2', text:'Days above the expected level', sub:'Days when food waste was well above the usual level for that weekday.' }, { t:'table', head:['Date','Weekday','Waste kg','Grams per ' + wn.unitName,'Usual grams per ' + wn.unitName,'Over usual','Extra kg'], rows:fl.slice(0, 15).map(x=>[x.date, WD[x.weekday], x.kg, Math.round(x.actual), Math.round(x.base), nf(x.pct, 0) + '%', x.excessKg])});
+  d.blocks.push({ t:'pagebreak' }, { t:'h2', text:'Appendix: daily detail' }, dailyTable(c));
+  return d;
+}
+function buildUtil(from, to){
+  const c = repCtx(from, to), d = repDoc('Utilities and cost', 'Electricity, gas and water use, with cost at your tariffs and the hourly pattern.', c);
+  d.blocks.push({ t:'h2', text:'Summary' }, ...secUtil(c, true));
+  const a = pfAfterModel(c.rg), t = feedState.settings || {};
+  if (a){ const cl = (a.e.closed * (t.tariff_kwh || 0)) + (a.w.closed / 1000 * (t.tariff_water_kl || 0)) + (a.g.closed * (t.tariff_gas_kg || 0));
+    d.blocks.push({ t:'h2', text:'Closed-hours consumption', sub:'Use outside trading hours is usually waste.' }, { t:'table', head:['Utility','Total used','Used when closed','Share when closed'], rows:[['Electricity (kWh)', a.e.total, a.e.closed, a.e.total > 0 ? nf(a.e.closed / a.e.total * 100, 0) + '%' : '—'], ['Water (L)', a.w.total, a.w.closed, a.w.total > 0 ? nf(a.w.closed / a.w.total * 100, 0) + '%' : '—'], ['Gas (kg)', a.g.total, a.g.closed, a.g.total > 0 ? nf(a.g.closed / a.g.total * 100, 0) + '%' : '—']] }, { t:'note', text:'Cost of closed-hours consumption in this period: ' + money(cl) + '.' }); }
+  d.blocks.push({ t:'h2', text:'Meters' }, ...secDevices(c));
+  d.blocks.push({ t:'pagebreak' }, { t:'h2', text:'Appendix: daily detail' }, dailyTable(c));
+  return d;
+}
+function buildDaily(from, to){
+  const c = repCtx(from, to), d = repDoc('Daily data', 'One row per day: waste, recycling, oil, gas, electricity, water and sales.', c);
+  d.blocks.push({ t:'h2', text:'Summary' }, secKpisFinance(c), dailyTable(c, 'All days in the period'));
+  return d;
+}
+const REPORT_PACK = [
+  { id:'mgmt', title:'Management report', sub:'The full pack for the owner or head office: financial position, waste, recycling, utilities, findings and actions.', inside:['Executive summary','Net contribution bridge','Waste and recycling','Utilities','Findings and actions','Daily detail'], build:buildMgmt,
+    csv:c=>({ head:['Category','This period','Prior period'], rows:[...c.m.costs.map((x,i)=>[x.name, Math.round(x.v*100)/100, Math.round(c.pm.costs[i].v*100)/100]), ...c.m.income.map((x,i)=>[x.name + ' (recovery)', Math.round(x.v*100)/100, Math.round(c.pm.income[i].v*100)/100]), ['Revenue', Math.round(c.m.sales*100)/100, Math.round(c.pm.sales*100)/100], ['Net contribution', Math.round(c.m.left*100)/100, Math.round(c.pm.left*100)/100]] }) },
+  { id:'waste', title:'Waste, recycling and used oil', sub:'Kilograms weighed, diversion from landfill, material mix, weekday pattern and recovery value.', inside:['Summary','Trends and mix','Material table','Days above normal','Daily detail'], build:buildWaste, csvId:'recyc' },
+  { id:'util', title:'Utilities and cost', sub:'Electricity, gas and water per day and per hour, cost at your tariffs and closed-hours use.', inside:['Summary','Per day and per hour','Cost per cover','Closed hours','Meter status'], build:buildUtil, csvId:'util' },
+  { id:'daily', title:'Daily data', sub:'Every day in the range with all measures and sales, ready to keep or hand to an accountant.', inside:['Summary','Daily table'], build:buildDaily, csvId:'pillars' }
+];
+function repRange(){ const f = $('repFrom').value, t = $('repTo').value; if (!f || !t || f > t){ toast('Choose a valid date range first.'); return null; } return { f, t }; }
+function repBase(id, r){ return ((setup && setup.name) || 'WasteSmart').replace(/[^a-z0-9]+/gi, '_') + '_' + id + '_' + r.f + '_to_' + r.t; }
+function repHasData(r){ if (!repRows(r.f, r.t).length){ toast('No data in this range.'); return false; } return true; }
+function reportOpen(id){ const rp = REPORT_PACK.find(x=>x.id === id), r = repRange(); if (!rp || !r || !repHasData(r)) return; WSR.show(()=>rp.build(r.f, r.t), { base:repBase(id, r), csv:()=>reportCsv(id) }); }
+function reportFile(id, fmt){ const rp = REPORT_PACK.find(x=>x.id === id), r = repRange(); if (!rp || !r || !repHasData(r)) return; toast('Building the ' + (fmt === 'pdf' ? 'PDF' : 'Word') + ' report…'); setTimeout(()=>{ try{ WSR.download(rp.build(r.f, r.t), fmt, repBase(id, r)); }catch(e){ console.error(e); toast('Could not build the report: ' + e.message); } }, 40); }
+function reportCsv(id){
+  const rp = REPORT_PACK.find(x=>x.id === id), r = repRange(); if (!rp || !r || !repHasData(r)) return;
+  if (rp.csv){ const x = rp.csv(repCtx(r.f, r.t)); triggerDownload(repBase(id, r) + '.csv', toCSV(x.head, x.rows)); return; }
+  const old = REPORTS.find(q=>q.id === rp.csvId), rows = reportRows(); triggerDownload(repBase(id, r) + '.csv', toCSV(old.head, rows.map(old.row)));
+}
+function boardReport(fmt){ const rg = biResolveRange(); if (!repRows(rg.from, rg.to).length){ toast('No data in this range.'); return; } toast('Building the ' + (fmt === 'pdf' ? 'PDF' : 'Word') + ' report…'); setTimeout(()=>{ try{ WSR.download(buildMgmt(rg.from, rg.to), fmt, ((setup && setup.name) || 'WasteSmart').replace(/[^a-z0-9]+/gi, '_') + '_mgmt_' + rg.from + '_to_' + rg.to); }catch(e){ console.error(e); toast('Could not build the report: ' + e.message); } }, 40); }
+function renderReports(){
+  if (!$('repFrom').value){ const now = new Date(); $('repFrom').value = isoDate(new Date(now.getFullYear(), now.getMonth(), 1)); $('repTo').value = isoDate(now); }
+  $('repFrom').onchange = $('repTo').onchange = renderReports;
+  const n = repRows($('repFrom').value, $('repTo').value).length;
+  $('reportCards').innerHTML = REPORT_PACK.map(rp=>`<div class="card rp-card"><h4>${esc(rp.title)}</h4><p class="section-sub" style="margin-bottom:8px">${esc(rp.sub)}</p>
+    <div class="rp-in">${rp.inside.map(s=>`<span>${esc(s)}</span>`).join('')}</div>
+    <div class="btnrow" style="margin-top:12px"><button class="btn primary small" onclick="reportOpen('${rp.id}')" ${n ? '' : 'disabled'}>Preview</button><button class="btn ghost small" onclick="reportFile('${rp.id}','pdf')" ${n ? '' : 'disabled'}>PDF</button><button class="btn ghost small" onclick="reportFile('${rp.id}','docx')" ${n ? '' : 'disabled'}>Word</button><button class="btn ghost small" onclick="reportCsv('${rp.id}')" ${n ? '' : 'disabled'}>CSV</button></div>${n ? '' : '<div class="costline">No days with figures in this range.</div>'}</div>`).join('');
 }
 
 /* ===================== START ===================== */
