@@ -501,7 +501,7 @@ html,body{max-width:100%;overflow-x:hidden}
     <p class="lock-sub" id="authSub">Log in with your business email and password.</p>
     <div class="auth-tabs" id="authTabs">
       <button type="button" class="auth-tab active" id="authTabLogin" onclick="showAuthPanel('login')">Log in</button>
-      <button type="button" class="auth-tab" id="authTabSignup" onclick="showAuthPanel('signup')">Request a demo</button>
+      <button type="button" class="auth-tab" id="authTabSignup" onclick="showAuthPanel('signup')">Request a free demo</button>
     </div>
     <div id="authLoginPanel">
       <div class="field"><label class="field-label" for="loginEmail">Business email</label><input type="email" id="loginEmail" placeholder="you@yourbusiness.co.za" autocomplete="username"></div>
@@ -522,7 +522,7 @@ html,body{max-width:100%;overflow-x:hidden}
         <div class="section-sub" id="suHistNote" style="margin-top:4px">Add an Excel or CSV of your past figures. It stays on this device and opens ready to load once your demo is approved. <a href="#" onclick="impTemplate();return false">Download the template</a></div></div>
       <div id="authSignupErr" class="lock-err"></div>
       <button class="btn primary block" id="authSignupBtn" onclick="submitSignup()">Request my demo</button>
-      <p class="auth-alt" id="suNote">How it works: 1. Request your demo. 2. Gilded Age reviews it and emails you a 6 digit verification code. 3. Enter the code to open a 14 day demo on your own numbers. Afterwards it is from R20 per day per site and everything you loaded is kept. <a href="#" onclick="suPlan('paid');return false">Ready to subscribe now?</a></p>
+      <p class="auth-alt" id="suNote">How it works: 1. Request your demo. 2. Gilded Age reviews it and emails you a 6 digit verification code. 3. Enter the code to open a free 14 day demo on your own numbers. Signing up and the demo cost nothing. To carry on afterwards, pricing starts from R20 per day per site and the final quote includes hardware and device integration; everything you loaded is kept. <a href="#" onclick="suPlan('paid');return false">Ready to subscribe now?</a></p>
       <p class="auth-alt" style="font-size:12.5px">We use your name and email only to set up and run your demo. <a href="privacy.html" target="_blank" rel="noopener">Privacy notice</a>.</p>
     </div>
     <div id="authCodePanel" hidden>
@@ -740,7 +740,7 @@ html,body{max-width:100%;overflow-x:hidden}
       <div class="form-grid"><div class="field"><label class="field-label" for="salesReportDate">Date</label><input type="date" id="salesReportDate"></div><div class="field"><label class="field-label" for="salesReportTotal">Total sales</label><input type="number" step="0.01" min="0" id="salesReportTotal" placeholder="0.00"></div></div>
       <button class="btn primary small" onclick="saveSalesReportTotal()">Save sales figure</button><div id="salesReportHistory" class="report-out" style="margin-top:12px"></div></div>
     <div class="editor-card" id="demoCard" hidden style="border-color:var(--accent,#5EEAD4)"><h4>Your demo</h4><p class="section-sub" id="demoText"></p></div>
-    <div class="editor-card" id="billingCard"><h4>Billing: from R20 per day per site</h4><p class="section-sub">Pay by direct EFT. Use your business name as the reference, then email proof of payment to <a href="mailto:accounts@gildedac.co.za">accounts@gildedac.co.za</a>.</p><div id="eftDetailsBlock" style="margin-bottom:12px"></div><button class="btn ghost small" onclick="copyEftDetails()">Copy banking details</button></div>
+    <div class="editor-card" id="billingCard"><h4>Billing: from R20 per day per site</h4><p class="section-sub">The demo is free. Your final quote includes hardware and device integration.</p><p class="section-sub">Pay by direct EFT. Use your business name as the reference, then email proof of payment to <a href="mailto:accounts@gildedac.co.za">accounts@gildedac.co.za</a>.</p><div id="eftDetailsBlock" style="margin-bottom:12px"></div><button class="btn ghost small" onclick="copyEftDetails()">Copy banking details</button></div>
     <div class="foot"><b id="footBizName">Waste Smart</b> · Powered by Waste Smart, Gilded Age Consulting · <span class="mono" id="buildVersionNote"></span></div>
   </div></section>
 
@@ -1184,9 +1184,9 @@ let suPlanSel = 'demo';
 function suPlan(p){
   suPlanSel = p; const d = p === 'demo';
   $('suHistBox').hidden = !d; $('authSignupBtn').textContent = d ? 'Request my demo' : 'Create account';
-  $('suNote').innerHTML = d ? 'How it works: 1. Request your demo. 2. Gilded Age reviews it and emails you a 6 digit verification code. 3. Enter the code to open a 14 day demo on your own numbers. Afterwards it is from R20 per day per site and everything you loaded is kept. <a href="#" onclick="suPlan(\'paid\');return false">Ready to subscribe now?</a>'
-    : 'After you sign up we email the payment details (from R20 per day per site). Once Gilded Age confirms your payment we email a verification code that activates your account. <a href="#" onclick="suPlan(\'demo\');return false">Rather try a demo first?</a>';
-  $('authSub').textContent = d ? 'Tell us about your business. Gilded Age will email you a verification code to open your demo.' : 'Your email and a password of at least 6 characters, including a number.';
+  $('suNote').innerHTML = d ? 'How it works: 1. Request your demo. 2. Gilded Age reviews it and emails you a 6 digit verification code. 3. Enter the code to open a free 14 day demo on your own numbers. Signing up and the demo cost nothing. To carry on afterwards, pricing starts from R20 per day per site and the final quote includes hardware and device integration; everything you loaded is kept. <a href="#" onclick="suPlan(\'paid\');return false">Ready to subscribe now?</a>'
+    : 'After you sign up we email the payment details (from R20 per day per site; the final quote includes hardware and device integration). Once Gilded Age confirms your payment we email a verification code that activates your account. <a href="#" onclick="suPlan(\'demo\');return false">Rather try a demo first?</a>';
+  $('authSub').textContent = d ? 'Tell us about your business. Signing up and the demo are free. Gilded Age will email you a verification code to open your demo.' : 'Your email and a password of at least 6 characters, including a number.';
 }
 function suHistPicked(){
   const f = $('suHist').files[0], n = $('suHistNote');
@@ -1201,7 +1201,7 @@ async function demoTake(email){ try{ const d = await demoDb(); const v = await n
 let demoInfo = null;
 async function demoAfterLogin(email){
   const c = $('demoCard');
-  if (demoInfo){ c.hidden = false; const d = demoInfo.daysLeft; $('demoText').textContent = 'Your demo ' + (d === null ? 'is open.' : d <= 0 ? 'ends today.' : 'has ' + d + ' day' + (d === 1 ? '' : 's') + ' left.') + ' Load your own history below to see the app on your numbers. Everything you load is kept when you subscribe (from R20 per day per site): visit www.gildedac.co.za.'; } else c.hidden = true;
+  if (demoInfo){ c.hidden = false; const d = demoInfo.daysLeft; $('demoText').textContent = 'Your demo ' + (d === null ? 'is open.' : d <= 0 ? 'ends today.' : 'has ' + d + ' day' + (d === 1 ? '' : 's') + ' left.') + ' Load your own history below to see the app on your numbers. Everything you load is kept when you subscribe (from R20 per day per site; the final quote includes hardware and device integration): visit www.gildedac.co.za.'; } else c.hidden = true;
   const f = await demoTake(email); if (!f && !(demoInfo && !entries.length)) return;
   showView('settings'); const card = $('impCard'); if (card) card.scrollIntoView({ block:'start' });
   if (f) impLoad(f);
@@ -1211,7 +1211,7 @@ function showAuthPanel(which){
   Object.keys(P).forEach(k => { $(P[k]).hidden = which !== k; });
   $('authTabLogin').classList.toggle('active', which === 'login'); $('authTabSignup').classList.toggle('active', which === 'signup');
   $('authTabs').hidden = which === 'set';
-  const h = { login:'Welcome <span class="hl">back</span>', signup:'Request your <span class="hl">demo</span>', code:'Enter your <span class="hl">code</span>', forgot:'Reset your <span class="hl">password</span>', set:'Choose your <span class="hl">password</span>' };
+  const h = { login:'Welcome <span class="hl">back</span>', signup:'Request your <span class="hl">free demo</span>', code:'Enter your <span class="hl">code</span>', forgot:'Reset your <span class="hl">password</span>', set:'Choose your <span class="hl">password</span>' };
   const s = { login:'Log in with your business email and password.', signup:'Your email and a password of at least 6 characters, including a number.', code:'Enter the 6 digit code Gilded Age emailed you.', forgot:'Enter your business email and we will send a single-use link that lasts one hour.', set:'Choose a password of at least 6 characters, including a number.' };
   $('authHeading').innerHTML = h[which]; $('authSub').textContent = s[which]; if (which === 'signup') suPlan(suPlanSel);
   ['authLoginErr','authSignupErr','authCodeErr','authForgotErr','authSetErr'].forEach(i => { $(i).textContent = ''; $(i).style.color = ''; });
