@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" data-look="x"><head>
-<script src="demo/shim.js"></script><meta charset="utf-8"><meta name="theme-color" content="#0C1118"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Waste Smart</title><meta name="robots" content="noindex">
+<script src="demo/shim.js"></script><meta charset="utf-8"><meta name="theme-color" content="#0F1A24"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%23F5F3EE%22/%3E%3Csvg x=%224%22 y=%223%22 width=%2224%22 height=%2226%22 viewBox=%2220 30 760 800%22%3E%3Crect x=%2283%22 y=%22170%22 width=%22108%22 height=%22173%22 fill=%22%23B28029%22/%3E%3Crect x=%22241%22 y=%2243%22 width=%22109%22 height=%22300%22 fill=%22%23DAA442%22/%3E%3Crect x=%22400%22 y=%22232%22 width=%22108%22 height=%22111%22 fill=%22%238C3A2C%22/%3E%3Crect x=%22558%22 y=%22106%22 width=%22108%22 height=%22237%22 fill=%22%23DAA442%22/%3E%3Ccircle cx=%22739%22 cy=%22299%22 r=%2239%22 fill=%22%237AC5E4%22/%3E%3Cg fill=%22%231A1712%22%3E%3Crect x=%22352%22 y=%22300%22 width=%2248%22 height=%2256%22/%3E%3Crect x=%2236%22 y=%22352%22 width=%22678%22 height=%2258%22/%3E%3Cpolygon points=%2278%2C410 672%2C410 598%2C820 152%2C820%22/%3E%3C/g%3E%3Cg stroke=%22%23F5F3EE%22 stroke-width=%2211%22 stroke-linecap=%22butt%22%3E%3Cline x1=%22252%22 y1=%22440%22 x2=%22282%22 y2=%22787%22/%3E%3Cline x1=%22333%22 y1=%22440%22 x2=%22345%22 y2=%22787%22/%3E%3Cline x1=%22410%22 y1=%22440%22 x2=%22405%22 y2=%22787%22/%3E%3Cline x1=%22497%22 y1=%22440%22 x2=%22465%22 y2=%22787%22/%3E%3C/g%3E%3C/svg%3E%3C/svg%3E"><title>Waste Smart</title><meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=EB+Garamond:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ============ Waste Smart v6.4 — one component set, three looks (data-look = a | b | c) ============ */
 :root{
@@ -317,23 +317,36 @@ textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
 .pf-hero{gap:18px 28px}
 
 /* ============ Look X "Executive": slate, teal, amber, coral. Corporate dark; the default ============ */
-:root[data-look="x"]{
-  --bg:#0C1118; --surface:#121A24; --surface2:#1A2430; --ink:#E8EDF4; --mute:#8D9CB0; --line:#243041;
-  --accent:#14B8A6; --accent-ink:#06201C; --accent-soft:#0F2E2C; --coral:#FF8A80;
-  --good:#5EEAD4; --warn:#F5A524; --bad:#FF8A80;
-  --radius:10px; --radius-s:8px; --shadow:none;
-  --font-display:'Manrope','Inter',system-ui,sans-serif; --font-body:'Manrope','Inter',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace;
-  --dw:800; --dcase:none; --dtrack:-.02em; --btn-case:none; --btn-track:0;
-  --c-waste:#F5A524; --c-plastic:#5EEAD4; --c-paper:#F5C86B; --c-glass:#7DB8FF; --c-cans:#B9A4FF; --c-oil:#C9A27C;
-  --c-gas:#FF8FB1; --c-elec:#7DB8FF; --c-water:#5EEAD4; --c-sales:#E8EDF4; --c-recyc:#5EEAD4;
-  --grid:rgba(232,237,244,.1); --tip-bg:#E8EDF4; --tip-ink:#0C1118; --heat0:#1A2430; --heat1:#14B8A6; --heat-ink:#06201C;
-  --nav-bg:#0C1118; --nav-ink:#E8EDF4; --hero-bg:#121A24; --hero-ink:#E8EDF4;
+:root[data-look="x"]{ /* Gilded Dark: deck navy, cream ink, gold */
+  --bg:#0F1A24; --surface:#16303F; --surface2:#1C3A4B; --ink:#F5F3EE; --mute:#A9C0C4; --line:#2A4A5B;
+  --accent:#E8C547; --accent-ink:#0F1A24; --accent-soft:#2A3A2E; --coral:#E8A598;
+  --good:#5EEAD4; --warn:#E8C547; --bad:#E8A598;
+  --radius:14px; --radius-s:10px; --shadow:none;
+  --font-display:'EB Garamond',Georgia,serif; --font-body:'DM Sans',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --dw:600; --dcase:none; --dtrack:0; --btn-case:none; --btn-track:.01em;
+  --c-waste:#E8C547; --c-plastic:#5EEAD4; --c-paper:#F5C86B; --c-glass:#7AC5E4; --c-cans:#B9A4FF; --c-oil:#C9A27C;
+  --c-gas:#E8A598; --c-elec:#7AC5E4; --c-water:#5EEAD4; --c-sales:#F5F3EE; --c-recyc:#5EEAD4;
+  --grid:rgba(245,243,238,.1); --tip-bg:#F5F3EE; --tip-ink:#0F1A24; --heat0:#1C3A4B; --heat1:#E8C547; --heat-ink:#0F1A24;
+  --nav-bg:#0F1A24; --nav-ink:#F5F3EE; --hero-bg:#16303F; --hero-ink:#F5F3EE; --bin:#F5F3EE; --slit:#0F1A24;
   color-scheme:dark;
 }
+:root[data-look="g"]{ /* Gilded Paper: deck cream, navy ink, teal and gold */
+  --bg:#F5F3EE; --surface:#FFFFFF; --surface2:#EDE8DA; --ink:#0F1A24; --mute:#4B606A; --line:#E0DACA;
+  --accent:#0B7F72; --accent-ink:#FFFFFF; --accent-soft:#DCEFEA; --coral:#B4533F;
+  --good:#0B7F72; --warn:#B8891A; --bad:#B4533F;
+  --radius:14px; --radius-s:10px; --shadow:0 1px 2px rgba(15,26,36,.05),0 10px 28px rgba(15,26,36,.06);
+  --font-display:'EB Garamond',Georgia,serif; --font-body:'DM Sans',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --dw:600; --dcase:none; --dtrack:0; --btn-case:none; --btn-track:.01em;
+  --c-waste:#C9A227; --c-plastic:#0B7F72; --c-paper:#B8891A; --c-glass:#2F7FA8; --c-cans:#6B4FB8; --c-oil:#8D6E63;
+  --c-gas:#B4533F; --c-elec:#2F7FA8; --c-water:#0B7F72; --c-sales:#0F1A24; --c-recyc:#0B7F72;
+  --grid:rgba(15,26,36,.12); --tip-bg:#0F1A24; --tip-ink:#F5F3EE; --heat0:#EDE8DA; --heat1:#0B7F72; --heat-ink:#FFFFFF;
+  --nav-bg:#0F1A24; --nav-ink:#F5F3EE; --hero-bg:linear-gradient(135deg,#0F1A24,#16303F); --hero-ink:#F5F3EE; --bin:#1A1712; --slit:#F5F3EE;
+  color-scheme:light;
+}
 :root[data-look="x"] .topnav{border-bottom:1px solid var(--line);padding-block:0;gap:20px;min-height:60px}
-:root[data-look="x"] .brand{font-size:18px;letter-spacing:-.01em}
-:root[data-look="x"] .brand .dot{width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--accent-ink)}
-:root[data-look="x"] .brand .dot::after{content:"W"}
+:root[data-look="x"] .brand,:root[data-look="g"] .brand{font-size:23px;letter-spacing:.005em}
+.brand .logo{width:30px;height:32px;flex:none;display:block}
+.lock-logo{width:54px;height:58px;display:block;margin-bottom:14px}
 :root[data-look="x"] .tabs{align-self:stretch;gap:2px}
 :root[data-look="x"] .tab{border-radius:0;background:transparent;font-weight:600;font-size:14px;padding:0 16px;min-height:44px;display:flex;align-items:center;border-bottom:3px solid transparent;opacity:.62}
 :root[data-look="x"] .tab[aria-current="page"]{background:transparent;color:var(--ink);border-bottom-color:var(--accent);opacity:1;font-weight:700}
@@ -432,7 +445,7 @@ textarea.code{font-family:var(--font-mono);font-size:12.5px;min-height:150px}
 html,body{max-width:100%;overflow-x:hidden}
 .bi-tablewrap,.report-out{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .savebar{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
-.lock-card{max-width:100%}
+.lock-card{max-width:480px}
 .ov-card svg{display:block;width:100%;height:auto;overflow:visible}.ov-card svg text{font-family:var(--font-body)}
 .bi-dev{flex-wrap:wrap;row-gap:2px}
 @media (max-width:640px){
@@ -459,10 +472,31 @@ html,body{max-width:100%;overflow-x:hidden}
 /* touch devices (iPad, tablets): no field below 16px, or iOS zooms the page on focus */
 @media (pointer:coarse){input,select,textarea,.bi-row input[type=date],.bi-row select{font-size:16px;min-height:44px}}
 
+/* ---- Gilded brand pass: uniform with pitch deck, index and admin ---- */
+:root[data-look="x"] h1,:root[data-look="x"] h2,:root[data-look="x"] h3,:root[data-look="g"] h1,:root[data-look="g"] h2,:root[data-look="g"] h3{font-family:'EB Garamond',Georgia,serif;font-weight:600;letter-spacing:0}
+:root[data-look="x"] .eyebrow{color:#C9A227;letter-spacing:.18em;font-weight:700}
+:root[data-look="g"] .eyebrow{color:#0B7F72;letter-spacing:.18em;font-weight:700}
+:root[data-look="x"] .btn,:root[data-look="g"] .btn{border-radius:999px}
+:root[data-look="g"] .topnav{border-bottom:1px solid #24404F}
+:root[data-look="g"] .topnav .tab{color:#F5F3EE}
+:root[data-look="g"] .topnav .tab[aria-current="page"]{border-bottom-color:#E8C547}
+:root[data-look="g"] .brand{color:#F5F3EE}
+:root[data-look="g"] .tab,:root[data-look="g"] .topnav{--ink:#F5F3EE}
+:root[data-look="g"] .topnav{--bin:#F5F3EE;--slit:#0F1A24}
+:root[data-look="g"] .tab{border-radius:0;background:transparent;border-bottom:3px solid transparent;opacity:.75;min-height:44px;display:flex;align-items:center}
+:root[data-look="g"] .tab[aria-current="page"]{background:transparent;color:#E8C547;border-bottom-color:#E8C547;opacity:1}
+
+.lock-card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:clamp(28px,5vw,48px);box-shadow:0 40px 90px -50px rgba(0,0,0,.6)}
+#lockScreen .lock-row{display:flex;gap:10px}#lockScreen .lock-row .pin-input{min-width:0;flex:1}
+:root[data-look="x"] .btn,:root[data-look="g"] .btn,:root[data-look="x"] .tab,:root[data-look="g"] .tab{font-family:var(--font-body)}
+
 </style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="wslogo" viewBox="20 30 760 800"><rect x="83" y="170" width="108" height="173" fill="#B28029"/><rect x="241" y="43" width="109" height="300" fill="#DAA442"/><rect x="400" y="232" width="108" height="111" fill="#8C3A2C"/><rect x="558" y="106" width="108" height="237" fill="#DAA442"/><circle cx="739" cy="299" r="39" fill="#7AC5E4"/><g fill="var(--bin,#1A1712)"><rect x="352" y="300" width="48" height="56"/><rect x="36" y="352" width="678" height="58"/><polygon points="78,410 672,410 598,820 152,820"/></g><g stroke="var(--slit,#F5F3EE)" stroke-width="11" stroke-linecap="butt"><line x1="252" y1="440" x2="282" y2="787"/><line x1="333" y1="440" x2="345" y2="787"/><line x1="410" y1="440" x2="405" y2="787"/><line x1="497" y1="440" x2="465" y2="787"/></g></symbol>
+</defs></svg>
 <!-- ================= AUTH ================= -->
 <div id="authScreen" hidden>
   <div class="lock-card">
+    <svg viewBox="20 30 760 800" aria-hidden="true" class="lock-logo"><use href="#wslogo"/></svg>
     <div class="eyebrow">Waste Smart</div>
     <h1 id="authHeading">Welcome <span class="hl">back</span></h1>
     <p class="lock-sub" id="authSub">Log in with your business email and password.</p>
@@ -515,6 +549,7 @@ html,body{max-width:100%;overflow-x:hidden}
 
 <div id="lockScreen" hidden>
   <div class="lock-card">
+    <svg viewBox="20 30 760 800" aria-hidden="true" class="lock-logo"><use href="#wslogo"/></svg>
     <div class="eyebrow" id="lockBrand">Waste Smart</div>
     <h1>Admin <span class="hl">access</span></h1>
     <p class="lock-sub">Enter your password to open the board.</p>
@@ -527,7 +562,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <!-- ================= APP (admin only) ================= -->
 <div id="app" hidden>
   <header class="topnav">
-    <div class="brand"><span class="dot"></span>Waste Smart</div>
+    <div class="brand"><svg viewBox="20 30 760 800" aria-hidden="true" class="logo"><use href="#wslogo"/></svg>Waste Smart</div>
     <nav class="tabs" id="tabs" aria-label="Sections">
       <button class="tab" data-view="profit">Overview</button>
       <button class="tab" data-view="today">Daily log</button>
@@ -721,7 +756,7 @@ html,body{max-width:100%;overflow-x:hidden}
    blocks: h2 | p | note | kpis | charts | table | actions | pagebreak
 */
 const WSR = (function(){
-  const COL = { ink:'#0C1118', mute:'#5B6675', line:'#D9DEE5', panel:'#F4F6F8', band:'#0C1118', accent:'#0E9F8E', good:'#2F9E44', bad:'#D9480F', warn:'#B7791F', white:'#FFFFFF', zebra:'#F7F9FB' };
+  const COL = { ink:'#0F1A24', mute:'#5B6675', line:'#D9DEE5', panel:'#F4F6F8', band:'#0F1A24', accent:'#0B7F72', good:'#2F9E44', bad:'#D9480F', warn:'#B7791F', white:'#FFFFFF', zebra:'#F7F9FB' };
   const FONT = 'Helvetica, Arial, "Liberation Sans", sans-serif';
   const ORG = 'Gilded Age Consulting', ORG_URL = 'www.gildedac.co.za';
   const PW = 595.28, PH = 841.89, MX = 36, CW = PW - MX*2;
@@ -961,21 +996,21 @@ const WSR = (function(){
 
   /* ---------------- on-screen preview ---------------- */
   const CSS = `.wsr-ov{position:fixed;inset:0;z-index:9999;background:#080C12;display:flex;flex-direction:column;font-family:${FONT}}
-  .wsr-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px max(14px,env(safe-area-inset-left,0px));background:#0C1118;border-bottom:1px solid #243041;color:#E8EDF4}
+  .wsr-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px max(14px,env(safe-area-inset-left,0px));background:#0F1A24;border-bottom:1px solid #243041;color:#E8EDF4}
   .wsr-bar b{font-size:14px;margin-right:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .wsr-bar button{font:600 13px ${FONT};border:1px solid #2E3B4E;background:#16202D;color:#E8EDF4;border-radius:8px;padding:8px 14px;cursor:pointer}
-  .wsr-bar button.pri{background:#14B8A6;border-color:#14B8A6;color:#06201C}.wsr-bar button:disabled{opacity:.55;cursor:wait}
+  .wsr-bar button.pri{background:#E8C547;border-color:#E8C547;color:#0F1A24}.wsr-bar button:disabled{opacity:.55;cursor:wait}
   .wsr-scroll{flex:1;overflow:auto;padding:18px max(10px,env(safe-area-inset-left,0px)) 40px}
-  .wsr-paper{max-width:860px;margin:0 auto;background:#fff;color:#0C1118;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.4);overflow:hidden;font-size:13px;line-height:1.5}
-  .wsr-cover{background:#0C1118;color:#fff;padding:26px 28px 22px;border-bottom:4px solid #0E9F8E;display:flex;gap:20px;flex-wrap:wrap;justify-content:space-between}
+  .wsr-paper{max-width:860px;margin:0 auto;background:#fff;color:#0F1A24;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.4);overflow:hidden;font-size:13px;line-height:1.5}
+  .wsr-cover{background:#0F1A24;color:#fff;padding:26px 28px 22px;border-bottom:4px solid #E8C547;display:flex;gap:20px;flex-wrap:wrap;justify-content:space-between}
   .wsr-cover small{display:block;color:#5EEAD4;font-weight:700;letter-spacing:.08em;font-size:11px}.wsr-cover h1{margin:6px 0 4px;font-size:26px;line-height:1.15}.wsr-cover p{margin:0;color:#B6C2CF}
   .wsr-meta{text-align:right;font-size:12px}.wsr-meta span{display:block;color:#7C8A99;font-size:10px;font-weight:700;letter-spacing:.08em;margin-top:8px}.wsr-meta b{font-size:13px}
-  .wsr-body{padding:6px 28px 26px}.wsr-body h2{font-size:17px;margin:24px 0 10px;padding:0 0 6px 11px;border-bottom:1px solid #D9DEE5;position:relative}.wsr-body h2:before{content:"";position:absolute;left:0;top:3px;width:4px;height:18px;background:#0E9F8E}
+  .wsr-body{padding:6px 28px 26px}.wsr-body h2{font-size:17px;margin:24px 0 10px;padding:0 0 6px 11px;border-bottom:1px solid #D9DEE5;position:relative}.wsr-body h2:before{content:"";position:absolute;left:0;top:3px;width:4px;height:18px;background:#0B7F72}
   .wsr-sub{color:#5B6675;font-size:12px;margin:-4px 0 10px}.wsr-body p{margin:6px 0}.wsr-note{color:#5B6675;font-size:11.5px}
-  .wsr-kpis{display:grid;grid-template-columns:repeat(var(--per,3),minmax(0,1fr));gap:10px;margin:10px 0}@media(max-width:640px){.wsr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}.wsr-k{background:#F4F6F8;border-top:3px solid #0E9F8E;padding:10px 12px;min-width:0}
+  .wsr-kpis{display:grid;grid-template-columns:repeat(var(--per,3),minmax(0,1fr));gap:10px;margin:10px 0}@media(max-width:640px){.wsr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}.wsr-k{background:#F4F6F8;border-top:3px solid #0B7F72;padding:10px 12px;min-width:0}
   .wsr-k i{display:block;font-style:normal;font-size:10px;font-weight:700;letter-spacing:.07em;color:#5B6675;text-transform:uppercase}.wsr-k b{display:block;font-size:22px;margin:3px 0 1px;overflow-wrap:anywhere}.wsr-k em{font-style:normal;font-size:11.5px;color:#5B6675}.wsr-k em.good{color:#2F9E44}.wsr-k em.bad{color:#D9480F}
-  .wsr-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:10px 0}.wsr-c{border:1px solid #D9DEE5;border-top:3px solid #0E9F8E;padding:10px 12px;min-width:0}.wsr-c h3{margin:0;font-size:13px}.wsr-c small{display:block;color:#5B6675;font-size:11px;margin-bottom:6px}.wsr-c img{display:block;width:100%;height:auto}
-  .wsr-tw{overflow-x:auto;margin:8px 0}.wsr-body table{border-collapse:collapse;width:100%;font-size:12px}.wsr-body th{background:#0C1118;color:#fff;text-align:left;padding:6px 9px;white-space:nowrap}.wsr-body td{padding:5px 9px;border-bottom:1px solid #EDF0F3;white-space:nowrap}.wsr-body tr:nth-child(even) td{background:#F7F9FB}.wsr-body .r{text-align:right}.wsr-body tr.tot td{background:#E3F4F1;font-weight:700}
+  .wsr-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:10px 0}.wsr-c{border:1px solid #D9DEE5;border-top:3px solid #0B7F72;padding:10px 12px;min-width:0}.wsr-c h3{margin:0;font-size:13px}.wsr-c small{display:block;color:#5B6675;font-size:11px;margin-bottom:6px}.wsr-c img{display:block;width:100%;height:auto}
+  .wsr-tw{overflow-x:auto;margin:8px 0}.wsr-body table{border-collapse:collapse;width:100%;font-size:12px}.wsr-body th{background:#0F1A24;color:#fff;text-align:left;padding:6px 9px;white-space:nowrap}.wsr-body td{padding:5px 9px;border-bottom:1px solid #EDF0F3;white-space:nowrap}.wsr-body tr:nth-child(even) td{background:#F7F9FB}.wsr-body .r{text-align:right}.wsr-body tr.tot td{background:#E3F4F1;font-weight:700}
   .wsr-act{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #EDF0F3}.wsr-act span{flex:none;width:62px;text-align:center;color:#fff;font-size:10px;font-weight:700;padding:3px 0;height:max-content}.wsr-act b{display:block}.wsr-act small{color:#5B6675;font-size:12px}
   .wsr-foot{padding:12px 28px;border-top:1px solid #D9DEE5;color:#5B6675;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}`;
   const H = s => X(s);
@@ -1016,9 +1051,9 @@ const WSR = (function(){
 // One admin login. Scales, meters and the POS feed in on their own (see ingest.php); anything can be typed by hand
 // as a backup, and a typed figure always wins for that day.
 const API_ENDPOINT = 'https://gildedac.co.za/app/api.php'; // set to match your live deployment
-const BUILD_VERSION = 'v6.10.0';
+const BUILD_VERSION = 'v6.10.1';
 const BUILD_DATE = '2026-10-26';
-const AUTH_TOKEN_KEY = 'ws_auth_token', AUTH_SITE_KEY = 'ws_auth_site', LOOK_KEY = 'ws_look_v2';
+const AUTH_TOKEN_KEY = 'ws_auth_token', AUTH_SITE_KEY = 'ws_auth_site', LOOK_KEY = 'ws_look_v3';
 
 function getAuthToken(){ try{ return localStorage.getItem(AUTH_TOKEN_KEY); }catch(e){ return null; } }
 function getAuthSite(){ try{ const r = localStorage.getItem(AUTH_SITE_KEY); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
@@ -1065,8 +1100,7 @@ function parseISO(s){ const [y,m,d] = s.split('-').map(Number); return new Date(
 function nf(n, dp){ return (Number(n)||0).toLocaleString('en-ZA', { maximumFractionDigits: dp==null?1:dp, minimumFractionDigits: 0 }); }
 
 /* ---------- looks (three skins over one component set) ---------- */
-const LOOKS = { x:['Executive','Slate and teal. Corporate dark with cost, earnings and leakage up front.'], b:['Fresh','Bright and friendly. Soft cards, deep green, big rounded numbers.'], a:['Control Room','Graphite and electric lime. Condensed, loud, built for a back-office screen.'], c:['Stainless','Steel grey, black ink and safety orange. Hard edges, label-tape feel.'],
-  d:['Boardroom','Navy sidebar, crisp white cards, electric blue. Sharp and corporate.'], e:['Midnight','Deep indigo dark mode with a violet glow. Modern and punchy.'], f:['Terracotta','Warm paper, espresso nav, editorial serif. Crafted, kitchen-professional.'] };
+const LOOKS = { x:['Gilded Dark','Deck navy, cream type and gold. The Waste Smart and Gilded Age house look.'], g:['Gilded Paper','Warm cream with navy type, teal and gold. The same brand, in daylight.'] };
 function applyLook(l){ if (!LOOKS[l]) l = 'x'; document.documentElement.setAttribute('data-look', l); try{ localStorage.setItem(LOOK_KEY, l); }catch(e){} }
 (function(){ let l = 'x'; try{ l = new URLSearchParams(location.search).get('look') || localStorage.getItem(LOOK_KEY) || 'x'; }catch(e){} applyLook(l); })();
 function renderLookPicker(){

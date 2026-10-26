@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" data-look="x"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0C1118"><meta name="robots" content="noindex"><script>/* ===================== WSR: report engine =====================
+<meta name="theme-color" content="#0F1A24"><meta name="robots" content="noindex"><script>/* ===================== WSR: report engine =====================
    One report model -> on-screen preview, PDF and Word (.docx). No libraries, no network.
    Charts are drawn on a canvas and embedded as images; text, tables and tiles stay real text.
    doc = { title, subtitle, client, period, generated, blocks:[...] }
    blocks: h2 | p | note | kpis | charts | table | actions | pagebreak
 */
 const WSR = (function(){
-  const COL = { ink:'#0C1118', mute:'#5B6675', line:'#D9DEE5', panel:'#F4F6F8', band:'#0C1118', accent:'#0E9F8E', good:'#2F9E44', bad:'#D9480F', warn:'#B7791F', white:'#FFFFFF', zebra:'#F7F9FB' };
+  const COL = { ink:'#0F1A24', mute:'#5B6675', line:'#D9DEE5', panel:'#F4F6F8', band:'#0F1A24', accent:'#0B7F72', good:'#2F9E44', bad:'#D9480F', warn:'#B7791F', white:'#FFFFFF', zebra:'#F7F9FB' };
   const FONT = 'Helvetica, Arial, "Liberation Sans", sans-serif';
   const ORG = 'Gilded Age Consulting', ORG_URL = 'www.gildedac.co.za';
   const PW = 595.28, PH = 841.89, MX = 36, CW = PW - MX*2;
@@ -248,21 +248,21 @@ const WSR = (function(){
 
   /* ---------------- on-screen preview ---------------- */
   const CSS = `.wsr-ov{position:fixed;inset:0;z-index:9999;background:#080C12;display:flex;flex-direction:column;font-family:${FONT}}
-  .wsr-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px max(14px,env(safe-area-inset-left,0px));background:#0C1118;border-bottom:1px solid #243041;color:#E8EDF4}
+  .wsr-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px max(14px,env(safe-area-inset-left,0px));background:#0F1A24;border-bottom:1px solid #243041;color:#E8EDF4}
   .wsr-bar b{font-size:14px;margin-right:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .wsr-bar button{font:600 13px ${FONT};border:1px solid #2E3B4E;background:#16202D;color:#E8EDF4;border-radius:8px;padding:8px 14px;cursor:pointer}
-  .wsr-bar button.pri{background:#14B8A6;border-color:#14B8A6;color:#06201C}.wsr-bar button:disabled{opacity:.55;cursor:wait}
+  .wsr-bar button.pri{background:#E8C547;border-color:#E8C547;color:#0F1A24}.wsr-bar button:disabled{opacity:.55;cursor:wait}
   .wsr-scroll{flex:1;overflow:auto;padding:18px max(10px,env(safe-area-inset-left,0px)) 40px}
-  .wsr-paper{max-width:860px;margin:0 auto;background:#fff;color:#0C1118;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.4);overflow:hidden;font-size:13px;line-height:1.5}
-  .wsr-cover{background:#0C1118;color:#fff;padding:26px 28px 22px;border-bottom:4px solid #0E9F8E;display:flex;gap:20px;flex-wrap:wrap;justify-content:space-between}
+  .wsr-paper{max-width:860px;margin:0 auto;background:#fff;color:#0F1A24;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.4);overflow:hidden;font-size:13px;line-height:1.5}
+  .wsr-cover{background:#0F1A24;color:#fff;padding:26px 28px 22px;border-bottom:4px solid #E8C547;display:flex;gap:20px;flex-wrap:wrap;justify-content:space-between}
   .wsr-cover small{display:block;color:#5EEAD4;font-weight:700;letter-spacing:.08em;font-size:11px}.wsr-cover h1{margin:6px 0 4px;font-size:26px;line-height:1.15}.wsr-cover p{margin:0;color:#B6C2CF}
   .wsr-meta{text-align:right;font-size:12px}.wsr-meta span{display:block;color:#7C8A99;font-size:10px;font-weight:700;letter-spacing:.08em;margin-top:8px}.wsr-meta b{font-size:13px}
-  .wsr-body{padding:6px 28px 26px}.wsr-body h2{font-size:17px;margin:24px 0 10px;padding:0 0 6px 11px;border-bottom:1px solid #D9DEE5;position:relative}.wsr-body h2:before{content:"";position:absolute;left:0;top:3px;width:4px;height:18px;background:#0E9F8E}
+  .wsr-body{padding:6px 28px 26px}.wsr-body h2{font-size:17px;margin:24px 0 10px;padding:0 0 6px 11px;border-bottom:1px solid #D9DEE5;position:relative}.wsr-body h2:before{content:"";position:absolute;left:0;top:3px;width:4px;height:18px;background:#0B7F72}
   .wsr-sub{color:#5B6675;font-size:12px;margin:-4px 0 10px}.wsr-body p{margin:6px 0}.wsr-note{color:#5B6675;font-size:11.5px}
-  .wsr-kpis{display:grid;grid-template-columns:repeat(var(--per,3),minmax(0,1fr));gap:10px;margin:10px 0}@media(max-width:640px){.wsr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}.wsr-k{background:#F4F6F8;border-top:3px solid #0E9F8E;padding:10px 12px;min-width:0}
+  .wsr-kpis{display:grid;grid-template-columns:repeat(var(--per,3),minmax(0,1fr));gap:10px;margin:10px 0}@media(max-width:640px){.wsr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}.wsr-k{background:#F4F6F8;border-top:3px solid #0B7F72;padding:10px 12px;min-width:0}
   .wsr-k i{display:block;font-style:normal;font-size:10px;font-weight:700;letter-spacing:.07em;color:#5B6675;text-transform:uppercase}.wsr-k b{display:block;font-size:22px;margin:3px 0 1px;overflow-wrap:anywhere}.wsr-k em{font-style:normal;font-size:11.5px;color:#5B6675}.wsr-k em.good{color:#2F9E44}.wsr-k em.bad{color:#D9480F}
-  .wsr-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:10px 0}.wsr-c{border:1px solid #D9DEE5;border-top:3px solid #0E9F8E;padding:10px 12px;min-width:0}.wsr-c h3{margin:0;font-size:13px}.wsr-c small{display:block;color:#5B6675;font-size:11px;margin-bottom:6px}.wsr-c img{display:block;width:100%;height:auto}
-  .wsr-tw{overflow-x:auto;margin:8px 0}.wsr-body table{border-collapse:collapse;width:100%;font-size:12px}.wsr-body th{background:#0C1118;color:#fff;text-align:left;padding:6px 9px;white-space:nowrap}.wsr-body td{padding:5px 9px;border-bottom:1px solid #EDF0F3;white-space:nowrap}.wsr-body tr:nth-child(even) td{background:#F7F9FB}.wsr-body .r{text-align:right}.wsr-body tr.tot td{background:#E3F4F1;font-weight:700}
+  .wsr-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:10px 0}.wsr-c{border:1px solid #D9DEE5;border-top:3px solid #0B7F72;padding:10px 12px;min-width:0}.wsr-c h3{margin:0;font-size:13px}.wsr-c small{display:block;color:#5B6675;font-size:11px;margin-bottom:6px}.wsr-c img{display:block;width:100%;height:auto}
+  .wsr-tw{overflow-x:auto;margin:8px 0}.wsr-body table{border-collapse:collapse;width:100%;font-size:12px}.wsr-body th{background:#0F1A24;color:#fff;text-align:left;padding:6px 9px;white-space:nowrap}.wsr-body td{padding:5px 9px;border-bottom:1px solid #EDF0F3;white-space:nowrap}.wsr-body tr:nth-child(even) td{background:#F7F9FB}.wsr-body .r{text-align:right}.wsr-body tr.tot td{background:#E3F4F1;font-weight:700}
   .wsr-act{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #EDF0F3}.wsr-act span{flex:none;width:62px;text-align:center;color:#fff;font-size:10px;font-weight:700;padding:3px 0;height:max-content}.wsr-act b{display:block}.wsr-act small{color:#5B6675;font-size:12px}
   .wsr-foot{padding:12px 28px;border-top:1px solid #D9DEE5;color:#5B6675;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}`;
   const H = s => X(s);
@@ -299,22 +299,22 @@ const WSR = (function(){
   return { COL, fnum, drawChart, prepare, toPDF, toDOCX, preview, download, show, save, layout };
 })();
 </script>
-<title>Waste Smart Multi user / corporate</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%23F5F3EE%22/%3E%3Csvg x=%224%22 y=%223%22 width=%2224%22 height=%2226%22 viewBox=%2220 30 760 800%22%3E%3Crect x=%2283%22 y=%22170%22 width=%22108%22 height=%22173%22 fill=%22%23B28029%22/%3E%3Crect x=%22241%22 y=%2243%22 width=%22109%22 height=%22300%22 fill=%22%23DAA442%22/%3E%3Crect x=%22400%22 y=%22232%22 width=%22108%22 height=%22111%22 fill=%22%238C3A2C%22/%3E%3Crect x=%22558%22 y=%22106%22 width=%22108%22 height=%22237%22 fill=%22%23DAA442%22/%3E%3Ccircle cx=%22739%22 cy=%22299%22 r=%2239%22 fill=%22%237AC5E4%22/%3E%3Cg fill=%22%231A1712%22%3E%3Crect x=%22352%22 y=%22300%22 width=%2248%22 height=%2256%22/%3E%3Crect x=%2236%22 y=%22352%22 width=%22678%22 height=%2258%22/%3E%3Cpolygon points=%2278%2C410 672%2C410 598%2C820 152%2C820%22/%3E%3C/g%3E%3Cg stroke=%22%23F5F3EE%22 stroke-width=%2211%22 stroke-linecap=%22butt%22%3E%3Cline x1=%22252%22 y1=%22440%22 x2=%22282%22 y2=%22787%22/%3E%3Cline x1=%22333%22 y1=%22440%22 x2=%22345%22 y2=%22787%22/%3E%3Cline x1=%22410%22 y1=%22440%22 x2=%22405%22 y2=%22787%22/%3E%3Cline x1=%22497%22 y1=%22440%22 x2=%22465%22 y2=%22787%22/%3E%3C/g%3E%3C/svg%3E%3C/svg%3E"><title>Waste Smart Multi user / corporate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=EB+Garamond:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0C1118;--surface:#121A24;--surface2:#1A2430;--ink:#E8EDF4;--mute:#8D9CB0;--line:#243041;--accent:#14B8A6;--accent-ink:#06201C;--good:#5EEAD4;--warn:#F5A524;--bad:#FF8A80;color-scheme:dark}
+:root{--bg:#0F1A24;--surface:#16303F;--surface2:#1C3A4B;--ink:#F5F3EE;--mute:#A9C0C4;--line:#2A4A5B;--accent:#E8C547;--accent-ink:#0F1A24;--good:#5EEAD4;--warn:#E8C547;--bad:#E8A598;--bin:#F5F3EE;--slit:#0F1A24;color-scheme:dark}
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}html,body{max-width:100%;overflow-x:hidden}
-body{background:var(--bg);color:var(--ink);font:15px/1.5 'Manrope',system-ui,sans-serif;-webkit-tap-highlight-color:transparent;min-height:100vh}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 'DM Sans',system-ui,sans-serif;-webkit-tap-highlight-color:transparent;min-height:100vh}
 button,input,select,textarea{font:inherit;color:inherit}
-h1,h2,h3{letter-spacing:-.02em;line-height:1.1}
+h1,h2,h3{font-family:'EB Garamond',Georgia,serif;font-weight:600;letter-spacing:0;line-height:1.1}
 [hidden]{display:none!important}
 .wrap{max-width:1280px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
 .top{position:sticky;top:0;z-index:40;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
 .top .wrap{display:flex;align-items:center;gap:20px;min-height:60px;flex-wrap:wrap}
-.brand{font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px;white-space:nowrap}
-.brand i{width:26px;height:26px;border-radius:6px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:14px}
+.brand{font-family:'EB Garamond',Georgia,serif;font-weight:600;font-size:23px;display:flex;align-items:center;gap:11px;white-space:nowrap}
+.brand svg{width:32px;height:35px;flex:none}
 .tabs{display:flex;gap:2px;align-self:stretch;overflow-x:auto;scrollbar-width:none;flex:1}
 .tabs::-webkit-scrollbar{display:none}
 .tab{background:none;border:0;border-bottom:3px solid transparent;padding:0 16px;min-height:44px;font-weight:600;font-size:14px;color:var(--mute);white-space:nowrap;cursor:pointer}
@@ -405,13 +405,16 @@ label{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-tra
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.tiles>div{background:var(--surface2);border-radius:8px;padding:12px 14px}.tiles .l{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}.tiles .n{font-size:20px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}
 .c3{grid-template-columns:minmax(0,1.6fr) repeat(4,minmax(0,1fr))}
 .three{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}
-svg.ch{display:block;width:100%;height:auto;overflow:visible}svg.ch text{font-family:'Manrope',sans-serif;fill:var(--mute);font-size:11px}
+svg.ch{display:block;width:100%;height:auto;overflow:visible}svg.ch text{font-family:'DM Sans',sans-serif;fill:var(--mute);font-size:11px}
 @media (max-width:1100px){.three{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:760px){.scope{grid-template-columns:repeat(2,minmax(0,1fr))}.scope>div:nth-child(3),.scope>div:nth-child(4){grid-column:1/-1}.c3{grid-template-columns:minmax(0,1fr) auto auto}.c3 .hm{display:none}.fr{grid-template-columns:minmax(0,1fr) 96px}.fr .fd{display:none}.heat div{padding:8px 2px;min-height:64px}}
+.btn{border-radius:999px}.btn.pri:hover{filter:brightness(1.06)}
 </style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="wslogo" viewBox="20 30 760 800"><rect x="83" y="170" width="108" height="173" fill="#B28029"/><rect x="241" y="43" width="109" height="300" fill="#DAA442"/><rect x="400" y="232" width="108" height="111" fill="#8C3A2C"/><rect x="558" y="106" width="108" height="237" fill="#DAA442"/><circle cx="739" cy="299" r="39" fill="#7AC5E4"/><g fill="var(--bin,#1A1712)"><rect x="352" y="300" width="48" height="56"/><rect x="36" y="352" width="678" height="58"/><polygon points="78,410 672,410 598,820 152,820"/></g><g stroke="var(--slit,#F5F3EE)" stroke-width="11" stroke-linecap="butt"><line x1="252" y1="440" x2="282" y2="787"/><line x1="333" y1="440" x2="345" y2="787"/><line x1="410" y1="440" x2="405" y2="787"/><line x1="497" y1="440" x2="465" y2="787"/></g></symbol>
+</defs></svg>
 <div class="demo">DEMO · generated sample portfolio · changes reset on reload · <a href="app.html">Site app</a> · <a href="master.html">Gilded Age master admin</a></div>
 <header class="top"><div class="wrap">
-  <div class="brand"><i>W</i>Waste Smart <span style="font-weight:600;font-size:12px;opacity:.7;margin-left:6px">Multi user / corporate</span></div>
+  <div class="brand"><svg viewBox="20 30 760 800" aria-hidden="true"><use href="#wslogo"/></svg>Waste Smart <span style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#C9A227;margin-left:6px">Multi user / corporate</span></div>
   <nav class="tabs" id="tabs"><button class="tab" data-t="portfolio">Overview</button><button class="tab" data-t="daily">Daily log</button><button class="tab" data-t="analysis">Analysis</button><button class="tab" data-t="sustain">Sustainability</button><button class="tab" data-t="reports">Reporting</button><button class="tab" data-t="integr">Integrations</button><button class="tab" data-t="sites">Sites</button><button class="tab" data-t="structure">Structure</button><button class="tab" data-t="admin">Administration</button></nav>
   <div class="nr"><span class="grp" id="grpName"></span><select id="dsSel" aria-label="Demo portfolio size" style="width:auto;min-height:38px;padding:4px 10px;font-size:13px"><option value="s">3 sites</option><option value="m">48 sites</option><option value="e" selected>3,000 sites</option></select></div>
 </div></header>
@@ -866,6 +869,7 @@ async function gload(){
   if(r.status===401){try{sessionStorage.removeItem(GK)}catch(e){}return glogin('Please sign in again.')}
   if(!r.ok)return $('#main').innerHTML='<p class="sub">'+esc(r.j.error||'The group service is not reachable.')+'</p>';
   window.WS_GROUP_DATA=r.j;S.D=r.j;S.reg=S.area=S.site=null;S.fr=S.fa=S.ft=S.fs=S.sq='';S.page=0;compute();render();
+  const nb=r.j.noRatesSites||0;if(nb){const d=document.querySelector('.demo');if(d)d.insertAdjacentHTML('afterbegin',`<b style="margin-right:10px">${nb} of ${r.j.sites.length} sites have no tariffs or rates set, so their costs are understated (not estimated). Set them in each site's Administration page.</b>`)}
 }
 if(window.WS_GROUP_LIVE){
   const msg=()=>toast('Sites, structure and rates for your group are managed by Gilded Age Consulting (www.gildedac.co.za).');
