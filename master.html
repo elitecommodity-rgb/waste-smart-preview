@@ -522,6 +522,9 @@ function openModal(html){ $('modalBox').innerHTML = html; $('modal').classList.r
 function closeModal(){ $('modal').classList.add('hide'); }
 function ago(h){ if (h == null) return 'No data yet'; if (h < 1) return 'Just now'; if (h < 24) return Math.round(h) + ' h ago'; return Math.round(h / 24) + ' d ago'; }
 function statusPill(c){
+  if (c.plan === 'demo' && c.status === 'pending') return c.codeSent ? '<span class="pill p-blue">Demo approved, awaiting code</span>' : '<span class="pill p-warn">Demo request: review</span>';
+  if (c.plan === 'demo' && c.status === 'suspended') return '<span class="pill p-bad">Demo ended</span>';
+  if (c.plan === 'demo' && c.status === 'active') return '<span class="pill p-blue">Demo' + (c.demoDaysLeft != null ? ': ' + c.demoDaysLeft + ' d left' : '') + '</span>';
   if (c.status === 'pending') return c.codeSent ? '<span class="pill p-blue">Code sent, awaiting activation</span>' : '<span class="pill p-warn">Awaiting payment</span>';
   if (c.status === 'suspended') return '<span class="pill p-bad">Suspended</span>';
   if (!c.pinSet) return '<span class="pill p-blue">Awaiting first sign-in</span>';
@@ -583,8 +586,8 @@ async function viewOverview(){
 function sectionStats(list){ return { n:list.length, ok:list.filter(c => c.status !== 'suspended' && !attention(c) && c.pinSet).length, need:list.filter(attention).length, wait:list.filter(c => !c.pinSet && c.status === 'active').length, pend:list.filter(c => c.status === 'pending').length, dev:list.reduce((a, c) => a + c.devices.length, 0), live:list.reduce((a, c) => a + c.health.live, 0) }; }
 function pendingPanel(cs){
   const p = cs.filter(c => c.status === 'pending'); if (!p.length) return '';
-  return `<div class="card" style="margin-bottom:14px;border-color:var(--warn)"><h3>New sign-ups awaiting payment (${p.length})</h3><p class="sub">These clients created their own account. Once their proof of payment arrives, confirm it and they are emailed a verification code that activates the account.</p>
-  <div class="tw"><table><tbody>${p.map(c => `<tr><td><b>${esc(c.name)}</b><div class="sub">${esc(c.ownerEmail)} · signed up ${esc(c.created)}</div></td><td>${statusPill(c)}</td><td style="text-align:right;white-space:nowrap"><button class="btn small gold" onclick="authorise(${c.id})">${c.codeSent ? 'Resend code' : 'Payment received: send code'}</button> <button class="btn small ghost" onclick="go('client',${c.id})">Open</button></td></tr>`).join('')}</tbody></table></div></div>`;
+  return `<div class="card" style="margin-bottom:14px;border-color:var(--warn)"><h3>New requests awaiting you (${p.length})</h3><p class="sub">Demo requests: review the business, then approve to email the 6 digit code that opens a 14 day demo. Paid sign-ups: confirm payment to email the code that activates the account.</p>
+  <div class="tw"><table><tbody>${p.map(c => `<tr><td><b>${esc(c.name)}</b><div class="sub">${esc(c.ownerEmail)} · ${c.plan === 'demo' ? 'asked for a demo' : 'signed up'} ${esc(c.created)}</div></td><td>${statusPill(c)}</td><td style="text-align:right;white-space:nowrap"><button class="btn small gold" onclick="authorise(${c.id})">${c.codeSent ? 'Resend code' : (c.plan === 'demo' ? 'Approve demo: send code' : 'Payment received: send code')}</button> <button class="btn small ghost" onclick="go('client',${c.id})">Open</button></td></tr>`).join('')}</tbody></table></div></div>`;
 }
 function renderOverview(){
   const cs = state.clients, sg = cs.filter(c => c.kind !== 'corporate'), co = cs.filter(c => c.kind === 'corporate'), gs = new Set(co.map(c => c.group)).size, all = sectionStats(cs);
@@ -625,7 +628,7 @@ function renderSection(){
     <div class="kpi"><span>Awaiting first sign-in</span><b>${wait}</b><small>invite sent, PIN not set</small></div>
   </div>
   <div class="card">
-    <div class="bar">${[['all','All'],['pending','Awaiting payment'],['attention','Needs attention'],['invited','Awaiting sign-in'],['suspended','Suspended']].map(x => `<button class="chip ${f === x[0] ? 'on' : ''}" onclick="state.filter='${x[0]}';renderSection()">${x[1]}</button>`).join('')}
+    <div class="bar">${[['all','All'],['pending','Awaiting review / payment'],['attention','Needs attention'],['invited','Awaiting sign-in'],['suspended','Suspended']].map(x => `<button class="chip ${f === x[0] ? 'on' : ''}" onclick="state.filter='${x[0]}';renderSection()">${x[1]}</button>`).join('')}
       <input type="text" placeholder="Search…" value="${esc(state.q)}" oninput="state.q=this.value;renderSectionKeep()"></div>
     <div class="tw"><table><thead><tr><th>${kind === 'corporate' ? 'Site' : 'Client'}</th><th>Status</th><th>Devices</th><th>Last data</th><th>Admin sign-in</th></tr></thead><tbody>
     ${body || `<tr><td colspan="5" class="sub" style="padding:24px">${cs.length ? 'No sites match.' : (kind === 'corporate' ? 'No groups yet. Add the first site and give it a group name.' : 'No single user sites yet.')}</td></tr>`}
@@ -820,13 +823,15 @@ async function newBiToken(){ const r = await call('bi_token_create', { clientId:
 /* ---- access ---- */
 function tabAccess(){
   const c = state.client.client, pend = c.status === 'pending', sus = c.status === 'suspended';
-  const signin = pend
+  const demoBar = c.plan === 'demo' ? `<div class="note" style="margin-bottom:12px"><b>Demo account.</b> ${c.status === 'pending' ? 'It starts for 14 days when the client enters the verification code.' : (c.status === 'suspended' ? 'The demo has ended and the site is paused. Their data is kept.' : 'Ends ' + esc((c.trialEnds || '').slice(0, 10)) + (c.demoDaysLeft != null ? ' (' + c.demoDaysLeft + ' days left).' : '.'))}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">${c.status !== 'pending' ? '<button class="btn small ghost" onclick="demoExtend(' + c.id + ',7)">Extend 7 days</button>' : ''}<button class="btn small gold" onclick="demoConvert(${c.id})">Payment received: convert to paid</button></div></div>` : '';
+  const signin = demoBar + (pend
     ? `<p><span class="pill ${c.codeSent ? 'p-blue' : 'p-warn'}">${c.codeSent ? 'Verification code sent' : 'Awaiting payment'}</span></p><p class="sub">${c.codeSent ? 'The client has been emailed a 6-digit code (valid 7 days, single use). It activates the account when they enter it on the sign-in page.' : 'The client created this account themselves. When their proof of payment arrives, confirm it to email the verification code.'}</p>
-       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn gold" onclick="authorise(${c.id})">${c.codeSent ? 'Resend verification code' : 'Payment received: send code'}</button><button class="btn ghost" onclick="statusModal('active')">Activate without a code</button></div>`
+       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn gold" onclick="authorise(${c.id})">${c.codeSent ? 'Resend verification code' : (c.plan === 'demo' ? 'Approve demo: send code' : 'Payment received: send code')}</button><button class="btn ghost" onclick="statusModal('active')">Activate without a code</button></div>`
     : `<p class="sub">The client signs in with <b>${esc(c.ownerEmail)}</b> and the password they chose (at least 6 characters, with a number).</p>
        <p>${c.pinSet ? '<span class="pill p-good">Password set</span> ' + esc(c.pinSetAt || '') : '<span class="pill p-blue">Waiting for the client to choose a password</span>'}</p>
        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${c.pinSet ? '' : '<button class="btn gold" onclick="resendInvite()">Resend invite email</button>'}<button class="btn ghost" onclick="sendReset()">Send password reset email</button></div>
-       <p class="sub" style="margin-top:12px">Links work once and expire after ${c.pinSet ? '60 minutes' : '7 days'}. Setting a new password signs the client out everywhere.</p>`;
+       <p class="sub" style="margin-top:12px">Links work once and expire after ${c.pinSet ? '60 minutes' : '7 days'}. Setting a new password signs the client out everywhere.</p>`);
   const stat = pend
     ? '<p class="sub">Not active yet. The client cannot sign in and devices cannot send data until the account is activated.</p>'
     : sus ? `<p class="sub">This site is switched off. The client cannot sign in and devices cannot send data. Nothing is deleted, and everything returns the moment you switch it back on.</p><div style="margin-top:10px"><button class="btn gold" onclick="statusModal('active')">Switch site on</button></div>`
@@ -870,10 +875,12 @@ async function groupAdminModal(g){
 }
 async function saveGroupAdmin(g){ try { await call('group_admin_save', { group:g, name:$('gaN').value, email:$('gaE').value, password:$('gaP').value }); closeModal(); toast('Group login saved. Give them the email and password.'); } catch(e){ toast(e.message); } }
 function afterAuth(id){ if ($('tabBody')) viewClient(id); else go('overview'); }
+async function demoExtend(id, days){ try { await call('client_demo_extend', { id, days }); toast('Demo extended by ' + days + ' days'); viewClient(id); } catch(e){ toast(e.message); } }
+async function demoConvert(id){ try { await call('client_convert', { id }); toast('Converted to a paid account. Their data is kept.'); viewClient(id); } catch(e){ toast(e.message); } }
 async function authorise(id){
   try { const r = await call('client_authorise', { id });
     const c = (state.clients || []).find(x => x.id === id) || (state.client && state.client.client) || { ownerEmail:'the client' };
-    openModal(`<h2>${r.email && r.email.sent ? 'Verification code emailed' : 'Email not sent'}</h2>${r.email && r.email.sent ? `<p>The 6-digit code was sent to <b>${esc(c.ownerEmail)}</b>. They enter it on the sign-in page to activate the account.</p>` : `<div class="note">${esc((r.email && r.email.error) || 'Email delivery is not set up on the server yet.')} Give the client this code yourself:</div><div class="cred"><code style="font-size:22px;letter-spacing:4px">${esc(r.code || '')}</code><button class="btn small ghost" onclick="copy('${r.code || ''}')">Copy</button></div>`}
+    openModal(`<h2>${r.email && r.email.sent ? 'Verification code emailed' : 'Email not sent'}</h2>${r.email && r.email.sent ? `<p>The 6-digit code was sent to <b>${esc(c.ownerEmail)}</b>. They enter it on the sign-in page to ${c.plan === 'demo' ? 'open the demo' : 'activate the account'}.</p>` : `<div class="note">${esc((r.email && r.email.error) || 'Email delivery is not set up on the server yet.')} Give the client this code yourself:</div><div class="cred"><code style="font-size:22px;letter-spacing:4px">${esc(r.code || '')}</code><button class="btn small ghost" onclick="copy('${r.code || ''}')">Copy</button></div>`}
     <p class="sub">The code works once and expires in 7 days.</p><div style="text-align:right"><button class="btn" onclick="closeModal();afterAuth(${id})">Close</button></div>`);
   } catch(e){ toast(e.message); }
 }
@@ -1023,7 +1030,7 @@ function mockInit(){
     devices:[], audit:[], bi:{ 1:[{ label:'Power BI desktop' }] }, bk:{},
     admins:[{ name:'Gilded Age Owner', email:'admin@gildedac.co.za', role:'owner', lastLogin:'today' },{ name:'Support Desk', email:'support@gildedac.co.za', role:'admin', lastLogin:'3 days ago' }] };
   [[1,'Harbour Group','Western Cape','Cape Town CBD'],[6,'Harbour Group','Western Cape','V&A Waterfront'],[3,'Bluff Collective','KwaZulu-Natal','Durban South'],[2,'Bluff Collective','Northern Cape','Karoo']].forEach(g => { const c = M.clients.find(x => x.id === g[0]); c.group = g[1]; c.region = g[2]; c.area = g[3]; });
-  M.clients.push({ id:7, name:'Sunset Deli', type:'Café', ownerEmail:'hello@sunsetdeli.example', contact:'Naledi Khumalo', tz:'Africa/Johannesburg', currency:'R', pinSet:true, pinSetAt:'2026-10-21', status:'pending', notes:'', created:'2026-10-21', settings:{ tariff_kwh:2.4, tariff_gas_kg:38, tariff_water_kl:28 }, _specs:{ some:[] } });
+  M.clients.push({ id:7, plan:'demo', name:'Sunset Deli', type:'Café', ownerEmail:'hello@sunsetdeli.example', contact:'Naledi Khumalo', tz:'Africa/Johannesburg', currency:'R', pinSet:true, pinSetAt:'2026-10-21', status:'pending', notes:'', created:'2026-10-21', settings:{ tariff_kwh:2.4, tariff_gas_kg:38, tariff_water_kl:28 }, _specs:{ some:[] } });
   M.clients.forEach(c => { c.group = c.group || ''; c.region = c.region || ''; c.area = c.area || ''; });
   M.clients.forEach(c => { if (c.status !== 'pending') M.bk[c.id] = { takenAt:new Date(Date.now() - (c.id === 5 ? 50 : 3 + c.id) * 3600000).toISOString().slice(0, 19).replace('T', ' '), copies:Math.min(7, 2 + c.id) }; });
   M.clients.forEach(c => { const s = c._specs; const list = s.some || all;
@@ -1034,7 +1041,7 @@ function mockInit(){
 function mkDev(cid, p, health, hoursAgo, name){ const id = M.did++; return { id, clientId:cid, uid:'d_' + (Math.random().toString(16).slice(2, 12)), name: name || p.n, kind:p.kind, adapter:p.ad, target:p.t, enabled:true, health, hoursAgo, keyPrefix:'wsd_' + Math.random().toString(16).slice(2, 6) }; }
 function mCred(){ const r = () => Math.random().toString(16).slice(2, 12); return { deviceId:'d_' + r(), apiKey:'wsd_' + r() + r() + r() + r(), hmacSecret:r() + r() + r() }; }
 function mPub(c){ const devs = M.devices.filter(d => d.clientId === c.id); const lastH = devs.filter(d => d.hoursAgo != null).map(d => d.hoursAgo);
-  return Object.assign({}, c, { kind: c.group ? 'corporate' : 'single', devices:devs, health:healthOf(devs), lastDataHours: lastH.length ? Math.min.apply(null, lastH) : null, codeSent: c.status === 'pending' && !!c._code }); }
+  return Object.assign({}, c, { kind: c.group ? 'corporate' : 'single', devices:devs, health:healthOf(devs), lastDataHours: lastH.length ? Math.min.apply(null, lastH) : null, codeSent: c.status === 'pending' && !!c._code, plan:c.plan || 'paid', trialEnds:c.trialEnds || null, demoDaysLeft:c.demoDaysLeft == null ? null : c.demoDaysLeft }); }
 function mAudit(who, what, cid){ M.audit.unshift({ ts:new Date().toISOString().slice(0, 16).replace('T', ' '), who, what, clientId:cid || null }); }
 function mRules(kind, grp, region, area){
   if (kind && kind !== 'single' && kind !== 'corporate') throw new Error('Choose Single user site or Multi user / corporate.');
@@ -1066,7 +1073,9 @@ function mock(a, p){
     case 'client_status': { const c = cl(p.id); const was = c.status; c.status = p.status === 'suspended' ? 'suspended' : 'active'; M.devices.filter(d => d.clientId === c.id).forEach(d => { d.enabled = c.status === 'active'; d.health = d.enabled ? (d.hoursAgo == null ? 'never' : (d.hoursAgo < 2 ? 'live' : d.health === 'disabled' ? 'live' : d.health)) : 'disabled'; }); mAudit(who, (c.status === 'suspended' ? 'suspended the site' : (was === 'pending' ? 'activated the site without a code' : 'reactivated the site')) + (p.reason ? ': ' + p.reason : ''), c.id); return { ok:true }; }
     case 'group_admins_list': return { admins:[] };
     case 'group_admin_save': return { ok:true };
-    case 'client_authorise': { const c = cl(p.id); if (c.status !== 'pending') throw new Error(c.status === 'active' ? 'This site is already active.' : 'This site is suspended. Reactivate it instead.'); c._code = String(100000 + Math.floor(Math.random() * 900000)); mAudit(who, 'confirmed payment and emailed the verification code', c.id); return { ok:true, email:{ sent:true } }; }
+    case 'client_convert': { const c = cl(p.id); c.plan = 'paid'; c.trialEnds = null; c.demoDaysLeft = null; if (c.status === 'suspended') c.status = 'active'; mAudit(who, 'converted the demo to a paid account (payment confirmed)', c.id); return { ok:true }; }
+    case 'client_demo_extend': { const c = cl(p.id); c.status = 'active'; c.demoDaysLeft = (c.demoDaysLeft || 0) + (+p.days || 7); mAudit(who, 'extended the demo by ' + (+p.days || 7) + ' days', c.id); return { ok:true }; }
+    case 'client_authorise': { const c = cl(p.id); if (c.status !== 'pending') throw new Error(c.status === 'active' ? 'This site is already active.' : 'This site is suspended. Reactivate it instead.'); c._code = String(100000 + Math.floor(Math.random() * 900000)); mAudit(who, c.plan === 'demo' ? 'approved the demo and emailed the verification code' : 'confirmed payment and emailed the verification code', c.id); return { ok:true, email:{ sent:true } }; }
     case 'backups_list': { const rows = M.clients.map(c => { const b = M.bk[c.id]; const age = b ? (Date.now() - new Date(b.takenAt.replace(' ', 'T') + 'Z').getTime()) / 3600000 : null; return { id:c.id, name:c.name, ownerEmail:c.ownerEmail, status:c.status, takenAt:b ? b.takenAt : null, ageHours:age == null ? null : Math.round(age * 10) / 10, fresh:age != null && age <= 26, bytes:b ? 18000 + c.id * 9100 : 0, rows:b ? 400 + c.id * 220 : 0, copies:b ? b.copies : 0 }; }); const stale = rows.filter(r => !r.fresh).length; const last = rows.map(r => r.takenAt).filter(Boolean).sort().pop() || null; return { backups:rows, summary:{ sites:rows.length, fresh:rows.length - stale, stale, lastRun:last, nextDue:null, keep:7, cron:false } }; }
     case 'backup_run': { const now = new Date().toISOString().slice(0, 19).replace('T', ' '); const ids = p.id ? [+p.id] : M.clients.map(c => c.id); ids.forEach(id => { const o = M.bk[id]; M.bk[id] = { takenAt:now, copies:Math.min(7, (o ? o.copies : 0) + 1) }; }); mAudit(who, p.id ? 'ran a backup of this site' : 'ran a backup of every site', p.id ? +p.id : null); return { ok:true, sites:ids.length }; }
     case 'backup_download': { const c = cl(p.id); if (!M.bk[c.id]) throw new Error('No backup has been taken for this site yet.'); return { exportedAt:new Date().toISOString(), takenAt:M.bk[c.id].takenAt, client:mPub(c), note:'Demo backup: the live service holds every saved record for this site.' }; }
