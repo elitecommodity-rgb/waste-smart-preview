@@ -598,7 +598,8 @@ function renderOverview(){
     <div class="kpi"><span>Active clients</span><b>${cs.filter(c => c.status === 'active').length}</b><small>${cs.filter(c => c.status === 'suspended').length} suspended</small></div>
     <div class="kpi"><span>Devices reporting</span><b>${all.dev ? Math.round(all.live / all.dev * 100) : 0}%</b><small>${all.live} of ${all.dev} live right now</small></div>
     <div class="kpi"><span>Need attention</span><b style="color:${all.need ? 'var(--bad)' : 'var(--good)'}">${all.need}</b><small>quiet or offline devices</small></div>
-    <div class="kpi"><span>Awaiting first sign-in</span><b>${all.wait}</b><small>invite sent, PIN not set</small></div></div>
+    <div class="kpi"><span>Awaiting first sign-in</span><b>${all.wait}</b><small>invite sent, PIN not set</small></div>
+    <div class="kpi"><span>Demos</span><b>${cs.filter(c => c.plan === 'demo' && c.status === 'active').length}</b><small>${cs.filter(c => c.plan === 'demo' && c.status === 'pending' && !c.codeSent).length} to review · ${cs.filter(c => c.plan === 'demo' && c.status === 'active' && c.demoDaysLeft != null && c.demoDaysLeft <= 3).length} ending in 3 days · ${cs.filter(c => c.plan === 'demo' && c.status === 'suspended').length} ended</small></div></div>
   ${pendingPanel(cs)}
   <div class="secgrid">${panel('single', sg)}${panel('corporate', co)}</div>`;
 }
@@ -612,7 +613,7 @@ function renderSection(){
   const dev = cs.reduce((a, c) => a + c.devices.length, 0), live = cs.reduce((a, c) => a + c.health.live, 0);
   const need = cs.filter(attention).length, wait = cs.filter(c => !c.pinSet && c.status === 'active').length;
   const f = state.filter, q = state.q.toLowerCase();
-  const rows = cs.filter(c => (f === 'all' || (f === 'attention' && attention(c)) || (f === 'invited' && !c.pinSet && c.status === 'active') || (f === 'pending' && c.status === 'pending') || (f === 'suspended' && c.status === 'suspended'))
+  const rows = cs.filter(c => (f === 'all' || (f === 'attention' && attention(c)) || (f === 'invited' && !c.pinSet && c.status === 'active') || (f === 'pending' && c.status === 'pending') || (f === 'demo' && c.plan === 'demo') || (f === 'suspended' && c.status === 'suspended'))
     && (!q || (c.name + ' ' + c.ownerEmail + ' ' + c.contact + ' ' + (c.group || '') + ' ' + (c.region || '') + ' ' + (c.area || '')).toLowerCase().includes(q)));
   const row = c => `<tr class="row" onclick="go('client',${c.id})"><td><b>${esc(c.name)}</b><div class="sub">${esc(c.type)}${kind === 'corporate' ? ' · ' + esc([c.region, c.area].filter(Boolean).join(' / ') || 'No region yet') : ' · ' + esc(c.tz)}</div></td><td>${statusPill(c)}</td>
       <td>${dots(c.health)}<div class="sub">${c.devices.length} device${c.devices.length === 1 ? '' : 's'}</div></td><td>${ago(c.lastDataHours)}</td><td>${esc(c.ownerEmail)}</td></tr>`;
@@ -622,13 +623,13 @@ function renderSection(){
   else body = rows.map(row).join('');
   $('ovBody').innerHTML = `
   <div class="kpis">
-    <div class="kpi"><span>${kind === 'corporate' ? 'Sites' : 'Active sites'}</span><b>${kind === 'corporate' ? cs.length : act.length}</b><small>${kind === 'corporate' ? new Set(cs.map(c => c.group)).size + ' group(s), ' : ''}${cs.filter(c => c.status === 'suspended').length} suspended · ${cs.filter(c => c.status === 'pending').length} awaiting payment</small></div>
+    <div class="kpi"><span>${kind === 'corporate' ? 'Sites' : 'Active sites'}</span><b>${kind === 'corporate' ? cs.length : act.length}</b><small>${kind === 'corporate' ? new Set(cs.map(c => c.group)).size + ' group(s), ' : ''}${cs.filter(c => c.status === 'suspended').length} suspended · ${cs.filter(c => c.status === 'pending').length} awaiting review or payment</small></div>
     <div class="kpi"><span>Devices reporting</span><b>${dev ? Math.round(live / dev * 100) : 0}%</b><small>${live} of ${dev} live right now</small></div>
     <div class="kpi"><span>Need attention</span><b style="color:${need ? 'var(--bad)' : 'var(--good)'}">${need}</b><small>quiet or offline devices</small></div>
     <div class="kpi"><span>Awaiting first sign-in</span><b>${wait}</b><small>invite sent, PIN not set</small></div>
   </div>
   <div class="card">
-    <div class="bar">${[['all','All'],['pending','Awaiting review / payment'],['attention','Needs attention'],['invited','Awaiting sign-in'],['suspended','Suspended']].map(x => `<button class="chip ${f === x[0] ? 'on' : ''}" onclick="state.filter='${x[0]}';renderSection()">${x[1]}</button>`).join('')}
+    <div class="bar">${[['all','All'],['pending','Awaiting review / payment'],['demo','Demos'],['attention','Needs attention'],['invited','Awaiting sign-in'],['suspended','Suspended']].map(x => `<button class="chip ${f === x[0] ? 'on' : ''}" onclick="state.filter='${x[0]}';renderSection()">${x[1]}</button>`).join('')}
       <input type="text" placeholder="Search…" value="${esc(state.q)}" oninput="state.q=this.value;renderSectionKeep()"></div>
     <div class="tw"><table><thead><tr><th>${kind === 'corporate' ? 'Site' : 'Client'}</th><th>Status</th><th>Devices</th><th>Last data</th><th>Admin sign-in</th></tr></thead><tbody>
     ${body || `<tr><td colspan="5" class="sub" style="padding:24px">${cs.length ? 'No sites match.' : (kind === 'corporate' ? 'No groups yet. Add the first site and give it a group name.' : 'No single user sites yet.')}</td></tr>`}
@@ -826,7 +827,7 @@ function tabAccess(){
   const demoBar = c.plan === 'demo' ? `<div class="note" style="margin-bottom:12px"><b>Demo account.</b> ${c.status === 'pending' ? 'It starts for 14 days when the client enters the verification code.' : (c.status === 'suspended' ? 'The demo has ended and the site is paused. Their data is kept.' : 'Ends ' + esc((c.trialEnds || '').slice(0, 10)) + (c.demoDaysLeft != null ? ' (' + c.demoDaysLeft + ' days left).' : '.'))}
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">${c.status !== 'pending' ? '<button class="btn small ghost" onclick="demoExtend(' + c.id + ',7)">Extend 7 days</button>' : ''}<button class="btn small gold" onclick="demoConvert(${c.id})">Payment received: convert to paid</button></div></div>` : '';
   const signin = demoBar + (pend
-    ? `<p><span class="pill ${c.codeSent ? 'p-blue' : 'p-warn'}">${c.codeSent ? 'Verification code sent' : 'Awaiting payment'}</span></p><p class="sub">${c.codeSent ? 'The client has been emailed a 6-digit code (valid 7 days, single use). It activates the account when they enter it on the sign-in page.' : 'The client created this account themselves. When their proof of payment arrives, confirm it to email the verification code.'}</p>
+    ? `<p><span class="pill ${c.codeSent ? 'p-blue' : 'p-warn'}">${c.codeSent ? 'Verification code sent' : (c.plan === 'demo' ? 'Awaiting your review' : 'Awaiting payment')}</span></p><p class="sub">${c.codeSent ? 'The client has been emailed a 6-digit code (valid 7 days, single use). It activates the account when they enter it on the sign-in page.' : (c.plan === 'demo' ? 'The client asked for a demo. Review the business, then approve it to email the verification code that opens a 14 day demo.' : 'The client created this account themselves. When their proof of payment arrives, confirm it to email the verification code.')}</p>
        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn gold" onclick="authorise(${c.id})">${c.codeSent ? 'Resend verification code' : (c.plan === 'demo' ? 'Approve demo: send code' : 'Payment received: send code')}</button><button class="btn ghost" onclick="statusModal('active')">Activate without a code</button></div>`
     : `<p class="sub">The client signs in with <b>${esc(c.ownerEmail)}</b> and the password they chose (at least 6 characters, with a number).</p>
        <p>${c.pinSet ? '<span class="pill p-good">Password set</span> ' + esc(c.pinSetAt || '') : '<span class="pill p-blue">Waiting for the client to choose a password</span>'}</p>
@@ -994,7 +995,7 @@ function renderBackups(r){
     <div class="kpi"><span>Copies kept</span><b>${s.keep}</b><small>per site, newest replaces oldest</small></div></div>
   ${s.cron ? '<div class="note">With more than 200 sites, run <code>php bin/ga_backup.php</code> from a nightly cron job. The page no longer refreshes backups by itself.</div>' : ''}
   <div class="card"><div class="tw"><table><thead><tr><th>Site</th><th>Status</th><th>Latest backup</th><th>Size</th><th>Copies</th><th></th></tr></thead><tbody>
-  ${rows.map(b => `<tr><td><b>${esc(b.name)}</b><div class="sub">${esc(b.ownerEmail)}</div></td><td><span class="pill ${b.status === 'active' ? 'p-good' : b.status === 'pending' ? 'p-warn' : 'p-bad'}">${b.status === 'suspended' ? 'Off' : b.status === 'pending' ? 'Awaiting payment' : 'On'}</span></td>
+  ${rows.map(b => `<tr><td><b>${esc(b.name)}</b><div class="sub">${esc(b.ownerEmail)}</div></td><td><span class="pill ${b.status === 'active' ? 'p-good' : b.status === 'pending' ? 'p-warn' : 'p-bad'}">${b.status === 'suspended' ? 'Off' : b.status === 'pending' ? 'Pending' : 'On'}</span></td>
     <td>${b.takenAt ? `<span class="pill ${b.fresh ? 'p-good' : 'p-warn'}">${b.fresh ? 'Current' : 'Out of date'}</span> <span class="sub">${ago(b.ageHours)}</span>` : '<span class="pill p-bad">None yet</span>'}</td>
     <td>${b.takenAt ? fmtBytes(b.bytes) + '<div class="sub">' + b.rows + ' records</div>' : ''}</td><td>${b.copies}</td>
     <td style="white-space:nowrap"><button class="btn small ghost" onclick="runBackup(${b.id})">Back up now</button> <button class="btn small ghost" ${b.takenAt ? '' : 'disabled'} onclick="downloadBackup(${b.id})">Download</button></td></tr>`).join('') || '<tr><td colspan="6" class="sub" style="padding:20px">No sites yet.</td></tr>'}

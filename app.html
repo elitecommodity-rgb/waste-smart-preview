@@ -456,6 +456,8 @@ html,body{max-width:100%;overflow-x:hidden}
 #impPrev .hero-total .l{font-size:11px}
 #impPrev li.bad{color:var(--bad);font-weight:600}
 #impWork td select{max-width:100%}
+/* touch devices (iPad, tablets): no field below 16px, or iOS zooms the page on focus */
+@media (pointer:coarse){input,select,textarea,.bi-row input[type=date],.bi-row select{font-size:16px;min-height:44px}}
 
 </style></head><body>
 <!-- ================= AUTH ================= -->
