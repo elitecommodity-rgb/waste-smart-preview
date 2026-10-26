@@ -4,8 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%23F5F3EE%22/%3E%3Csvg x=%224%22 y=%223%22 width=%2224%22 height=%2226%22 viewBox=%2220 30 760 800%22%3E%3Crect x=%2283%22 y=%22170%22 width=%22108%22 height=%22173%22 fill=%22%23B28029%22/%3E%3Crect x=%22241%22 y=%2243%22 width=%22109%22 height=%22300%22 fill=%22%23DAA442%22/%3E%3Crect x=%22400%22 y=%22232%22 width=%22108%22 height=%22111%22 fill=%22%238C3A2C%22/%3E%3Crect x=%22558%22 y=%22106%22 width=%22108%22 height=%22237%22 fill=%22%23DAA442%22/%3E%3Ccircle cx=%22739%22 cy=%22299%22 r=%2239%22 fill=%22%237AC5E4%22/%3E%3Cg fill=%22%231A1712%22%3E%3Crect x=%22352%22 y=%22300%22 width=%2248%22 height=%2256%22/%3E%3Crect x=%2236%22 y=%22352%22 width=%22678%22 height=%2258%22/%3E%3Cpolygon points=%2278%2C410 672%2C410 598%2C820 152%2C820%22/%3E%3C/g%3E%3Cg stroke=%22%23F5F3EE%22 stroke-width=%2211%22 stroke-linecap=%22butt%22%3E%3Cline x1=%22252%22 y1=%22440%22 x2=%22282%22 y2=%22787%22/%3E%3Cline x1=%22333%22 y1=%22440%22 x2=%22345%22 y2=%22787%22/%3E%3Cline x1=%22410%22 y1=%22440%22 x2=%22405%22 y2=%22787%22/%3E%3Cline x1=%22497%22 y1=%22440%22 x2=%22465%22 y2=%22787%22/%3E%3C/g%3E%3C/svg%3E%3C/svg%3E"><title>Gilded Age Master Admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=EB+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts.css">
 <script>window.MASTER_DEMO=true;</script><script>/* ===================== WSR: report engine =====================
    One report model -> on-screen preview, PDF and Word (.docx). No libraries, no network.
    Charts are drawn on a canvas and embedded as images; text, tables and tiles stay real text.
@@ -425,6 +424,7 @@ tr.gh td{background:var(--field);font-weight:700;padding-top:12px;padding-bottom
     <h1>Master admin</h1><p>Client onboarding, integrations and access for every Waste Smart site.</p>
     <label>Email</label><input type="email" id="lEmail" autocomplete="username" required>
     <label>Password</label><input type="password" id="lPass" autocomplete="current-password" required>
+    <div id="lCodeBox" class="hide"><label>Authenticator code or recovery code</label><input type="text" id="lCode" inputmode="numeric" autocomplete="one-time-code" placeholder="6 digit code"></div>
     <div class="err" id="lErr"></div>
     <button class="btn gold" style="width:100%;margin-top:6px" id="lBtn">Sign in</button>
     <div class="looks" id="looksLogin" style="margin-top:14px"></div>
@@ -454,6 +454,7 @@ tr.gh td{background:var(--field);font-weight:700;padding-top:12px;padding-bottom
     <button data-v="onboard" onclick="go('onboard')">&#10010; Onboard a client</button>
     <button data-v="backups" onclick="go('backups')">&#9112; Backups</button>
     <button data-v="team" onclick="go('team')">&#9881; Team &amp; audit</button>
+    <button data-v="security" onclick="go('security')">&#128274; Security &amp; privacy</button>
     <div class="sp"></div>
     <div class="who" id="who"></div>
     <div class="looks" id="looksSide"></div>
@@ -510,7 +511,7 @@ async function call(action, payload){
   let res; try { res = await fetch(MASTER_ENDPOINT, { method:'POST', headers:h, body: JSON.stringify(Object.assign({ action }, payload || {})) }); }
   catch(e){ throw new Error('Could not reach the master service.'); }
   let b = null; try { b = await res.json(); } catch(e){}
-  if (!res.ok) { const err = new Error((b && b.error) || ('Request failed: ' + res.status)); err.status = res.status; if (res.status === 401 && session) { sessionStorage.removeItem('gaa'); location.reload(); } throw err; }
+  if (!res.ok) { const err = new Error((b && b.error) || ('Request failed: ' + res.status)); err.status = res.status; err.need2fa = !!(b && b.need2fa); if (res.status === 401 && session && !(b && b.need2fa)) { sessionStorage.removeItem('gaa'); location.reload(); } throw err; }
   return b;
 }
 /* ================= helpers ================= */
@@ -538,8 +539,8 @@ function attention(c){ return c.status === 'active' && c.pinSet && (c.health.sta
 /* ================= auth ================= */
 async function doLogin(ev){
   ev.preventDefault(); $('lErr').textContent = ''; $('lBtn').disabled = true;
-  try { const r = await call('login', { email: $('lEmail').value.trim(), password: $('lPass').value }); session = r; try { sessionStorage.setItem('gaa', JSON.stringify(r)); } catch(e){} start(); }
-  catch(e){ $('lErr').textContent = e.message; } finally { $('lBtn').disabled = false; }
+  try { const r = await call('login', { email: $('lEmail').value.trim(), password: $('lPass').value, code: $('lCode').value.trim() }); session = r; try { sessionStorage.setItem('gaa', JSON.stringify(r)); } catch(e){} start(); }
+  catch(e){ if (e.need2fa) { $('lCodeBox').classList.remove('hide'); $('lCode').focus(); } $('lErr').textContent = e.message; } finally { $('lBtn').disabled = false; }
 }
 async function doLogout(){ try { await call('logout'); } catch(e){} session = null; try { sessionStorage.removeItem('gaa'); } catch(e){} $('app').classList.add('hide'); $('login').classList.remove('hide'); }
 function start(){ $('login').classList.add('hide'); $('app').classList.remove('hide'); $('who').textContent = session.name + ' · ' + session.role; go('overview'); }
@@ -571,6 +572,7 @@ function go(v, arg){
   if (v === 'onboard') return viewOnboard(arg);
   if (v === 'client') return viewClient(arg);
   if (v === 'backups') return viewBackups();
+  if (v === 'security') return viewSecurity();
   if (v === 'team') return viewTeam();
 }
 const KIND = { single:['Single user site','One kitchen with one admin PIN. The owner opens their own app and sees nothing else.'], corporate:['Multi user / corporate','Several sites under one group. Every site keeps its own admin PIN, and the group admin sees all of them together.'] };
@@ -838,7 +840,8 @@ function tabAccess(){
   $('tabBody').innerHTML = `<div class="grid2">
   <div class="card"><h3>Account sign-in</h3>${signin}</div>
   <div class="card"><h3>Site on / off</h3>${stat}
-    <div class="sect">Backup</div><p class="sub">The nightly master backup is on the Backups page.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost small" onclick="downloadBackup(${c.id})">Download latest backup</button><button class="btn ghost small" onclick="exportBackup()">Export live data now</button></div></div></div>`;
+    <div class="sect">Backup</div><p class="sub">The nightly master backup is on the Backups page.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost small" onclick="downloadBackup(${c.id})">Download latest backup</button><button class="btn ghost small" onclick="exportBackup()">Export live data now</button></div>
+    <div class="sect">Privacy</div><p class="sub">Give the client a copy of everything held for them, or remove them completely when they leave. Erasing needs the site switched off first and cannot be undone.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost small" onclick="exportClient(${c.id})">Export all client data</button>${session.role === 'owner' ? `<button class="btn danger small" ${sus ? '' : 'disabled title="Switch the site off first"'} onclick="eraseModal(${c.id})">Erase client…</button>` : ''}</div></div></div>`;
 }
 function mailPreview(kind, c, link){
   const first = kind === 'invite';
@@ -868,7 +871,7 @@ async function setStatus(s){ const why = $('stWhy') ? $('stWhy').value.trim() : 
 async function groupAdminModal(g){
   let list = []; try { list = (await call('group_admins_list', { group:g })).admins; } catch(e){}
   openModal(`<h2>Group login: ${esc(g)}</h2><p>The group administrator signs in at <b>group.html</b> and sees every site in this group, nothing else.</p>
-  ${list.length ? '<div class="sub">' + list.map(a => esc(a.name) + ' &middot; ' + esc(a.email) + (a.active ? '' : ' (off)') + (a.lastLogin ? ' &middot; last sign-in ' + esc(a.lastLogin) : '')).join('<br>') + '</div>' : '<div class="sub">No group administrator yet.</div>'}
+  ${list.length ? '<div class="sub">' + list.map(a => esc(a.name) + ' &middot; ' + esc(a.email) + (a.active ? '' : ' (off)') + (a.lastLogin ? ' &middot; last sign-in ' + esc(a.lastLogin) : '') + (a.twofa ? ' &middot; 2FA on <a href="#" onclick="resetGroup2fa(\'' + esc(a.email) + '\');return false">reset</a>' : '')).join('<br>') + '</div>' : '<div class="sub">No group administrator yet.</div>'}
   <label>Name</label><input type="text" id="gaN" maxlength="120"><label>Email</label><input type="email" id="gaE"><label>Password (6+ characters with a number)</label><input type="text" id="gaP" autocomplete="off">
   <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Close</button><button class="btn gold" onclick="saveGroupAdmin('${esc(g).replace(/'/g, '')}')">Save group login</button></div>`);
 }
@@ -981,7 +984,7 @@ function wizDone(r){
 /* ================= backups ================= */
 function fmtBytes(n){ return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
 async function viewBackups(){
-  $('main').innerHTML = '<div class="top"><div><h1>Backups</h1><p>A master copy of every site\'s information, refreshed every 24 hours. Passwords and device keys are never included.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="runBackup()">Back up everything now</button></div></div><div id="bkBody" class="sub">Loading…</div>';
+  $('main').innerHTML = '<div class="top"><div><h1>Backups</h1><p>A master copy of every site\'s information, refreshed every 24 hours. Passwords and device keys are never included.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" onclick="restoreCheck()">Run restore check</button><button class="btn gold" onclick="runBackup()">Back up everything now</button></div></div><div id="bkBody" class="sub">Loading…</div>';
   try { const r = await call('backups_list'); renderBackups(r); } catch(e){ $('bkBody').textContent = e.message; }
 }
 function renderBackups(r){
@@ -990,7 +993,9 @@ function renderBackups(r){
     <div class="kpi"><span>Sites covered</span><b>${s.fresh} of ${s.sites}</b><small>backed up in the last 24 hours</small></div>
     <div class="kpi"><span>Out of date</span><b style="color:${s.stale ? 'var(--bad)' : 'var(--good)'}">${s.stale}</b><small>${s.stale ? 'run a backup now' : 'every site is current'}</small></div>
     <div class="kpi"><span>Last run</span><b style="font-size:18px">${esc(s.lastRun ? s.lastRun.replace('T', ' ').slice(0, 16) + ' UTC' : 'Never')}</b><small>${s.nextDue ? 'next refresh due ' + esc(s.nextDue.slice(0, 16)) + ' UTC' : 'refreshes when due'}</small></div>
-    <div class="kpi"><span>Copies kept</span><b>${s.keep}</b><small>per site, newest replaces oldest</small></div></div>
+    <div class="kpi"><span>Copies kept</span><b>${s.keep}</b><small>per site, newest replaces oldest</small></div>
+    <div class="kpi"><span>Encryption</span><b style="color:${s.encrypted ? 'var(--good)' : 'var(--bad)'}">${s.encrypted ? 'On' : 'Off'}</b><small>${s.encrypted ? 'AES-256 backups' : 'set backup_passphrase in the config'}</small></div>
+    <div class="kpi"><span>Restore check</span><b style="font-size:18px">${s.restoreCheck ? (s.restoreCheck.failed.length ? s.restoreCheck.failed.length + ' failed' : s.restoreCheck.ok + ' readable') : 'Not run'}</b><small>${s.restoreCheck ? esc(s.restoreCheck.at.replace('T', ' ').slice(0, 16)) + ' UTC' : 'proves backups can be opened'}</small></div></div>
   ${s.cron ? '<div class="note">With more than 200 sites, run <code>php bin/ga_backup.php</code> from a nightly cron job. The page no longer refreshes backups by itself.</div>' : ''}
   <div class="card"><div class="tw"><table><thead><tr><th>Site</th><th>Status</th><th>Latest backup</th><th>Size</th><th>Copies</th><th></th></tr></thead><tbody>
   ${rows.map(b => `<tr><td><b>${esc(b.name)}</b><div class="sub">${esc(b.ownerEmail)}</div></td><td><span class="pill ${b.status === 'active' ? 'p-good' : b.status === 'pending' ? 'p-warn' : 'p-bad'}">${b.status === 'suspended' ? 'Off' : b.status === 'pending' ? 'Pending' : 'On'}</span></td>
@@ -1006,12 +1011,43 @@ async function downloadBackup(id){ try { const r = await call('backup_download',
 async function viewTeam(){
   $('main').innerHTML = '<div class="top"><div><h1>Team &amp; audit</h1><p>Who can use the master admin, and what has been done.</p></div></div><div id="tmBody" class="sub">Loading…</div>';
   const [a, l] = await Promise.all([call('admins_list'), call('audit_list')]);
-  $('tmBody').innerHTML = `<div class="grid2"><div class="card"><h3 style="margin-bottom:8px">Administrators</h3><div class="tw"><table><tbody>${a.admins.map(x => `<tr><td><b>${esc(x.name)}</b><div class="sub">${esc(x.email)}</div></td><td><span class="pill p-mute">${esc(x.role)}</span></td><td class="sub">${esc(x.lastLogin || (x.invited ? 'invited' : 'never'))}</td>${session.role === 'owner' && x.role !== 'owner' ? `<td><button class="btn small ghost" onclick="resetAdminPw('${esc(x.email)}')">Send password link</button></td>` : '<td></td>'}</tr>`).join('')}</tbody></table></div>
+  $('tmBody').innerHTML = `<div class="grid2"><div class="card"><h3 style="margin-bottom:8px">Administrators</h3><div class="tw"><table><tbody>${a.admins.map(x => `<tr><td><b>${esc(x.name)}</b><div class="sub">${esc(x.email)}</div></td><td><span class="pill p-mute">${esc(x.role)}</span></td><td class="sub">${esc(x.lastLogin || (x.invited ? 'invited' : 'never'))}</td>${session.role === 'owner' && x.role !== 'owner' ? `<td><button class="btn small ghost" onclick="resetAdminPw('${esc(x.email)}')">Send password link</button>${x.twofa ? ` <button class="btn small ghost" onclick="reset2fa('${esc(x.email)}')">Reset 2FA</button>` : ''}</td>` : '<td></td>'}</tr>`).join('')}</tbody></table></div>
     ${session.role === 'owner' ? '<div style="margin-top:10px"><button class="btn small ghost" onclick="addAdmin()">Add an administrator</button></div>' : ''}</div>
     <div class="card"><h3 style="margin-bottom:8px">Recent activity</h3><div style="max-height:420px;overflow:auto"><table><tbody>${l.audit.map(x => `<tr><td class="sub" style="white-space:nowrap">${esc(x.ts)}</td><td><b>${esc(x.who)}</b> ${esc(x.what)}${x.client ? ' <span class="sub">· ' + esc(x.client) + '</span>' : ''}</td></tr>`).join('')}</tbody></table></div></div></div>`;
 }
 function addAdmin(){ openModal(`<h2>Add an administrator</h2><label>Name</label><input type="text" id="naName"><label>Email</label><input type="email" id="naEmail"><div class="err" id="naErr"></div><p class="sub">They get an email with a one-time link to choose their password.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn gold" onclick="doAddAdmin()">Add and send invite</button></div>`); }
 async function doAddAdmin(){ try { await call('admin_create', { name: $('naName').value, email: $('naEmail').value }); closeModal(); toast('Administrator added'); viewTeam(); } catch(e){ $('naErr').textContent = e.message; } }
+
+
+/* ================= security & privacy ================= */
+async function viewSecurity(){
+  $('main').innerHTML = '<div class="top"><div><h1>Security &amp; privacy</h1><p>Two-factor sign-in for your account, and the tools for privacy requests.</p></div></div><div id="secBody" class="sub">Loading…</div>';
+  const t = await call('twofa_status');
+  $('secBody').innerHTML = `<div class="grid2"><div class="card"><h3>Two-factor sign-in</h3>
+    <p class="sub">${t.on ? 'On. Signing in needs your password and a 6 digit code from your authenticator app.' : 'Off. Switch it on to protect this account with a code from an authenticator app on your phone.'}</p>
+    <div style="margin-top:10px">${t.on ? '<button class="btn danger" onclick="off2fa()">Switch off…</button>' : '<button class="btn gold" onclick="setup2fa()">Set up two-factor</button>'}</div></div>
+   <div class="card"><h3>Privacy requests</h3><p class="sub">Open a client and use Export all client data or Erase client on its Access tab. Demo requests that never go ahead are removed automatically after 90 days.</p>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">${session.role === 'owner' ? '<button class="btn ghost" onclick="purgeDemos()">Remove lapsed demos now</button>' : ''}<a class="btn ghost" href="privacy.html" target="_blank" rel="noopener">Privacy notice</a></div></div></div>`;
+}
+async function setup2fa(){
+  try { const r = await call('twofa_setup');
+    openModal(`<h2>Set up two-factor</h2><p class="sub">In your authenticator app choose Add account, then Enter a setup key, and type this key:</p><div class="cred"><code>${esc(r.secret)}</code></div><p class="sub" style="margin-top:8px">Account name: ${esc(session.email || 'your email')}. Time based, 6 digits.</p><label>Code from the app</label><input type="text" id="tfCode" inputmode="numeric" autocomplete="one-time-code"><div class="err" id="tfErr"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn gold" onclick="enable2fa()">Switch on</button></div>`);
+  } catch(e){ toast(e.message); }
+}
+async function enable2fa(){
+  try { const r = await call('twofa_enable', { code: $('tfCode').value });
+    openModal(`<h2>Two-factor is on</h2><p class="sub">Save these recovery codes somewhere safe. Each works once if you lose your phone. They are shown only now.</p><div class="cred"><code style="white-space:pre-line">${r.recovery.map(esc).join('\n')}</code></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="copy(${esc(JSON.stringify(r.recovery.join('\n'))).replace(/'/g, '&#39;')})">Copy</button><button class="btn gold" onclick="closeModal();viewSecurity()">I have saved them</button></div>`);
+  } catch(e){ $('tfErr').textContent = e.message; }
+}
+function off2fa(){ openModal(`<h2>Switch off two-factor</h2><label>Your password</label><input type="password" id="tfPw" autocomplete="current-password"><label>Current code or recovery code</label><input type="text" id="tfCode" autocomplete="one-time-code"><div class="err" id="tfErr"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="doOff2fa()">Switch off</button></div>`); }
+async function doOff2fa(){ try { await call('twofa_disable', { password: $('tfPw').value, code: $('tfCode').value }); closeModal(); toast('Two-factor switched off'); viewSecurity(); } catch(e){ $('tfErr').textContent = e.message; } }
+async function resetGroup2fa(email){ try { await call('group_admin_2fa_reset', { email }); toast('Two-factor reset for ' + email); closeModal(); } catch(e){ toast(e.message); } }
+async function reset2fa(email){ try { await call('admin_2fa_reset', { email }); toast('Two-factor reset. They can sign in with their password and set it up again.'); viewTeam(); } catch(e){ toast(e.message); } }
+async function restoreCheck(){ try { const r = await call('restore_check'); toast(r.failed.length ? r.failed.length + ' backup(s) could not be read' : 'All ' + r.ok + ' latest backups opened correctly'); viewBackups(); } catch(e){ toast(e.message); } }
+async function purgeDemos(){ try { const r = await call('demo_purge'); toast(r.removed + ' lapsed demo(s) removed'); } catch(e){ toast(e.message); } }
+async function exportClient(id){ try { const r = await call('client_export', { id }); saveFile('waste-smart-client-data-' + id + '-' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(r, null, 2), 'application/json'); toast('Client data exported'); } catch(e){ toast(e.message); } }
+function eraseModal(id){ const c = state.client.client; openModal(`<h2>Erase ${esc(c.name)}</h2><p class="sub">This permanently removes the client, their site data, devices, sign-in and backups. A certificate of erasure is downloaded when it is done. Export their data first if they want a copy.</p><label>Type the client name to confirm</label><input type="text" id="erName" autocomplete="off"><div class="err" id="erErr"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="doErase(${id})">Erase permanently</button></div>`); }
+async function doErase(id){ try { const r = await call('client_erase', { id, confirmName: $('erName').value }); saveFile('waste-smart-erasure-certificate-' + id + '.json', JSON.stringify(r.certificate, null, 2), 'application/json'); closeModal(); toast('Client erased. Certificate downloaded.'); go('overview'); } catch(e){ $('erErr').textContent = e.message; } }
 
 /* ================= demo backend (same contract as master.php) ================= */
 let M = null;
@@ -1075,7 +1111,7 @@ function mock(a, p){
     case 'client_convert': { const c = cl(p.id); c.plan = 'paid'; c.trialEnds = null; c.demoDaysLeft = null; if (c.status === 'suspended') c.status = 'active'; mAudit(who, 'converted the demo to a paid account (payment confirmed)', c.id); return { ok:true }; }
     case 'client_demo_extend': { const c = cl(p.id); c.status = 'active'; c.demoDaysLeft = (c.demoDaysLeft || 0) + (+p.days || 7); mAudit(who, 'extended the demo by ' + (+p.days || 7) + ' days', c.id); return { ok:true }; }
     case 'client_authorise': { const c = cl(p.id); if (c.status !== 'pending') throw new Error(c.status === 'active' ? 'This site is already active.' : 'This site is suspended. Reactivate it instead.'); c._code = String(100000 + Math.floor(Math.random() * 900000)); mAudit(who, c.plan === 'demo' ? 'approved the demo and emailed the verification code' : 'confirmed payment and emailed the verification code', c.id); return { ok:true, email:{ sent:true } }; }
-    case 'backups_list': { const rows = M.clients.map(c => { const b = M.bk[c.id]; const age = b ? (Date.now() - new Date(b.takenAt.replace(' ', 'T') + 'Z').getTime()) / 3600000 : null; return { id:c.id, name:c.name, ownerEmail:c.ownerEmail, status:c.status, takenAt:b ? b.takenAt : null, ageHours:age == null ? null : Math.round(age * 10) / 10, fresh:age != null && age <= 26, bytes:b ? 18000 + c.id * 9100 : 0, rows:b ? 400 + c.id * 220 : 0, copies:b ? b.copies : 0 }; }); const stale = rows.filter(r => !r.fresh).length; const last = rows.map(r => r.takenAt).filter(Boolean).sort().pop() || null; return { backups:rows, summary:{ sites:rows.length, fresh:rows.length - stale, stale, lastRun:last, nextDue:null, keep:7, cron:false } }; }
+    case 'backups_list': { const rows = M.clients.map(c => { const b = M.bk[c.id]; const age = b ? (Date.now() - new Date(b.takenAt.replace(' ', 'T') + 'Z').getTime()) / 3600000 : null; return { id:c.id, name:c.name, ownerEmail:c.ownerEmail, status:c.status, takenAt:b ? b.takenAt : null, ageHours:age == null ? null : Math.round(age * 10) / 10, fresh:age != null && age <= 26, bytes:b ? 18000 + c.id * 9100 : 0, rows:b ? 400 + c.id * 220 : 0, copies:b ? b.copies : 0 }; }); const stale = rows.filter(r => !r.fresh).length; const last = rows.map(r => r.takenAt).filter(Boolean).sort().pop() || null; return { backups:rows, summary:{ sites:rows.length, fresh:rows.length - stale, stale, lastRun:last, nextDue:null, keep:7, cron:false, encrypted:true, restoreCheck:M.rc || null } }; }
     case 'backup_run': { const now = new Date().toISOString().slice(0, 19).replace('T', ' '); const ids = p.id ? [+p.id] : M.clients.map(c => c.id); ids.forEach(id => { const o = M.bk[id]; M.bk[id] = { takenAt:now, copies:Math.min(7, (o ? o.copies : 0) + 1) }; }); mAudit(who, p.id ? 'ran a backup of this site' : 'ran a backup of every site', p.id ? +p.id : null); return { ok:true, sites:ids.length }; }
     case 'backup_download': { const c = cl(p.id); if (!M.bk[c.id]) throw new Error('No backup has been taken for this site yet.'); return { exportedAt:new Date().toISOString(), takenAt:M.bk[c.id].takenAt, client:mPub(c), note:'Demo backup: the live service holds every saved record for this site.' }; }
     case 'invite_resend': { const c = cl(p.id); mAudit(who, 'resent the invite email', c.id); return { email:{ sent:true }, link:CLIENT_APP_URL + '?setpin=' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) }; }
@@ -1089,6 +1125,15 @@ function mock(a, p){
     case 'device_delete': { const i = M.devices.findIndex(x => x.id === p.id); if (p.keepData) { M.devices[i].enabled = false; M.devices[i].health = 'disabled'; } else M.devices.splice(i, 1); return { ok:true }; }
     case 'bi_token_create': (M.bi[p.clientId] = M.bi[p.clientId] || []).push({ label:p.label }); mAudit(who, 'issued a Power BI token', +p.clientId); return { token:'wsbi_' + Math.random().toString(16).slice(2, 12) + Math.random().toString(16).slice(2, 12) };
     case 'admins_list': return { admins:M.admins };
+    case 'twofa_status': return { on: !!M.tf };
+    case 'twofa_setup': return { ok:true, secret:'JBSW Y3DP EHPK 3PXP KRSX G5DB ONSX EZLS', uri:'otpauth://totp/Waste%20Smart:demo' };
+    case 'twofa_enable': if (!/^\d{6}$/.test(String(p.code || ''))) throw new Error('That code is not right. Check the time on your phone and try the next code.'); M.tf = true; return { ok:true, recovery:['a1b2-c3d4','e5f6-0718','9a8b-7c6d','1f2e-3d4c','5b6a-7988','0c1d-2e3f','4a5b-6c7d','8e9f-a0b1'] };
+    case 'twofa_disable': if (!p.password) throw new Error('Your password is not right.'); M.tf = false; return { ok:true };
+    case 'admin_2fa_reset': case 'group_admin_2fa_reset': return { ok:true };
+    case 'restore_check': M.rc = { at:new Date().toISOString(), ok:M.clients.length, failed:[], encrypted:true }; return M.rc;
+    case 'demo_purge': return { ok:true, removed:0 };
+    case 'client_export': { const c = cl(p.id); return { format:'waste-smart-site-backup-1', client:{ name:c.name, ownerEmail:c.ownerEmail }, note:'Demo export' }; }
+    case 'client_erase': { const c = cl(p.id); if (c.status === 'active') { const e = new Error('Switch the site off first, then erase it.'); throw e; } if (String(p.confirmName || '').trim() !== c.name) throw new Error('Type the exact client name to confirm.'); M.clients = M.clients.filter(x => x.id !== c.id); return { ok:true, certificate:{ certificate:'waste-smart-erasure-1', client:c.name, erasedAt:new Date().toISOString(), erasedBy:who } }; }
     case 'admin_create': if (!/@/.test(p.email || '')) throw new Error('Enter a valid email.'); M.admins.push({ name:p.name || p.email, email:p.email, role:'admin', lastLogin:null }); mAudit(who, 'added administrator ' + p.email); return { ok:true };
     case 'audit_list': return { audit: M.audit.slice(0, 60).map(x => ({ ts:x.ts, who:x.who, what:x.what, client:(M.clients.find(c => c.id === x.clientId) || {}).name })) };
   }

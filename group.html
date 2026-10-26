@@ -300,8 +300,7 @@ const WSR = (function(){
 })();
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%23F5F3EE%22/%3E%3Csvg x=%224%22 y=%223%22 width=%2224%22 height=%2226%22 viewBox=%2220 30 760 800%22%3E%3Crect x=%2283%22 y=%22170%22 width=%22108%22 height=%22173%22 fill=%22%23B28029%22/%3E%3Crect x=%22241%22 y=%2243%22 width=%22109%22 height=%22300%22 fill=%22%23DAA442%22/%3E%3Crect x=%22400%22 y=%22232%22 width=%22108%22 height=%22111%22 fill=%22%238C3A2C%22/%3E%3Crect x=%22558%22 y=%22106%22 width=%22108%22 height=%22237%22 fill=%22%23DAA442%22/%3E%3Ccircle cx=%22739%22 cy=%22299%22 r=%2239%22 fill=%22%237AC5E4%22/%3E%3Cg fill=%22%231A1712%22%3E%3Crect x=%22352%22 y=%22300%22 width=%2248%22 height=%2256%22/%3E%3Crect x=%2236%22 y=%22352%22 width=%22678%22 height=%2258%22/%3E%3Cpolygon points=%2278%2C410 672%2C410 598%2C820 152%2C820%22/%3E%3C/g%3E%3Cg stroke=%22%23F5F3EE%22 stroke-width=%2211%22 stroke-linecap=%22butt%22%3E%3Cline x1=%22252%22 y1=%22440%22 x2=%22282%22 y2=%22787%22/%3E%3Cline x1=%22333%22 y1=%22440%22 x2=%22345%22 y2=%22787%22/%3E%3Cline x1=%22410%22 y1=%22440%22 x2=%22405%22 y2=%22787%22/%3E%3Cline x1=%22497%22 y1=%22440%22 x2=%22465%22 y2=%22787%22/%3E%3C/g%3E%3C/svg%3E%3C/svg%3E"><title>Waste Smart Multi user / corporate</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=EB+Garamond:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts.css">
 <style>
 :root{--bg:#0F1A24;--surface:#16303F;--surface2:#1C3A4B;--ink:#F5F3EE;--mute:#A9C0C4;--line:#2A4A5B;--accent:#E8C547;--accent-ink:#0F1A24;--good:#5EEAD4;--warn:#E8C547;--bad:#E8A598;--bin:#F5F3EE;--slit:#0F1A24;color-scheme:dark}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -857,10 +856,30 @@ const GP=window.WS_GROUP_API||'group.php', GK='ws_group_token';
 async function gcall(action,body,tok){const r=await fetch(GP,{method:'POST',headers:Object.assign({'Content-Type':'application/json'},tok?{Authorization:'Bearer '+tok}:{}),body:JSON.stringify(Object.assign({action},body||{}))});let j={};try{j=await r.json()}catch(e){}return{ok:r.ok,status:r.status,j}}
 function glogin(msg){
   document.body.style.overflow='hidden';
-  $('#layer').innerHTML=`<div class="ov c"><div class="card" style="max-width:380px;width:100%"><div class="hd"><h3>Sign in to your group</h3></div><p class="sub" style="margin-top:0">Multi user / corporate. Use the email and password Gilded Age Consulting set up for your group.</p><div class="frm"><div class="fld"><label for="gl_e">Email</label><input id="gl_e" type="email" autocomplete="username"></div><div class="fld"><label for="gl_p">Password</label><input id="gl_p" type="password" autocomplete="current-password"></div></div><p id="gl_m" class="sub" style="color:var(--bad,#d33)">${esc(msg||'')}</p><button class="btn pri" id="gl_b">Sign in</button><p class="sub">Forgotten your password? Contact Gilded Age Consulting via www.gildedac.co.za</p></div></div>`;
-  const go=async()=>{$('#gl_b').disabled=true;const r=await gcall('login',{email:$('#gl_e').value,password:$('#gl_p').value});if(r.ok&&r.j.token){try{sessionStorage.setItem(GK,r.j.token)}catch(e){}$('#layer').innerHTML='';document.body.style.overflow='';gload()}else{$('#gl_m').textContent=r.j.error||'Could not sign in.';$('#gl_b').disabled=false}};
+  $('#layer').innerHTML=`<div class="ov c"><div class="card" style="max-width:380px;width:100%"><div class="hd"><h3>Sign in to your group</h3></div><p class="sub" style="margin-top:0">Multi user / corporate. Use the email and password Gilded Age Consulting set up for your group.</p><div class="frm"><div class="fld"><label for="gl_e">Email</label><input id="gl_e" type="email" autocomplete="username"></div><div class="fld"><label for="gl_p">Password</label><input id="gl_p" type="password" autocomplete="current-password"></div><div class="fld" id="gl_cb" style="display:none"><label for="gl_c">Authenticator or recovery code</label><input id="gl_c" type="text" inputmode="numeric" autocomplete="one-time-code"></div></div><p id="gl_m" class="sub" style="color:var(--bad,#d33)">${esc(msg||'')}</p><button class="btn pri" id="gl_b">Sign in</button><p class="sub">Forgotten your password? Contact Gilded Age Consulting via www.gildedac.co.za</p></div></div>`;
+  const go=async()=>{$('#gl_b').disabled=true;const r=await gcall('login',{email:$('#gl_e').value,password:$('#gl_p').value,code:$('#gl_c').value.trim()});if(r.ok&&r.j.token){try{sessionStorage.setItem(GK,r.j.token)}catch(e){}$('#layer').innerHTML='';document.body.style.overflow='';gload()}else{if(r.j.need2fa){$('#gl_cb').style.display='';$('#gl_c').focus()}$('#gl_m').textContent=r.j.error||'Could not sign in.';$('#gl_b').disabled=false}};
   $('#gl_b').onclick=go;$('#gl_p').onkeydown=e=>{if(e.key==='Enter')go()};$('#gl_e').focus();
 }
+
+function tfaTok(){try{return sessionStorage.getItem(GK)||''}catch(e){return''}}
+function tfaBox(h){$('#layer').innerHTML='<div class="ov c"><div class="card" style="max-width:420px;width:100%">'+h+'</div></div>';document.body.style.overflow='hidden'}
+function tfaClose(){$('#layer').innerHTML='';document.body.style.overflow=''}
+async function tfaOpen(){
+  const m=await gcall('me',{},tfaTok());const on=m.j&&m.j.twofa;
+  tfaBox('<div class="hd"><h3>Two-factor sign-in</h3></div><p class="sub" style="margin-top:0">'+(on?'On. Signing in needs your password and a 6 digit code from your authenticator app.':'Off. Switch it on to protect this account with a code from an authenticator app.')+'</p><p id="tf_m" class="sub" style="color:var(--bad,#d33)"></p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="tfaClose()">Close</button>'+(on?'<button class="btn" onclick="tfaOff()">Switch off</button>':'<button class="btn pri" onclick="tfaSetup()">Set up</button>')+'</div>');
+}
+async function tfaSetup(){
+  const r=await gcall('twofa_setup',{},tfaTok());if(!r.ok)return($('#tf_m').textContent=r.j.error||'Could not start set up.');
+  tfaBox('<div class="hd"><h3>Set up two-factor</h3></div><p class="sub" style="margin-top:0">In your authenticator app choose Add account, then Enter a setup key, and type this key:</p><p><code>'+esc(r.j.secret)+'</code></p><div class="frm"><div class="fld"><label for="tf_c">Code from the app</label><input id="tf_c" inputmode="numeric" autocomplete="one-time-code"></div></div><p id="tf_m" class="sub" style="color:var(--bad,#d33)"></p><div style="display:flex;gap:8px"><button class="btn" onclick="tfaClose()">Cancel</button><button class="btn pri" onclick="tfaOn()">Switch on</button></div>');
+}
+async function tfaOn(){
+  const r=await gcall('twofa_enable',{code:$('#tf_c').value},tfaTok());if(!r.ok)return($('#tf_m').textContent=r.j.error||'That code is not right.');
+  tfaBox('<div class="hd"><h3>Two-factor is on</h3></div><p class="sub" style="margin-top:0">Save these recovery codes somewhere safe. Each works once if you lose your phone. They are shown only now.</p><pre style="white-space:pre-line;font-family:inherit"><code>'+r.j.recovery.map(esc).join('\n')+'</code></pre><button class="btn pri" onclick="tfaClose()">I have saved them</button>');
+}
+function tfaOff(){
+  tfaBox('<div class="hd"><h3>Switch off two-factor</h3></div><div class="frm"><div class="fld"><label for="tf_p">Your password</label><input id="tf_p" type="password" autocomplete="current-password"></div><div class="fld"><label for="tf_c">Current code or recovery code</label><input id="tf_c" autocomplete="one-time-code"></div></div><p id="tf_m" class="sub" style="color:var(--bad,#d33)"></p><div style="display:flex;gap:8px"><button class="btn" onclick="tfaClose()">Cancel</button><button class="btn pri" onclick="tfaDo()">Switch off</button></div>');
+}
+async function tfaDo(){const r=await gcall('twofa_disable',{password:$('#tf_p').value,code:$('#tf_c').value},tfaTok());if(!r.ok)return($('#tf_m').textContent=r.j.error||'Could not switch off.');tfaClose()}
 async function gload(){
   let t='';try{t=sessionStorage.getItem(GK)||''}catch(e){}
   if(!t)return glogin();
@@ -874,7 +893,7 @@ async function gload(){
 if(window.WS_GROUP_LIVE){
   const msg=()=>toast('Sites, structure and rates for your group are managed by Gilded Age Consulting (www.gildedac.co.za).');
   nodeForm=siteForm=bulkImport=saveCfg=msg;
-  const d=document.querySelector('.demo');if(d)d.innerHTML='<a href="app.html">Site app</a> · <a href="#" onclick="try{sessionStorage.removeItem(\'ws_group_token\')}catch(e){}location.reload();return false">Sign out</a>';
+  const d=document.querySelector('.demo');if(d)d.innerHTML='<a href="app.html">Site app</a> · <a href="#" onclick="tfaOpen();return false">Two-factor</a> · <a href="privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="#" onclick="try{sessionStorage.removeItem(\'ws_group_token\')}catch(e){}location.reload();return false">Sign out</a>';
   const ds=$('#dsSel');if(ds)ds.style.display='none';
   S.D={name:'',regions:[],areas:[],sites:[],users:[]};compute();gload();
 } else if(window.WS_GROUP_DATA){const o=document.createElement('option');o.value='b';o.textContent=window.WS_GROUP_DATA.optionLabel||'Measured test run';$('#dsSel').insertBefore(o,$('#dsSel').firstChild);$('#dsSel').value='b';load('b')}else load('e');
