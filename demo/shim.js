@@ -19,8 +19,9 @@
     return s;
   }));
   try {
+    if (location.hash === '#demo') { localStorage.removeItem('ws_auth_token'); localStorage.removeItem('ws_auth_site'); } else {
     localStorage.setItem('ws_auth_token', 'demo');
-    localStorage.setItem('ws_auth_site', JSON.stringify({ id:1, name:'Harbour Street Kitchen', type:'Independent Restaurant', currency:'R' }));
+    localStorage.setItem('ws_auth_site', JSON.stringify({ id:1, name:'Harbour Street Kitchen', type:'Independent Restaurant', currency:'R' })); }
   } catch(e){}
   const json = (o, code) => new Response(JSON.stringify(o), { status: code || 200, headers: { 'Content-Type':'application/json' } });
   const realFetch = window.fetch.bind(window);
@@ -30,9 +31,9 @@
     const body = opts && opts.body ? JSON.parse(opts.body) : {};
     const a = body.action;
     if (/master\.php/.test(u)) {   // sign-up, code, login and reset are answered locally; nothing is sent or stored
-      if (a === 'site_login') return (body.password === DEMO_PIN) ? json({ ok:true, token:'demo', role:'admin', site:{ id:1, name:'Harbour Street Kitchen', type:'Independent Restaurant', currency:'R' } }) : json({ error:'The email or password is not right. In this demo the password is ' + DEMO_PIN + '.' }, 401);
-      if (a === 'signup') return json({ ok:true, pending:true, message:'Demo: your account would now be created and the payment details emailed. When Gilded Age confirms payment, a verification code is emailed. In this demo the code is ' + DEMO_CODE + '.' });
-      if (a === 'verify_code') return String(body.code) === DEMO_CODE ? json({ ok:true, message:'Demo: account active. Log in with the demo email and password ' + DEMO_PIN + '.' }) : json({ error:'That code is not right. In this demo it is ' + DEMO_CODE + '.' }, 422);
+      if (a === 'site_login') return (body.password === DEMO_PIN) ? json({ ok:true, token:'demo', role:'admin', demo:{ endsAt:null, daysLeft:14 }, site:{ id:1, name:'Harbour Street Kitchen', type:'Independent Restaurant', currency:'R' } }) : json({ error:'The email or password is not right. In this demo the password is ' + DEMO_PIN + '.' }, 401);
+      if (a === 'signup') return json({ ok:true, pending:true, plan: body.plan === 'demo' ? 'demo' : 'paid', message: body.plan === 'demo' ? 'Demo: your request would now go to Gilded Age for review, and a 6 digit verification code is emailed when it is approved. In this preview the code is ' + DEMO_CODE + '.' : 'Demo: your account would now be created and the payment details emailed. When Gilded Age confirms payment, a verification code is emailed. In this preview the code is ' + DEMO_CODE + '.' });
+      if (a === 'verify_code') return String(body.code) === DEMO_CODE ? json({ ok:true, plan:'demo', demoDays:14, message:'Your demo is open for 14 days. In this preview log in with any email and the password ' + DEMO_PIN + '.' }) : json({ error:'That code is not right. In this demo it is ' + DEMO_CODE + '.' }, 422);
       if (a === 'site_password_change') return json({ ok:true });
       return json({ ok:true, message:'Demo: a reset link would be emailed to you.' });
     }
