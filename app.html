@@ -665,7 +665,7 @@ html,body{max-width:100%;overflow-x:hidden}
           <div class="field"><label class="field-label" for="cfgGasType">Type of gas</label><select id="cfgGasType"><option value="lpg">LPG (cylinders or bulk tank)</option><option value="nat">Natural gas</option></select><div class="costline">Used to convert m³, litres, kWh, MJ and cylinders to kg when no supplier figure is typed.</div></div>
           <div class="field"><label class="field-label" for="cfgNoise">Cylinder noise filter (kg)</label><input type="number" id="cfgNoise" min="0" step="0.01"></div></div>
         <button class="btn primary small" onclick="saveFeedSettings()">Save</button></div>
-      <div class="editor-card"><h4>Targets and weekly digest</h4><p class="section-sub" style="margin-bottom:12px">Optional. Leave a target at 0 and it is not checked. Alerts and the digest use device data only.</p>
+      <div class="editor-card"><h4>Targets and weekly digest</h4><p class="section-sub" style="margin-bottom:12px">Optional. Leave a target at 0 and it is not checked. Target alerts and the digest include typed and imported history; device alerts use device data.</p>
         <div class="form-grid"><div class="field"><label class="field-label" for="cfgTWaste">Waste per cover, kg (at most)</label><input type="number" id="cfgTWaste" min="0" step="0.001"></div>
           <div class="field"><label class="field-label" for="cfgTDiv">Recycled share of waste, % (at least)</label><input type="number" id="cfgTDiv" min="0" max="100" step="0.1"></div>
           <div class="field"><label class="field-label" for="cfgTUtil">Utilities as % of sales (at most)</label><input type="number" id="cfgTUtil" min="0" max="100" step="0.1"></div>
@@ -1010,7 +1010,7 @@ const WSR = (function(){
 // One admin login. Scales, meters and the POS feed in on their own (see ingest.php); anything can be typed by hand
 // as a backup, and a typed figure always wins for that day.
 const API_ENDPOINT = 'https://gildedac.co.za/app/api.php'; // set to match your live deployment
-const BUILD_VERSION = 'v6.9.1';
+const BUILD_VERSION = 'v6.9.2';
 const BUILD_DATE = '2026-10-26';
 const AUTH_TOKEN_KEY = 'ws_auth_token', AUTH_SITE_KEY = 'ws_auth_site', LOOK_KEY = 'ws_look_v2';
 
@@ -1931,7 +1931,7 @@ async function ovAlertsC(){
     if (!alertCache.list || Date.now() - alertCache.at > 60000){ const r = await feedsCall('alerts'); alertCache = { at: Date.now(), list: r.alerts || [] }; }
   }catch(e){ box.innerHTML = ''; return; }
   const L = alertCache.list;
-  box.innerHTML = L.length ? `<div class="ov-card" style="margin-bottom:16px"><div class="hd"><h3>Alerts</h3><small>${L.length} to look at · from device data</small></div>${L.map(a=>`<div class="ov-act"><span class="tag ${a.level==='warn'?'hi':'lo'}">${a.level==='warn'?'CHECK':'INFO'}</span><div><b>${esc(a.title)}</b><small>${esc(a.detail)}</small></div></div>`).join('')}</div>` : '';
+  box.innerHTML = L.length ? `<div class="ov-card" style="margin-bottom:16px"><div class="hd"><h3>Alerts</h3><small>${L.length} to look at · from device and typed data</small></div>${L.map(a=>`<div class="ov-act"><span class="tag ${a.level==='warn'?'hi':'lo'}">${a.level==='warn'?'CHECK':'INFO'}</span><div><b>${esc(a.title)}</b><small>${esc(a.detail)}</small></div></div>`).join('')}</div>` : '';
 }
 
 /* ===================== THE BOARD (Power BI style) ===================== */
