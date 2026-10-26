@@ -446,6 +446,16 @@ html,body{max-width:100%;overflow-x:hidden}
 .auth-alt{margin:14px 0 0;text-align:center;font-size:13px}.auth-alt a{color:var(--accent)}
 
 .rp-in{display:flex;flex-wrap:wrap;gap:6px}.rp-in span{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--mute)}
+.meterbox{margin-top:10px;border-top:1px solid var(--grid);padding-top:8px}
+.meterbox summary{cursor:pointer;font-size:.85rem;color:var(--muted,inherit);min-height:32px;display:flex;align-items:center}
+.mrgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:8px 0}
+.mrgrid label{display:flex;flex-direction:column;gap:3px;font-size:.78rem}
+.mrgrid input,.mrgrid select{min-height:40px;padding:6px 8px;width:100%;box-sizing:border-box}
+#impPrev .hero-total{gap:18px}
+#impPrev .hero-total .n{font-size:26px;line-height:1.15}
+#impPrev .hero-total .l{font-size:11px}
+#impPrev li.bad{color:var(--bad);font-weight:600}
+#impWork td select{max-width:100%}
 
 </style></head><body>
 <!-- ================= AUTH ================= -->
@@ -532,6 +542,7 @@ html,body{max-width:100%;overflow-x:hidden}
       <p class="section-sub" id="ovSub">What operations cost now, what they earn, and where money is leaking.</p></div>
       <div class="seg" id="pfPeriod" role="group" aria-label="Reporting period"><button class="bi-chip" data-r="period:month">Month to date</button><button class="bi-chip" data-r="lastmonth">Prior month</button><button class="bi-chip" data-r="last:90">90 days</button><button class="bi-chip" data-r="period:year">Year to date</button></div></div>
     <div id="pfSetup"></div>
+    <div id="ovAlerts"></div>
     <div class="ov-grid">
       <aside class="ov-card" id="ovRail" aria-label="Net contribution"></aside>
       <div class="ov-main">
@@ -651,7 +662,15 @@ html,body{max-width:100%;overflow-x:hidden}
           <div class="field"><label class="field-label" for="cfgKwh">Electricity per kWh</label><input type="number" id="cfgKwh" min="0" step="0.01"></div>
           <div class="field"><label class="field-label" for="cfgGas">Gas per kg</label><input type="number" id="cfgGas" min="0" step="0.01"></div>
           <div class="field"><label class="field-label" for="cfgWater">Water per kilolitre</label><input type="number" id="cfgWater" min="0" step="0.01"></div>
+          <div class="field"><label class="field-label" for="cfgGasType">Type of gas</label><select id="cfgGasType"><option value="lpg">LPG (cylinders or bulk tank)</option><option value="nat">Natural gas</option></select><div class="costline">Used to convert m³, litres, kWh, MJ and cylinders to kg when no supplier figure is typed.</div></div>
           <div class="field"><label class="field-label" for="cfgNoise">Cylinder noise filter (kg)</label><input type="number" id="cfgNoise" min="0" step="0.01"></div></div>
+        <button class="btn primary small" onclick="saveFeedSettings()">Save</button></div>
+      <div class="editor-card"><h4>Targets and weekly digest</h4><p class="section-sub" style="margin-bottom:12px">Optional. Leave a target at 0 and it is not checked. Alerts and the digest use device data only.</p>
+        <div class="form-grid"><div class="field"><label class="field-label" for="cfgTWaste">Waste per cover, kg (at most)</label><input type="number" id="cfgTWaste" min="0" step="0.001"></div>
+          <div class="field"><label class="field-label" for="cfgTDiv">Recycled share of waste, % (at least)</label><input type="number" id="cfgTDiv" min="0" max="100" step="0.1"></div>
+          <div class="field"><label class="field-label" for="cfgTUtil">Utilities as % of sales (at most)</label><input type="number" id="cfgTUtil" min="0" max="100" step="0.1"></div>
+          <div class="field"><label class="field-label" for="cfgDigestTo">Send the digest to</label><input type="email" id="cfgDigestTo" placeholder="Blank = the account email"></div></div>
+        <label class="costline" style="display:flex;gap:8px;align-items:center;margin:4px 0 12px"><input type="checkbox" id="cfgDigest"> Email me a weekly digest (Mondays)</label>
         <button class="btn primary small" onclick="saveFeedSettings()">Save</button></div>
       <div class="editor-card"><h4>Power BI and Excel</h4><p class="section-sub" style="margin-bottom:12px">Create a read-only token, then in Power BI choose Get data, OData feed. Username: anything. Password: the token.</p>
         <div class="field"><label class="field-label">OData feed address</label><div class="cred" id="biUrl"></div></div>
@@ -676,6 +695,7 @@ html,body{max-width:100%;overflow-x:hidden}
     <div class="editor-card" style="margin-bottom:16px"><h4>Environmental factors</h4><p class="section-sub">Saved per kg of material diverted from landfill.</p>
       <div class="form-grid"><div class="field"><label class="field-label" for="envWaterFactor">Litres of water saved per kg</label><input type="number" step="any" id="envWaterFactor"></div><div class="field"><label class="field-label" for="envTreesFactor">Trees saved per 1,000 kg</label><input type="number" step="any" id="envTreesFactor"></div><div class="field"><label class="field-label" for="envLandfillFactor">Landfill saved (m³ per kg)</label><input type="number" step="any" id="envLandfillFactor"></div><div class="field"><label class="field-label" for="envCo2Factor">CO₂ saved (kg per kg)</label><input type="number" step="any" id="envCo2Factor"></div></div>
       <button class="btn primary small" onclick="saveEnvFactors()">Save factors</button></div>
+    <div class="editor-card" id="impCard" style="margin-bottom:16px"><h4>Import history</h4><div id="impBox"></div></div>
     <div class="editor-card" style="margin-bottom:16px"><h4>Hand-keyed sales (optional)</h4><p class="section-sub">Sales arrive on their own from a connected POS. Key a day's total here only for a till that is not connected. A typed figure wins over the feed.</p>
       <div class="form-grid"><div class="field"><label class="field-label" for="salesReportDate">Date</label><input type="date" id="salesReportDate"></div><div class="field"><label class="field-label" for="salesReportTotal">Total sales</label><input type="number" step="0.01" min="0" id="salesReportTotal" placeholder="0.00"></div></div>
       <button class="btn primary small" onclick="saveSalesReportTotal()">Save sales figure</button><div id="salesReportHistory" class="report-out" style="margin-top:12px"></div></div>
@@ -990,8 +1010,8 @@ const WSR = (function(){
 // One admin login. Scales, meters and the POS feed in on their own (see ingest.php); anything can be typed by hand
 // as a backup, and a typed figure always wins for that day.
 const API_ENDPOINT = 'https://gildedac.co.za/app/api.php'; // set to match your live deployment
-const BUILD_VERSION = 'v6.7.2';
-const BUILD_DATE = '2026-10-23';
+const BUILD_VERSION = 'v6.9.1';
+const BUILD_DATE = '2026-10-26';
 const AUTH_TOKEN_KEY = 'ws_auth_token', AUTH_SITE_KEY = 'ws_auth_site', LOOK_KEY = 'ws_look_v2';
 
 function getAuthToken(){ try{ return localStorage.getItem(AUTH_TOKEN_KEY); }catch(e){ return null; } }
@@ -1076,7 +1096,16 @@ function eRecyc(e){ return REC_KEYS.reduce((s,k)=>s+eRecycBy(e,k),0) + eRecycBy(
 function eOil(e){ return +e.usedOil || 0; }
 function recValue(e){ return REC_KEYS.reduce((s,k)=>s+eRecycBy(e,k)*(rates[k]||0),0); }
 function oilValue(e){ return eOil(e) * (oilSettings.usedRatePerKg||0); }
-function findEntryIndexForDate(date){ return entries.findIndex(e => e.date === date); }
+/* date -> position, rebuilt only when the list is replaced or changes length (a day is looked up many times per screen and per import) */
+let _dateIdx = null, _dateIdxArr = null, _dateIdxLen = -1;
+function findEntryIndexForDate(date){
+  if (!_dateIdx || _dateIdxArr !== entries || _dateIdxLen !== entries.length){
+    _dateIdx = new Map(); for (let i = entries.length - 1; i >= 0; i--) _dateIdx.set(entries[i].date, i);   // first entry for a date wins, as findIndex did
+    _dateIdxArr = entries; _dateIdxLen = entries.length;
+  }
+  const i = _dateIdx.get(date);
+  return i !== undefined && entries[i] && entries[i].date === date ? i : -1;
+}
 function periodBounds(period, offset){
   const now = new Date(); offset = offset||0; let start, end;
   if (period==='day'){ start = new Date(now.getFullYear(), now.getMonth(), now.getDate()-offset); end = new Date(start); end.setDate(end.getDate()+1); }
@@ -1311,6 +1340,7 @@ function onEntryDateChange(force){ todayDirty = false; touched = {}; renderToday
 function loadDraft(){
   const e = curEntry(); dr = {};
   FIELD_PATHS.forEach(p=>{ const v = e ? getPath(e, p) : undefined; dr[p] = (v != null && +v > 0) ? String(Math.round(+v*1000)/1000) : ''; });
+  loadMeters();
 }
 function srcOf(p){
   const e = curEntry(), fs = (e && e.feedSrc) || {}, v = parseFloat(dr[p]) || 0;
@@ -1324,6 +1354,96 @@ function badge(p){
   const fd = (feedState.days||{})[curDate()] || {}; const util = p.startsWith('util.') ? p.slice(5) : null;
   const est = s === 'feed' && util && getPath(fd, 'utilEst.'+util) > 0;
   return s === 'feed' ? `<span class="src feed">Device</span>${est ? ' <span class="src est" title="Part of this figure was estimated across a gap in the meter readings">Estimated</span>' : ''}` : '<span class="src manual">Typed</span>';
+}
+
+/* ---------- manual meter readings: type the meter index, the day's use is worked out ---------- */
+/* ---------- gas: the app converts whatever the meter or bill reads into kg ---------- */
+/* Standard reference values, used only when the site has not typed its own figure. They are estimates and are labelled as such. */
+const GAS_STD = {
+  lpg: { label:'LPG',         perM3:2.2,  perL:0.51,    kwhPerKg:12.8, mjPerKg:46.0 },   // vapour 2.2 kg/m3, liquid 0.51 kg/L, net energy 12.8 kWh/kg
+  nat: { label:'Natural gas', perM3:0.72, perL:0.00072, kwhPerKg:14.7, mjPerKg:53.0 }    // 0.72 kg/m3, net energy about 10.6 kWh/m3
+};
+function gasType(){
+  const s = typeof feedState !== 'undefined' && feedState.settings && feedState.settings.gas_type;
+  if (s && GAS_STD[s]) return s;
+  try{ const l = localStorage.getItem('ws_gastype'); if (l && GAS_STD[l]) return l; }catch(_){}
+  return 'lpg';
+}
+/* kg per one unit as typed (unit labels: kg, tonnes, m³, litres, kWh, MJ, "19 kg cylinders") */
+function gasAutoFactor(unit){
+  const t = GAS_STD[gasType()];
+  switch (unit){
+    case 'kg': return 1; case 'g': return 0.001; case 'tonnes': return 1000;
+    case 'm³': return t.perM3; case 'litres': return t.perL; case 'kWh': return 1 / t.kwhPerKg; case 'MJ': return 1 / t.mjPerKg;
+  }
+  const m = /^(\d+) kg cylinders?$/.exec(unit); return m ? +m[1] : 0;
+}
+function gasStdNote(unit){
+  const t = GAS_STD[gasType()], f = gasAutoFactor(unit);
+  return f && unit !== 'kg' ? `Converted at the standard ${t.label} figure (${nf(f, f < 0.1 ? 4 : 3)} kg per ${unit}), an estimate. Type your supplier's figure to use that instead.` : '';
+}
+const METER_DEF = {
+  gas:   { path:'util.gasKg', label:'Gas', out:'kg',  units:[['kg',1,false],['m³',0,false],['litres',0,false],['kWh',0,false],['MJ',0,false]] },
+  elec:  { path:'util.kwh',   label:'Electricity', out:'kWh', units:[['kWh',1,false],['MWh',1000,false]] },
+  water: { path:'util.waterL',label:'Water', out:'L', units:[['m³ (kl)',1000,false],['litres',1,false]] }
+};
+let mr = {}, keepMeters = false;
+function meterPrevClose(k, date){
+  let best = null;
+  (entries||[]).forEach(e=>{ if (e.date < date && e.meter && e.meter[k] && e.meter[k].close != null && (!best || e.date > best.date)) best = e; });
+  return best ? best.meter[k].close : '';
+}
+function loadMeters(){
+  if (keepMeters && Object.keys(mr).length) return;   // a unit change re-draws the screen; keep what is being typed
+  const e = curEntry(), date = curDate(); mr = {};
+  Object.keys(METER_DEF).forEach(k=>{
+    const m = (e && e.meter && e.meter[k]) || {};
+    const d = METER_DEF[k];
+    let fac = m.factor; if (k === 'gas'){ fac = m.custom ? m.factor : ''; } else if (fac == null){ try { fac = localStorage.getItem('ws_mfac_'+k); } catch(_){} }
+    mr[k] = { open: m.open != null ? String(m.open) : String(meterPrevClose(k, date)), close: m.close != null ? String(m.close) : '', unit: m.unit || d.units[0][0], factor: fac != null && fac !== '' ? String(fac) : '' };
+  });
+}
+function meterFactor(k){
+  const d = METER_DEF[k], u = d.units.find(x=>x[0] === mr[k].unit) || d.units[0];
+  if (k === 'gas'){ const o = parseFloat(mr[k].factor); return o > 0 ? o : gasAutoFactor(mr[k].unit); }   // typed supplier figure wins, otherwise the standard figure for the site's gas type
+  if (u[2]) return parseFloat(mr[k].factor) || 0;
+  return u[1];
+}
+function meterBox(k){
+  const d = METER_DEF[k], m = mr[k] || {open:'',close:'',unit:d.units[0][0],factor:''};
+  const u = d.units.find(x=>x[0] === m.unit) || d.units[0];
+  return `<details class="meterbox"${m.close ? ' open' : ''}><summary>Type meter readings instead</summary>
+    <div class="mrgrid">
+      <label>Opening<input type="number" inputmode="decimal" step="any" id="mr_${k}_open" value="${esc(m.open)}" oninput="meterIn('${k}')"></label>
+      <label>Closing<input type="number" inputmode="decimal" step="any" id="mr_${k}_close" value="${esc(m.close)}" oninput="meterIn('${k}')"></label>
+      <label>Meter reads in<select id="mr_${k}_unit" onchange="meterIn('${k}',true)">${d.units.map(x=>`<option${x[0]===m.unit?' selected':''}>${esc(x[0])}</option>`).join('')}</select></label>
+      ${u[2] || (k === 'gas' && u[0] !== 'kg') ? `<label>${esc(d.out)} per ${esc(u[0])}${k === 'gas' ? ' (optional)' : ''}<input type="number" inputmode="decimal" step="any" min="0" id="mr_${k}_fac" value="${esc(m.factor)}" placeholder="${k === 'gas' ? 'standard ' + nf(gasAutoFactor(u[0]), 3) : 'from your supplier'}" oninput="meterIn('${k}')"></label>` : ''}
+    </div>
+    <div class="tools"><span class="costline" id="mr_${k}_res"></span><button class="btn ghost small" onclick="meterApply('${k}')">Use this</button></div></details>`;
+}
+function meterIn(k, rerender){
+  const g = id => { const el = $('mr_'+k+'_'+id); return el ? el.value : ''; };
+  mr[k].open = g('open'); mr[k].close = g('close'); mr[k].unit = g('unit') || mr[k].unit;
+  if ($('mr_'+k+'_fac')) { mr[k].factor = g('fac'); if (k !== 'gas'){ try { localStorage.setItem('ws_mfac_'+k, mr[k].factor); } catch(_){} } }
+  if (rerender){ if (k === 'gas'){ mr[k].factor = ''; } keepMeters = true; try{ renderToday(true); } finally { keepMeters = false; } return; }
+  const r = meterCalc(k); const el = $('mr_'+k+'_res'); if (el) el.textContent = r.msg;
+}
+function meterCalc(k){
+  const d = METER_DEF[k], m = mr[k], o = parseFloat(m.open), c = parseFloat(m.close), f = meterFactor(k);
+  if (!(c >= 0) || isNaN(c)) return { ok:false, msg:'Type the closing reading.' };
+  if (isNaN(o)) return { ok:false, msg:'Type the opening reading.' };
+  if (c < o) return { ok:false, msg:'Closing is lower than opening. If the meter was replaced or reset, type the day\'s use directly.' };
+  if (!(f > 0)) return { ok:false, msg:`Type the ${d.out} per ${m.unit} for your supply.` };
+  const use = Math.round((c - o) * f * 1000) / 1000;
+  return { ok:true, use, msg:`Use ${nf(use, 2)} ${d.out}` + (k === 'gas' && !(parseFloat(m.factor) > 0) ? '. ' + gasStdNote(m.unit) : '') };
+}
+function meterApply(k){
+  meterIn(k); const r = meterCalc(k); const el = $('mr_'+k+'_res'); if (el) el.textContent = r.msg;
+  if (!r.ok){ toast(r.msg); return; }
+  const p = METER_DEF[k].path; dr[p] = String(r.use); touched[p] = true; todayDirty = true;
+  const fe = $(fid(p)); if (fe) fe.value = dr[p];
+  const bd = $('bd_'+fid(p)); if (bd) bd.innerHTML = badge(p);
+  updateHero(); setSaveMsg(); toast(METER_DEF[k].label + ' set to ' + nf(r.use, 2) + ' ' + METER_DEF[k].out + '. Save the day to keep it.');
 }
 function toolsFor(p, mass){
   const fv = feedVal(p);
@@ -1365,9 +1485,9 @@ function renderToday(soft){
       ${REC_KEYS.map(k=>`<div class="rowfield" style="--pc:var(${PILLAR_COLORS[k]})"><label for="${fid('recycling.'+k)}"><span class="sw"></span>${esc(REC_LABEL[k])}</label><input type="number" inputmode="decimal" min="0" step="0.01" id="${fid('recycling.'+k)}" value="${esc(dr['recycling.'+k])}" placeholder="0 kg" oninput="onField('recycling.${k}')"><span id="bd_${fid('recycling.'+k)}">${badge('recycling.'+k)}</span></div>`).join('')}
       <div class="tools"><span class="costline" id="recycTotal"></span><span class="addrow"><select id="addRecKey" aria-label="Material" style="min-height:40px;padding:6px 10px;width:auto">${REC_KEYS.map(k=>`<option value="${k}">${esc(REC_LABEL[k])}</option>`).join('')}</select><input type="number" min="0" step="0.01" id="addRecVal" placeholder="+ kg" aria-label="Add a weighing" onkeydown="if(event.key==='Enter'){addRecWeight()}"><button class="btn ghost small" onclick="addRecWeight()">Add</button></span></div>
       ${devLine(['recycling_plastic','recycling_paper','recycling_glass','recycling_cans'],'recycling scale')}</div>
-    <div class="pillar" ${pc('gas')}><h3><span class="sw"></span>Gas</h3><p class="hint">LPG used today.</p>${bigField('util.gasKg','kg')}${toolsFor('util.gasKg', false)}<div class="costline" id="gasCost"></div>${hourSpark('gas','var(--c-gas)')}${devLine(['gas'],'gas meter')}</div>
-    <div class="pillar" ${pc('elec')}><h3><span class="sw"></span>Electricity</h3><p class="hint">Power used today.</p>${bigField('util.kwh','kWh')}${toolsFor('util.kwh', false)}<div class="costline" id="elecCost"></div>${hourSpark('electricity','var(--c-elec)')}${devLine(['electricity'],'electricity meter')}</div>
-    <div class="pillar" ${pc('water')}><h3><span class="sw"></span>Water</h3><p class="hint">Water used today, in litres.</p>${bigField('util.waterL','L','1')}${toolsFor('util.waterL', false)}<div class="costline" id="waterCost"></div>${hourSpark('water','var(--c-water)')}${devLine(['water'],'water meter')}</div>`;
+    <div class="pillar" ${pc('gas')}><h3><span class="sw"></span>Gas</h3><p class="hint">LPG used today.</p>${bigField('util.gasKg','kg')}${toolsFor('util.gasKg', false)}<div class="costline" id="gasCost"></div>${meterBox('gas')}${hourSpark('gas','var(--c-gas)')}${devLine(['gas'],'gas meter')}</div>
+    <div class="pillar" ${pc('elec')}><h3><span class="sw"></span>Electricity</h3><p class="hint">Power used today.</p>${bigField('util.kwh','kWh')}${toolsFor('util.kwh', false)}<div class="costline" id="elecCost"></div>${meterBox('elec')}${hourSpark('electricity','var(--c-elec)')}${devLine(['electricity'],'electricity meter')}</div>
+    <div class="pillar" ${pc('water')}><h3><span class="sw"></span>Water</h3><p class="hint">Water used today, in litres.</p>${bigField('util.waterL','L','1')}${toolsFor('util.waterL', false)}<div class="costline" id="waterCost"></div>${meterBox('water')}${hourSpark('water','var(--c-water)')}${devLine(['water'],'water meter')}</div>`;
   updateHero(); updateLiveChip(); setSaveMsg();
 }
 function updateLiveChip(){
@@ -1423,6 +1543,8 @@ async function saveEntry(){
   delete entry.feedOnly;
   FIELD_PATHS.forEach(p=>{ const v = parseFloat(dr[p]); setPath(entry, p, v > 0 ? Math.round(v*1000)/1000 : 0); });
   if (!FIELD_PATHS.some(p=>parseFloat(dr[p]) > 0) && !prev){ toast('Nothing entered yet.'); return; }
+  entry.meter = entry.meter || {};
+  Object.keys(METER_DEF).forEach(k=>{ const m = mr[k]; if (m && m.close !== '' && !isNaN(parseFloat(m.close))) entry.meter[k] = { open: parseFloat(m.open)||0, close: parseFloat(m.close), unit: m.unit, factor: meterFactor(k), custom: k === 'gas' ? (parseFloat(m.factor) > 0) : undefined }; });
   entry.recovValue = recValue(entry); entry.usedOilValue = oilValue(entry);
   reconcileFeedSrc(entry);
   if (idx >= 0) entries[idx] = entry; else entries.push(entry);
@@ -1442,7 +1564,7 @@ async function saveEntry(){
 const FEEDS_ENDPOINT = API_ENDPOINT.replace(/api\.php.*$/, 'feeds.php');
 const INGEST_URL = API_ENDPOINT.replace(/api\.php.*$/, 'ingest.php');
 const BI_ODATA_URL = API_ENDPOINT.replace(/api\.php.*$/, 'bi.php') + '/odata';
-let feedState = { devices:[], settings:{ tz:'Africa/Johannesburg', tariff_kwh:0, tariff_gas_kg:0, tariff_water_kl:0, noise_kg:0.02 }, days:{}, hourly:[], pos:{}, ok:false, error:'', loadedAt:null };
+let feedState = { devices:[], settings:{ tz:'Africa/Johannesburg', tariff_kwh:0, tariff_gas_kg:0, tariff_water_kl:0, noise_kg:0.02, gas_type:'lpg' }, days:{}, hourly:[], pos:{}, ok:false, error:'', loadedAt:null };
 let feedAdminPin = null; // kept in memory only, for the current unlock
 let feedCatalog = null;
 
@@ -1591,14 +1713,15 @@ async function renderIntegrations(){
       </td></tr>`).join('')}
     </tbody></table></div>` : '<p class="section-sub" style="margin:0;">No devices yet. Add a scale, a meter or your POS.</p>';
   const s = feedState.settings;
-  if ($('cfgTz')){ $('cfgTz').value = s.tz; $('cfgKwh').value = s.tariff_kwh; $('cfgGas').value = s.tariff_gas_kg; $('cfgWater').value = s.tariff_water_kl; $('cfgNoise').value = s.noise_kg; }
+  if ($('cfgTz')){ $('cfgTz').value = s.tz; $('cfgKwh').value = s.tariff_kwh; $('cfgGas').value = s.tariff_gas_kg; $('cfgWater').value = s.tariff_water_kl; $('cfgNoise').value = s.noise_kg; if ($('cfgGasType')) $('cfgGasType').value = (s.gas_type === 'nat' ? 'nat' : 'lpg'); }
+  if ($('cfgTWaste')){ $('cfgTWaste').value = s.target_waste_kg_cover || ''; $('cfgTDiv').value = s.target_diversion_pct || ''; $('cfgTUtil').value = s.target_utility_pct || ''; $('cfgDigestTo').value = s.digest_to || ''; $('cfgDigest').checked = !!(+s.digest_weekly); }
   if ($('biUrl')) $('biUrl').textContent = BI_ODATA_URL;
   renderBiTokens(); renderFeedLog();
 }
 async function saveFeedSettings(){
   try{
-    const r = await feedsWrite('settings_save', { settings:{ tz:$('cfgTz').value.trim(), tariff_kwh:parseFloat($('cfgKwh').value)||0, tariff_gas_kg:parseFloat($('cfgGas').value)||0, tariff_water_kl:parseFloat($('cfgWater').value)||0, noise_kg:parseFloat($('cfgNoise').value)||0 } });
-    feedState.settings = Object.assign(feedState.settings, r.settings); toast('Saved.'); await loadFeeds(); renderBoard(); renderIntegrations();
+    const r = await feedsWrite('settings_save', { settings:{ tz:$('cfgTz').value.trim(), tariff_kwh:parseFloat($('cfgKwh').value)||0, tariff_gas_kg:parseFloat($('cfgGas').value)||0, tariff_water_kl:parseFloat($('cfgWater').value)||0, noise_kg:parseFloat($('cfgNoise').value)||0, gas_type:$('cfgGasType') ? $('cfgGasType').value : 'lpg', target_waste_kg_cover:parseFloat($('cfgTWaste').value)||0, target_diversion_pct:parseFloat($('cfgTDiv').value)||0, target_utility_pct:parseFloat($('cfgTUtil').value)||0, digest_weekly:$('cfgDigest').checked?1:0, digest_to:$('cfgDigestTo').value.trim() } });
+    feedState.settings = Object.assign(feedState.settings, r.settings); try{ localStorage.setItem('ws_gastype', feedState.settings.gas_type || 'lpg'); }catch(_){} toast('Saved.'); await loadFeeds(); renderBoard(); renderIntegrations();
   }catch(e){ feedErr(e); }
 }
 
@@ -1798,6 +1921,19 @@ function biDownloadPbids(){
   toast('Open the file in Power BI Desktop, then sign in with any username and your token as the password.');
 }
 
+
+/* ---------- alerts: computed on the server from device data ---------- */
+let alertCache = { at: 0, list: null };
+async function ovAlertsC(){
+  const box = $('ovAlerts'); if (!box) return;
+  if (!feedState.ok){ box.innerHTML = ''; return; }
+  try{
+    if (!alertCache.list || Date.now() - alertCache.at > 60000){ const r = await feedsCall('alerts'); alertCache = { at: Date.now(), list: r.alerts || [] }; }
+  }catch(e){ box.innerHTML = ''; return; }
+  const L = alertCache.list;
+  box.innerHTML = L.length ? `<div class="ov-card" style="margin-bottom:16px"><div class="hd"><h3>Alerts</h3><small>${L.length} to look at · from device data</small></div>${L.map(a=>`<div class="ov-act"><span class="tag ${a.level==='warn'?'hi':'lo'}">${a.level==='warn'?'CHECK':'INFO'}</span><div><b>${esc(a.title)}</b><small>${esc(a.detail)}</small></div></div>`).join('')}</div>` : '';
+}
+
 /* ===================== THE BOARD (Power BI style) ===================== */
 const biF = { rangeKey:'last:30', from:null, to:null, source:'all', weekday:null, bucket:null };
 const MATS = [['plastic','Plastic','--c-plastic'],['paper','Paper & cardboard','--c-paper'],['glass','Glass','--c-glass'],['cans','Cans','--c-cans']];
@@ -1831,7 +1967,7 @@ function rowFor(e){
   r.recyc = MATS.reduce((s,m)=>s+r[m[0]],0) + r.mixed;
   r.est = !!(fd.utilEst && (fd.utilEst.gasKg>0 || fd.utilEst.kwh>0 || fd.utilEst.waterL>0));
   r.sales = e.salesTyped ? (+e.salesTotal||0) : ((typeof fd.salesTotal === 'number') ? fd.salesTotal : (+e.salesTotal||0));
-  r.covers = e.salesTyped ? 0 : (fd.covers || e.covers || 0);
+  r.covers = (+e.covers) || (e.salesTyped ? 0 : (fd.covers || 0));
   r.orders = e.salesTyped ? 0 : (fd.orders || 0);
   r.src = {}; FIELD_PATHS.forEach(p=>{ r.src[p] = (e.feedSrc||{})[p] ? 'Device' : ((+getPath(e,p)||0) > 0 ? 'Typed' : ''); });
   return r;
@@ -2046,7 +2182,7 @@ function biExportCsv(){
 }
 function historyList(){
   const saved = entries.filter(e=>!e.feedOnly).sort((a,b)=>a.date<b.date?1:-1).slice(0,60);
-  $('historyBody').innerHTML = saved.length ? saved.map(e=>`<tr><td>${esc(e.date)}</td><td class="num">${nf(eWaste(e))}</td><td class="num">${nf(eRecyc(e))}</td><td class="num">${nf(eOil(e))}</td><td><button class="btn danger small" onclick="deleteEntry('${esc(e.id)}')">Delete</button></td></tr>`).join('') : '<tr><td colspan="5" class="bi-empty">Nothing saved yet.</td></tr>';
+  $('historyBody').innerHTML = saved.length ? saved.map(e=>`<tr><td>${esc(e.date)}${e.imps && e.imps.length ? ' <span class="src est">imported</span>' : ''}</td><td class="num">${nf(eWaste(e))}</td><td class="num">${nf(eRecyc(e))}</td><td class="num">${nf(eOil(e))}</td><td><button class="btn danger small" onclick="deleteEntry('${esc(e.id)}')">Delete</button></td></tr>`).join('') : '<tr><td colspan="5" class="bi-empty">Nothing saved yet.</td></tr>';
 }
 function biInit(){
   pfInit();
@@ -2088,7 +2224,7 @@ function renderProfit(){
   document.querySelectorAll('#pfPeriod .bi-chip').forEach(b=>b.classList.toggle('on', b.dataset.r === pfF.key));
   const rg = pfRange(), span = dayDiff(rg.from, rg.to) + 1, pFrom = addDays(rg.from, -span), pTo = addDays(rg.from, -1);
   const m = profitModel(rg.from, rg.to), pm = profitModel(pFrom, pTo), lk = ovLeakModel(m, rg);
-  ovTitle(rg); pfSetup(m); ovRailC(m, lk); ovCostsC(m, pm); ovLeaksC(lk); ovActionsC(m, pm, rg, lk);
+  ovTitle(rg); pfSetup(m); ovRailC(m, lk); ovCostsC(m, pm); ovLeaksC(lk); ovActionsC(m, pm, rg, lk); ovAlertsC();
   pfRatiosC(m, pm); pfAfterC(rg); pfVoidsC(rg); pfLaborC(rg); pfNormC(rg); pfHourC(rg);
   $('ovNote').textContent = 'Food waste is valued at your average food cost per kg. Leakage is an estimate worked out from your own data: waste above the usual level for that weekday, till write-offs, and utilities used in closed hours. Some closed-hour use (fridges, freezers) is expected.';
 }
@@ -2418,7 +2554,7 @@ function renderSettings(){
   $('rvPlastic').value = rates.plastic||''; $('rvPaper').value = rates.paper||''; $('rvGlass').value = rates.glass||''; $('rvCans').value = rates.cans||''; $('rvOil').value = oilSettings.usedRatePerKg||''; $('rvFood').value = rates.foodCostPerKg||''; $('rvFlag').value = rates.wasteFlagPct||30;
   $('envWaterFactor').value = envFactors.water; $('envTreesFactor').value = envFactors.trees; $('envLandfillFactor').value = envFactors.landfill; $('envCo2Factor').value = envFactors.co2;
   if (!$('salesReportDate').value) $('salesReportDate').value = isoDate(new Date());
-  renderSalesHistory(); renderEftDetails();
+  renderSalesHistory(); renderEftDetails(); if (typeof renderImportCard === 'function') renderImportCard();
 }
 async function saveBusinessProfile(){
   setup.name = $('setBizName').value.trim() || setup.name; setup.currency = $('setBizCurrency').value.trim() || setup.currency;
@@ -2457,6 +2593,404 @@ function renderSalesHistory(){
   const el = $('salesReportHistory'); if (!el) return;
   const list = entries.filter(e=>e.salesTyped).sort((a,b)=>a.date<b.date?1:-1).slice(0,10);
   el.innerHTML = list.length ? `<table class="htable"><thead><tr><th>Date</th><th>Total sales</th></tr></thead><tbody>${list.map(e=>`<tr><td class="mono">${esc(e.date)}</td><td class="mono">${fmtMoney(e.salesTotal)}</td></tr>`).join('')}</tbody></table>` : '<p class="section-sub">No hand-keyed sales yet.</p>';
+}
+
+/* ===================== IMPORT HISTORY (v6.9.0) =====================
+   Load past daily figures from an Excel (.xlsx) or CSV file so a business can see the app on its own numbers.
+   Everything is read in the browser. Imported figures are saved as typed history, so they behave like typed entries:
+   a device figure never overwrites them and they can be undone as a batch. Nothing is assumed: units that need a
+   conversion (gas in m3, litres, kWh or MJ) need the supplier's kg-per-unit figure, or that column is not loaded. */
+const IMP_FIELDS = [
+  { k:'kitchenWaste', path:'kitchenWaste', label:'Kitchen waste', kind:'mass', re:/kitchen|food\s*waste|^waste|waste\s*(kg|weight)?$|garbage|refuse/i },
+  { k:'plastic', path:'recycling.plastic', label:'Recycling: plastic', kind:'mass', re:/plastic/i },
+  { k:'paper', path:'recycling.paper', label:'Recycling: paper and cardboard', kind:'mass', re:/paper|cardboard/i },
+  { k:'glass', path:'recycling.glass', label:'Recycling: glass', kind:'mass', re:/glass/i },
+  { k:'cans', path:'recycling.cans', label:'Recycling: cans', kind:'mass', re:/\bcans?\b|\btins?\b|metal/i },
+  { k:'oil', path:'usedOil', label:'Used cooking oil', kind:'mass', re:/\boil\b|grease/i },
+  { k:'gas', path:'util.gasKg', label:'Gas', kind:'gas', re:/\bgas\b|lpg|propane/i },
+  { k:'kwh', path:'util.kwh', label:'Electricity', kind:'elec', re:/electric|kwh|power|energy|eskom/i },
+  { k:'water', path:'util.waterL', label:'Water', kind:'water', re:/water|municipal\s*water/i },
+  { k:'sales', path:'salesTotal', label:'Sales (total for the day)', kind:'money', re:/sales|revenue|turnover|takings|income/i },
+  { k:'covers', path:'covers', label:'Covers (guests served)', kind:'count', re:/cover|guest|pax|customer|diner|patron/i }
+];
+const IMP_UNITS = {
+  mass:  [['kg',1,false],['g',0.001,false],['tonnes',1000,false]],
+  gas:   [['kg',1,false],['tonnes',1000,false],['m³',0,'g'],['litres',0,'g'],['kWh',0,'g'],['MJ',0,'g'],['9 kg cylinders',9,false],['14 kg cylinders',14,false],['19 kg cylinders',19,false],['48 kg cylinders',48,false]],
+  elec:  [['kWh',1,false],['MWh',1000,false],['Wh',0.001,false]],
+  water: [['litres',1,false],['kilolitres / m³',1000,false]],
+  money: [['as typed',1,false]],
+  count: [['count',1,false]]
+};
+const IMP_NEEDS_FACTOR = { gas:'kg per unit (optional)' };
+let imp = null;      // working state for the file being imported
+const IMP_MAX_ROWS = 20000;
+
+/* ---------- reading files ---------- */
+function impParseCSV(text){
+  text = String(text).replace(/^﻿/, '');
+  const first = text.split(/\r?\n/).slice(0,5).join('\n');
+  const cnt = c => (first.match(new RegExp(c === '\t' ? '\\t' : '\\' + c, 'g')) || []).length;
+  let delim = ','; const sc = cnt(';'), tc = cnt('\t'), cc = cnt(',');
+  if (tc > cc && tc >= sc) delim = '\t'; else if (sc > cc) delim = ';';
+  const rows = []; let row = [], cur = '', q = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (q){ if (c === '"'){ if (text[i+1] === '"'){ cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === delim){ row.push(cur); cur = ''; }
+    else if (c === '\n' || c === '\r'){ if (c === '\r' && text[i+1] === '\n') i++; row.push(cur); cur = ''; rows.push(row); row = []; }
+    else cur += c;
+  }
+  if (cur !== '' || row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+async function impInflate(bytes){
+  if (typeof DecompressionStream === 'undefined') throw new Error('This browser cannot open Excel files. Save the sheet as CSV and import that instead.');
+  const ds = new DecompressionStream('deflate-raw');
+  return new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer();
+}
+async function impUnzip(buf){
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  let e = -1; for (let i = u8.length - 22; i >= Math.max(0, u8.length - 70000); i--){ if (dv.getUint32(i, true) === 0x06054b50){ e = i; break; } }
+  if (e < 0) throw new Error('This does not look like an Excel (.xlsx) file.');
+  const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true); const files = {};
+  const dec = new TextDecoder();
+  for (let i = 0; i < n; i++){
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true), csz = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), lo = dv.getUint32(p + 42, true);
+    const name = dec.decode(u8.subarray(p + 46, p + 46 + nl));
+    files[name] = { method, csz, lo };
+    p += 46 + nl + el + cl;
+  }
+  const get = async name => {
+    const f = files[name]; if (!f) return null;
+    const nl = dv.getUint16(f.lo + 26, true), el = dv.getUint16(f.lo + 28, true), s = f.lo + 30 + nl + el;
+    const data = u8.subarray(s, s + f.csz);
+    const out = f.method === 0 ? data : new Uint8Array(await impInflate(data));
+    return dec.decode(out);
+  };
+  return { names:Object.keys(files), get };
+}
+function impColIndex(ref){ const m = /^([A-Z]+)/.exec(ref || ''); if (!m) return 0; let n = 0; for (const ch of m[1]) n = n * 26 + (ch.charCodeAt(0) - 64); return n - 1; }
+async function impReadXlsx(buf){
+  const z = await impUnzip(buf), P = new DOMParser();
+  const xml = async name => { const t = await z.get(name); return t ? P.parseFromString(t, 'application/xml') : null; };
+  const shared = []; const sx = await xml('xl/sharedStrings.xml');
+  if (sx) sx.querySelectorAll('si').forEach(si => shared.push(Array.from(si.querySelectorAll('t')).map(t=>t.textContent).join('')));
+  const wb = await xml('xl/workbook.xml'), rels = await xml('xl/_rels/workbook.xml.rels');
+  const relMap = {}; if (rels) rels.querySelectorAll('Relationship').forEach(r => { relMap[r.getAttribute('Id')] = r.getAttribute('Target'); });
+  const sheets = [];
+  if (wb) wb.querySelectorAll('sheet').forEach((s, i) => {
+    const rid = s.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id') || s.getAttribute('r:id');
+    let t = relMap[rid] || ('worksheets/sheet' + (i + 1) + '.xml'); t = t.replace(/^\//, ''); if (!t.startsWith('xl/')) t = 'xl/' + t;
+    sheets.push({ name:s.getAttribute('name') || ('Sheet ' + (i + 1)), path:t });
+  });
+  if (!sheets.length) throw new Error('No sheets found in that file.');
+  const readSheet = async sh => {
+    const doc = await xml(sh.path); if (!doc) return [];
+    const rows = [];
+    doc.querySelectorAll('sheetData > row').forEach(r => {
+      const out = [];
+      r.querySelectorAll('c').forEach(c => {
+        const ci = impColIndex(c.getAttribute('r')), t = c.getAttribute('t'), v = c.querySelector('v');
+        let val = '';
+        if (t === 's') val = v ? (shared[parseInt(v.textContent, 10)] || '') : '';
+        else if (t === 'inlineStr') val = Array.from(c.querySelectorAll('t')).map(x=>x.textContent).join('');
+        else if (t === 'b') val = v && v.textContent === '1' ? 'TRUE' : 'FALSE';
+        else if (t === 'e') val = '';
+        else if (t === 'str') val = v ? v.textContent : '';
+        else if (v && v.textContent !== '') val = Number(v.textContent);
+        out[ci] = val;
+      });
+      for (let i = 0; i < out.length; i++) if (out[i] === undefined) out[i] = '';
+      rows.push(out);
+    });
+    return rows;
+  };
+  return { sheets, readSheet };
+}
+
+/* ---------- numbers and dates ---------- */
+function impNum(v){
+  if (typeof v === 'number') return isFinite(v) ? v : NaN;
+  let s = String(v == null ? '' : v).trim(); if (s === '') return null;
+  s = s.replace(/[^\d,.\-]/g, '');
+  if (s === '' || s === '-' ) return NaN;
+  const lc = s.lastIndexOf(','), ld = s.lastIndexOf('.');
+  if (lc >= 0 && ld >= 0) s = lc > ld ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+  else if (lc >= 0) s = /^-?\d{1,3}(,\d{3})+$/.test(s) ? s.replace(/,/g, '') : s.replace(',', '.');
+  const n = Number(s); return isFinite(n) ? n : NaN;
+}
+function impDate(v, fmt, monthOnly){
+  const iso = d => isoDate(d);
+  if (v === '' || v == null) return null;
+  if (typeof v === 'number'){
+    if (v > 20000 && v < 80000){ const d = new Date(Date.UTC(1899, 11, 30) + Math.round(v) * 86400000); return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2,'0') + '-' + String(d.getUTCDate()).padStart(2,'0'); }
+    return null;
+  }
+  const s = String(v).trim(); let m;
+  if ((m = /^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/.exec(s))) return iso(new Date(+m[1], +m[2] - 1, +m[3]));
+  if (monthOnly){
+    if ((m = /^(\d{4})[-\/.](\d{1,2})$/.exec(s))) return iso(new Date(+m[1], +m[2] - 1, 1));
+    if ((m = /^(\d{1,2})[-\/.](\d{4})$/.exec(s))) return iso(new Date(+m[2], +m[1] - 1, 1));
+    if ((m = /^([A-Za-z]{3,9})\.?[\s\-]+(\d{2,4})$/.exec(s))){ const d = new Date('1 ' + m[1] + ' ' + (m[2].length === 2 ? '20' + m[2] : m[2])); if (!isNaN(d)) return iso(d); }
+  }
+  if ((m = /^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})/.exec(s))){
+    let a = +m[1], b = +m[2], y = +m[3]; if (y < 100) y += 2000;
+    let dd = fmt === 'mdy' ? b : a, mm = fmt === 'mdy' ? a : b;
+    if (mm > 12 && dd <= 12){ const t = dd; dd = mm; mm = t; }
+    const d = new Date(y, mm - 1, dd); return d.getMonth() === mm - 1 ? iso(d) : null;
+  }
+  const d = new Date(s.replace(/(\d)(st|nd|rd|th)\b/i, '$1')); if (!isNaN(d) && /[A-Za-z]/.test(s)) return iso(d);
+  return null;
+}
+
+/* ---------- build the plan from the mapping ---------- */
+function impGuess(headers){
+  const map = {}; const used = new Set();
+  IMP_FIELDS.forEach(f => {
+    const i = headers.findIndex((h, ix) => !used.has(ix) && f.re.test(String(h)) && !(f.k === 'kitchenWaste' && /recycl|oil|plastic|paper|glass|can/i.test(String(h))));
+    if (i >= 0){ used.add(i); map[f.k] = { col:i }; }
+  });
+  // pick up a unit written in the header, e.g. "Water (kL)"
+  IMP_FIELDS.forEach(f => {
+    const m = map[f.k]; if (!m) return; const h = String(headers[m.col]).toLowerCase();
+    const U = IMP_UNITS[f.kind], pick = label => { const ix = U.findIndex(x => x[0] === label); if (ix >= 0) m.unit = ix; }; m.unit = 0;
+    if (f.kind === 'mass'){ if (/\(g\)|\bgrams?\b/.test(h)) pick('g'); else if (/tonne|\(t\)|\btons?\b/.test(h)) pick('tonnes'); }
+    if (f.kind === 'elec'){ if (/mwh/.test(h)) pick('MWh'); else if (/\bwh\b/.test(h) && !/kwh/.test(h)) pick('Wh'); }
+    if (f.kind === 'water'){ if (/\bkl\b|kilolit|m3|m³|\(m/.test(h)) pick('kilolitres / m³'); }
+    if (f.kind === 'gas'){
+      const cy = /(\d+)\s*kg\s*(cyl|bottle|tank)|(cyl\w*|bottle\w*)\s*\(?(\d+)\s*kg/.exec(h);
+      if (cy){ const n = cy[1] || cy[4]; pick(n + ' kg cylinders'); }
+      else if (/m3|m³|cubic/.test(h)) pick('m³'); else if (/litre|liter|\bltrs?\b|\(l\)/.test(h)) pick('litres'); else if (/kwh/.test(h)) pick('kWh'); else if (/\bmj\b|megajoule/.test(h)) pick('MJ');
+      else if (/tonne|\(t\)/.test(h)) pick('tonnes');
+    }
+    m.factor = '';
+  });
+  return map;
+}
+function impMonthDays(iso){ const [y, m] = iso.split('-').map(Number); return new Date(y, m, 0).getDate(); }
+function impPlan(){
+  const P = { days:new Map(), rowsRead:0, rowsUsed:0, badDate:0, badNum:0, negative:0, future:0, blocked:[], sameDate:0, fields:[] };
+  if (!imp || imp.dateCol == null || imp.dateCol < 0) return P;
+  const today = isoDate(new Date()), monthly = imp.period === 'month';
+  const active = IMP_FIELDS.filter(f => imp.map[f.k] && imp.map[f.k].col != null && imp.map[f.k].col >= 0);
+  active.forEach(f => {
+    const m = imp.map[f.k], u = IMP_UNITS[f.kind][m.unit || 0];
+    let factor = u[1];
+    if (u[2] === 'g'){ const o = parseFloat(m.factor); factor = o > 0 ? o : gasAutoFactor(u[0]); if (!(o > 0)) P.gasStd = gasStdNote(u[0]); }
+    else if (u[2]){ factor = parseFloat(m.factor); if (!(factor > 0)){ P.blocked.push(f.label + ': type the ' + IMP_NEEDS_FACTOR[f.kind] + ' for ' + u[0]); factor = 0; } }
+    P.fields.push({ f, factor });
+  });
+  const seen = new Set();
+  imp.rows.forEach(r => {
+    P.rowsRead++;
+    const d = impDate(r[imp.dateCol], imp.dateFmt, monthly);
+    if (!d){ if (String(r[imp.dateCol] == null ? '' : r[imp.dateCol]).trim() !== '') P.badDate++; return; }
+    const targets = [];
+    if (monthly){ const dim = impMonthDays(d), ym = d.slice(0, 8); for (let i = 1; i <= dim; i++){ const dd = ym + String(i).padStart(2, '0'); if (dd <= today) targets.push([dd, dim]); else P.future++; } }
+    else { if (d > today || d < '2000-01-01'){ P.future++; return; } targets.push([d, 1]); }
+    if (!targets.length) return;
+    let used = false;
+    P.fields.forEach(({ f, factor }) => {
+      if (!factor) return;
+      const raw = r[imp.map[f.k].col], n = impNum(raw);
+      if (n === null) return;
+      if (isNaN(n)){ P.badNum++; return; }
+      if (n < 0){ P.negative++; return; }
+      if (n === 0) return;
+      used = true;
+      targets.forEach(([dd, div]) => {
+        let day = P.days.get(dd); if (!day){ day = {}; P.days.set(dd, day); }
+        const val = n * factor / div;
+        day[f.path] = (day[f.path] || 0) + val;
+      });
+    });
+    if (used){ P.rowsUsed++; if (!monthly){ if (seen.has(d)) P.sameDate++; seen.add(d); } }
+  });
+  return P;
+}
+function impDayHasData(e){
+  if (!e) return false;
+  if (FIELD_PATHS.some(p => (+getPath(e, p) || 0) > 0)) return true;
+  return (+e.salesTotal || 0) > 0;
+}
+function impApplyPlan(P, mode, commit, batch){
+  const R = { add:0, newDays:0, changeDays:0, filled:0, overwritten:0, skippedConflict:0, skippedDays:0, from:null, to:null };
+  const dates = Array.from(P.days.keys()).sort();
+  dates.forEach(date => {
+    const vals = P.days.get(date), idx = findEntryIndexForDate(date); let e = idx >= 0 ? entries[idx] : null;
+    if (mode === 'skip' && impDayHasData(e)){ R.skippedDays++; return; }
+    const fd = (feedState.days || {})[date] || {};
+    let changed = false; const created = !e;
+    const work = e ? e : { id:'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), date, service:'—' };
+    const prev = {}, pf = {}, fo = !!(e && e.feedOnly);
+    Object.keys(vals).forEach(path => {
+      let v = Math.round(vals[path] * 1000) / 1000; if (!(v > 0)) return;
+      const cur = +getPath(work, path) || 0, isFeed = !!(work.feedSrc && work.feedSrc[path]) || (path === 'salesTotal' && !work.salesTyped && typeof fd.salesTotal === 'number' && fd.salesTotal > 0);
+      if (mode === 'fill' && (cur > 0 || isFeed)){ R.skippedConflict++; return; }
+      if (cur > 0 || isFeed) R.overwritten++; else R.filled++;
+      changed = true;
+      if (commit){
+        prev[path] = getPath(work, path) == null ? null : getPath(work, path);
+        if (path === 'salesTotal'){ prev.salesTyped = work.salesTyped == null ? null : work.salesTyped; work.salesTotal = v; work.salesTyped = true; }
+        else setPath(work, path, v);
+        if (work.feedSrc && work.feedSrc[path]){ pf[path] = work.feedSrc[path]; delete work.feedSrc[path]; }
+      }
+    });
+    if (!changed) return;
+    if (!R.from || date < R.from) R.from = date; if (!R.to || date > R.to) R.to = date;
+    if (created) R.newDays++; else R.changeDays++;
+    if (commit){
+      delete work.feedOnly;
+      work.imps = (work.imps || []).concat([{ b:batch.id, at:batch.at, file:batch.file, created, prev, pf, fo, spread:imp.period === 'month' }]);
+      if (created) entries.push(work);
+    }
+  });
+  return R;
+}
+
+/* ---------- the screen ---------- */
+function impBatches(){
+  const m = new Map();
+  entries.forEach(e => (e.imps || []).forEach(i => { let b = m.get(i.b); if (!b){ b = { id:i.b, at:i.at, file:i.file, days:0, from:e.date, to:e.date, spread:!!i.spread }; m.set(i.b, b); } b.days++; if (e.date < b.from) b.from = e.date; if (e.date > b.to) b.to = e.date; }));
+  return Array.from(m.values()).sort((a, b) => a.at < b.at ? 1 : -1);
+}
+function impTemplate(){
+  const head = ['Date','Kitchen waste (kg)','Plastic (kg)','Paper and cardboard (kg)','Glass (kg)','Cans (kg)','Used oil (kg)','Gas (kg)','Electricity (kWh)','Water (L)','Sales','Covers'];
+  const rows = [['2025-01-01',24.5,3.2,6.1,4.0,0.8,5.0,11.5,210,1800,12450,96],['2025-01-02',22.1,2.9,5.4,3.6,0.7,0,10.8,198,1650,11800,88],['2025-01-03',27.8,3.5,6.8,4.4,0.9,5.5,12.2,225,1950,14210,104]];
+  triggerDownload('Waste_Smart_history_template.csv', '﻿' + [head].concat(rows).map(r => r.join(',')).join('\r\n') + '\r\n', 'text/csv;charset=utf-8;');
+}
+function renderImportCard(){
+  const el = $('impBox'); if (!el) return;
+  const bs = impBatches();
+  el.innerHTML = `<p class="section-sub">Load your past figures (utilities, waste, recycling, sales) from an Excel or CSV file to see the app on your own numbers. One row per day, or one row per month for utility bills. The file is read on this device.</p>
+    <div class="btnrow" style="margin-bottom:12px"><button class="btn primary small" onclick="impChoose()">Choose a file</button><button class="btn ghost small" onclick="impTemplate()">Download the template</button></div>
+    <div id="impWork"></div>
+    ${bs.length ? `<h4 style="margin:16px 0 6px">Imported so far</h4><table class="htable"><thead><tr><th>Imported</th><th>File</th><th>Days</th><th>Dates</th><th></th></tr></thead><tbody>${bs.map(b => `<tr><td class="mono">${esc(String(b.at).slice(0, 16).replace('T', ' '))}</td><td>${esc(b.file)}${b.spread ? ' <span class="src est">monthly, spread</span>' : ''}</td><td class="num">${b.days}</td><td class="mono">${esc(b.from)} to ${esc(b.to)}</td><td><button class="btn danger small" onclick="impUndo('${esc(b.id)}')">Undo</button></td></tr>`).join('')}</tbody></table>` : ''}`;
+}
+function impChoose(){
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.xlsx,.csv,.tsv,.txt';
+  inp.onchange = () => { if (inp.files[0]) impLoad(inp.files[0]); };
+  inp.click();
+}
+async function impLoad(file){
+  const w = $('impWork'); w.innerHTML = '<p class="section-sub">Reading ' + esc(file.name) + '…</p>';
+  try{
+    let rows, sheets = null, xl = null;
+    if (/\.xlsx$/i.test(file.name)){
+      xl = await impReadXlsx(await file.arrayBuffer());
+      sheets = xl.sheets; rows = await xl.readSheet(sheets[0]);
+    } else if (/\.xls$/i.test(file.name)){ throw new Error('Old .xls files are not supported. In Excel choose Save As, then .xlsx or CSV.'); }
+    else rows = impParseCSV(await file.text());
+    imp = { file:file.name, xl, sheets, sheet:0, mode:'fill', period:'day', dateFmt:'dmy' };
+    impSetRows(rows);
+    impRender();
+  }catch(e){ console.error(e); w.innerHTML = '<div class="warnbox">' + esc(e.message || 'Could not read that file.') + '</div>'; }
+}
+function impSetRows(rows){
+  rows = rows.filter(r => r.some(c => String(c == null ? '' : c).trim() !== ''));
+  let hi = rows.findIndex(r => r.filter(c => String(c == null ? '' : c).trim() !== '').length >= 2); if (hi < 0) hi = 0;
+  const headers = (rows[hi] || []).map(h => String(h == null ? '' : h).trim());
+  imp.headers = headers; imp.rows = rows.slice(hi + 1).slice(0, IMP_MAX_ROWS);
+  imp.truncated = rows.length - hi - 1 > IMP_MAX_ROWS;
+  imp.map = impGuess(headers);
+  const di = headers.findIndex(h => /date|day|datum|month|period/i.test(h));
+  imp.dateCol = di >= 0 ? di : 0;
+  if (/month/i.test(headers[imp.dateCol] || '') && !/date|day/i.test(headers[imp.dateCol] || '')) imp.period = 'month';
+}
+async function impSheet(i){ imp.sheet = +i; imp.rows = []; impSetRows(await imp.xl.readSheet(imp.sheets[imp.sheet])); impRender(); }
+function impRender(){
+  const w = $('impWork'); if (!w || !imp) return;
+  if (!imp.rows.length){ w.innerHTML = '<div class="warnbox">No rows were found under the header row. Check the file and try again.</div>'; return; }
+  const colOpts = sel => '<option value="-1">Not in my file</option>' + imp.headers.map((h, i) => `<option value="${i}"${sel === i ? ' selected' : ''}>${esc(h || ('Column ' + (i + 1)))}</option>`).join('');
+  const sample = (col) => { for (const r of imp.rows.slice(0, 20)){ const v = r[col]; if (v !== '' && v != null) return String(v).slice(0, 18); } return ''; };
+  const maprows = IMP_FIELDS.map(f => {
+    const m = imp.map[f.k] || { col:-1, unit:0, factor:'' }, units = IMP_UNITS[f.kind], u = units[m.unit || 0];
+    const unitSel = units.length > 1 ? `<select onchange="impUnit('${f.k}',this.value)">${units.map((x, i) => `<option value="${i}"${i === (m.unit || 0) ? ' selected' : ''}>${esc(x[0])}</option>`).join('')}</select>` : `<span class="costline">${esc(units[0][0])}</span>`;
+    const fac = u[2] ? `<input type="number" step="any" min="0" style="width:150px;margin-top:6px" placeholder="${esc(IMP_NEEDS_FACTOR[f.kind])}" value="${esc(m.factor || '')}" oninput="impFactor('${f.k}',this.value)">` : '';
+    return `<tr><td><b>${esc(f.label)}</b></td><td><select onchange="impCol('${f.k}',this.value)">${colOpts(m.col)}</select></td><td>${unitSel} ${fac}</td><td class="mono">${m.col >= 0 ? esc(sample(m.col)) : ''}</td></tr>`;
+  }).join('');
+  w.innerHTML = `<div class="card" style="margin-bottom:12px"><div class="form-grid">
+      <div class="field"><label class="field-label">File</label><div class="costline">${esc(imp.file)} · ${nf(imp.rows.length, 0)} rows${imp.truncated ? ' (first ' + IMP_MAX_ROWS + ' used)' : ''}</div></div>
+      ${imp.sheets && imp.sheets.length > 1 ? `<div class="field"><label class="field-label">Sheet</label><select onchange="impSheet(this.value)">${imp.sheets.map((s, i) => `<option value="${i}"${i === imp.sheet ? ' selected' : ''}>${esc(s.name)}</option>`).join('')}</select></div>` : ''}
+      <div class="field"><label class="field-label">Date column</label><select onchange="impDateCol(this.value)">${imp.headers.map((h, i) => `<option value="${i}"${i === imp.dateCol ? ' selected' : ''}>${esc(h || ('Column ' + (i + 1)))}</option>`).join('')}</select></div>
+      <div class="field"><label class="field-label">Each row is</label><select onchange="impPeriod(this.value)"><option value="day"${imp.period === 'day' ? ' selected' : ''}>One day</option><option value="month"${imp.period === 'month' ? ' selected' : ''}>A month total (spread evenly over its days)</option></select></div>
+      <div class="field"><label class="field-label">Dates written as</label><select onchange="impFmt(this.value)"><option value="dmy"${imp.dateFmt === 'dmy' ? ' selected' : ''}>Day first (31/12/2025)</option><option value="mdy"${imp.dateFmt === 'mdy' ? ' selected' : ''}>Month first (12/31/2025)</option></select></div></div>
+      <div class="costline">Dates like 2025-12-31 and Excel dates are read as they are.</div></div>
+    <div class="bi-tablewrap"><table class="htable"><thead><tr><th>Figure</th><th>Column in your file</th><th>Unit</th><th>Example</th></tr></thead><tbody>${maprows}</tbody></table></div>
+    <div class="card" style="margin:12px 0"><div class="form-grid"><div class="field"><label class="field-label">If a day already has figures</label><select onchange="impMode(this.value)"><option value="fill"${imp.mode === 'fill' ? ' selected' : ''}>Fill only the blanks (keep what is there)</option><option value="overwrite"${imp.mode === 'overwrite' ? ' selected' : ''}>Replace with the file</option><option value="skip"${imp.mode === 'skip' ? ' selected' : ''}>Skip that day</option></select></div></div></div>
+    <div id="impPrev"></div>`;
+  impPreview();
+}
+function impCol(k, v){ const m = imp.map[k] || (imp.map[k] = { col:-1, unit:0, factor:'' }); m.col = +v; if (m.col < 0) delete imp.map[k]; impRender(); }
+function impUnit(k, v){ imp.map[k].unit = +v; impRender(); }
+function impFactor(k, v){ imp.map[k].factor = v; impPreview(); }
+function impDateCol(v){ imp.dateCol = +v; impPreview(); }
+function impPeriod(v){ imp.period = v; impPreview(); }
+function impFmt(v){ imp.dateFmt = v; impPreview(); }
+function impMode(v){ imp.mode = v; impPreview(); }
+function impPreview(){
+  const el = $('impPrev'); if (!el) return;
+  const P = impPlan(), R = impApplyPlan(P, imp.mode, false), tot = k => { let s = 0; P.days.forEach(d => { s += d[k] || 0; }); return s; };
+  const notes = [];
+  if (P.blocked.length) notes.push(...P.blocked.map(x => `<li class="bad">${esc(x)}</li>`));
+  if (P.badDate) notes.push(`<li>${nf(P.badDate, 0)} rows have a date that could not be read and are skipped.</li>`);
+  if (P.badNum) notes.push(`<li>${nf(P.badNum, 0)} cells are not numbers and are skipped.</li>`);
+  if (P.negative) notes.push(`<li>${nf(P.negative, 0)} negative figures are skipped.</li>`);
+  if (P.future) notes.push(`<li>${nf(P.future, 0)} rows are dated in the future or before 2000 and are skipped.</li>`);
+  if (P.sameDate) notes.push(`<li>${nf(P.sameDate, 0)} rows share a date with an earlier row. Their figures are added together.</li>`);
+  if (P.gasStd) notes.push('<li>Gas: ' + esc(P.gasStd) + '</li>');
+  if (R.skippedConflict) notes.push(`<li>${nf(R.skippedConflict, 0)} figures were left alone because that day already has one.</li>`);
+  if (R.skippedDays) notes.push(`<li>${nf(R.skippedDays, 0)} days already have figures and are skipped.</li>`);
+  if (imp.period === 'month') notes.push('<li>Month totals are shared equally across the days of each month, so day-to-day patterns will look flat. Daily files give a truer picture.</li>');
+  const nDays = R.newDays + R.changeDays, tile = (n, l) => `<div><div class="n">${n}</div><div class="l">${l}</div></div>`;
+  const util = P.days.size && nDays ? tile(nf(tot('util.kwh'), 0) + ' kWh', 'Electricity') + tile(nf(tot('util.waterL') / 1000, 1) + ' kL', 'Water') + tile(nf(tot('util.gasKg'), 1) + ' kg', 'Gas') + tile(nf(tot('kitchenWaste'), 0) + ' kg', 'Kitchen waste') + tile(tot('salesTotal') ? fmtMoney(tot('salesTotal')) : '—', 'Sales') : '';
+  el.innerHTML = `<div class="hero-total" style="margin-bottom:10px">${tile(nf(nDays, 0), 'Days to load') + tile(R.from ? esc(R.from) + ' to ' + esc(R.to) : '—', 'Date range') + tile(nf(R.newDays, 0), 'New days')}</div>
+    ${!nDays && P.days.size && !P.blocked.length ? '<div class="costline"><b>Nothing new to load.</b> Every day in this file already has figures in the app, so there is nothing to add or change.</div>' : ''}
+    ${util ? `<div class="hero-total" style="background:var(--surface);color:var(--ink);border:1.5px solid var(--line);margin-bottom:10px">${util}</div>` : ''}
+    ${notes.length ? `<ul class="costline" style="margin:0 0 10px 18px">${notes.join('')}</ul>` : ''}
+    <div class="btnrow"><button class="btn primary" id="impGo" onclick="impCommit()" ${nDays && !P.blocked.length ? '' : 'disabled'}>Import ${nDays ? nf(nDays, 0) + ' days' : ''}</button><button class="btn ghost small" onclick="imp=null;$('impWork').innerHTML=''">Cancel</button></div>
+    ${P.blocked.length ? '<div class="costline">Fix the items in red, or choose "Not in my file" for that figure, to continue.</div>' : ''}`;
+}
+async function impCommit(){
+  const P = impPlan(); if (P.blocked.length) return;
+  const backup = JSON.stringify(entries), batch = { id:'imp' + Date.now().toString(36), at:new Date().toISOString(), file:imp.file };
+  const R = impApplyPlan(P, imp.mode, true, batch);
+  const btn = $('impGo'); if (btn) btn.disabled = true;
+  if (!(await sSet(K.ENTRIES, JSON.stringify(entries)))){ entries = JSON.parse(backup); if (btn) btn.disabled = false; return; }
+  toast('Imported ' + nf(R.newDays + R.changeDays, 0) + ' days.');
+  imp = null; renderImportCard(); impRefresh();
+}
+function impDelPath(o, path){
+  const k = path.split('.'), last = k.pop(); let c = o;
+  for (const x of k){ if (!c || typeof c !== 'object') return; c = c[x]; }
+  if (c && typeof c === 'object'){ delete c[last]; }
+}
+async function impUndo(id){
+  const backup = JSON.stringify(entries); let n = 0;
+  entries = entries.filter(e => {
+    const i = (e.imps || []).findIndex(x => x.b === id); if (i < 0) return true;
+    const it = e.imps[i]; e.imps.splice(i, 1); n++;
+    if (it.created && !e.imps.length) return false;
+    Object.keys(it.prev || {}).forEach(path => {
+      const pv = it.prev[path];
+      if (path === 'salesTyped'){ if (pv == null) delete e.salesTyped; else e.salesTyped = pv; }
+      else if (path === 'salesTotal'){ if (pv == null){ delete e.salesTotal; delete e.salesTyped; } else e.salesTotal = pv; }
+      else if (path === 'covers'){ if (pv == null) delete e.covers; else e.covers = pv; }
+      else if (pv == null) impDelPath(e, path);
+      else setPath(e, path, pv);
+    });
+    if (it.pf){ e.feedSrc = e.feedSrc || {}; Object.keys(it.pf).forEach(k => { e.feedSrc[k] = it.pf[k]; }); }
+    if (it.fo) e.feedOnly = true;
+    if (!e.imps.length) delete e.imps;
+    return true;
+  });
+  if (!(await sSet(K.ENTRIES, JSON.stringify(entries)))){ entries = JSON.parse(backup); return; }
+  toast('Undid ' + nf(n, 0) + ' days of that import.'); renderImportCard(); impRefresh();
+}
+function impRefresh(){
+  try{ if (typeof renderToday === 'function') renderToday(false); if (typeof renderBoard === 'function' && $('biKpis')) renderBoard(); if (typeof renderProfit === 'function') renderProfit(); if (typeof renderSalesHistory === 'function') renderSalesHistory(); }catch(e){ console.error(e); }
 }
 
 /* ===================== REPORT PACK: preview, PDF, Word, CSV ===================== */
