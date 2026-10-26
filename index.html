@@ -45,12 +45,12 @@ header{position:sticky;top:0;z-index:20;background:rgba(15,26,36,.94);backdrop-f
 .mock .bar i{width:9px;height:9px;border-radius:50%;background:#2B4A5B}
 .mock .bar span{margin-left:auto;font-size:11.5px;color:var(--dim)}
 .mk-top{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px}
-.mk-card{background:var(--navy);border:1px solid var(--line);border-radius:12px;padding:16px}
+.mk-card{container-type:inline-size;min-width:0;background:var(--navy);border:1px solid var(--line);border-radius:12px;padding:16px}
 .mk-card small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
-.mk-big{font-family:'EB Garamond',Georgia,serif;font-size:clamp(32px,4.2vw,46px);font-weight:600;color:var(--gold2);line-height:1.05;margin-top:6px}
+.mk-big{font-family:'EB Garamond',Georgia,serif;font-size:clamp(22px,15cqi,44px);font-weight:600;color:var(--gold2);line-height:1.1;margin-top:6px;white-space:nowrap;font-variant-numeric:lining-nums tabular-nums}
 .mk-card .sub{font-size:12px;color:var(--mut);margin-top:4px}
 .mk-leak{background:#2A1B1C;border-color:#5B2F2A}
-.mk-leak small{color:var(--bad)}.mk-leak .mk-big{color:var(--bad);font-size:clamp(28px,3.4vw,36px)}
+.mk-leak small{color:var(--bad)}.mk-leak .mk-big{color:var(--bad);font-size:clamp(22px,14cqi,38px)}
 .mk-rows{margin-top:14px;display:grid;gap:10px}
 .mk-row{display:grid;grid-template-columns:minmax(0,92px) minmax(0,1fr) 66px;gap:10px;align-items:center;font-size:12.5px}
 .mk-row span:first-child{color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
